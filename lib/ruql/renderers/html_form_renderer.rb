@@ -27,11 +27,13 @@ class HtmlFormRenderer
         @h.head do
           @h.title @quiz.title
           @h.link(:rel => 'stylesheet', :type =>'text/css', :href =>@css) if @css
-          @h.script(:type => 'text/javascript', :src => @js) do
+          @h.script(:type => 'text/javascript', :src => "http://code.jquery.com/jquery-2.1.0.min.js") do
           end if @js
         end
         @h.body do
           render_questions
+          @h.script(:type => 'text/javascript', :src => @js) do
+          end if @js
         end
       end
     end
@@ -74,16 +76,18 @@ class HtmlFormRenderer
         else q.answers
         end
       @h.ol :class => 'answers' do
+        id_answer = 1
         answers.each do |answer|
           if @show_solutions
             render_answer_for_solutions(answer, q.raw?)
           else
             #if q.raw? then @h.li { |l| l << answer.answer_text } else @h.li answer.answer_text end
-            @h.input(:type => 'radio', :name => 'a', :class => 'select') { |p| 
+            @h.input(:type => 'radio', :id => "qmc#{index}-#{id_answer}", :class => 'select') { |p| 
               p << answer.answer_text
               p << '</br>'
             }
           end
+          id_answer += 1
         end
       end
     end
@@ -97,16 +101,18 @@ class HtmlFormRenderer
     else q.answers
     end
     @h.ol :class => 'answers' do
+      id_answer = 1
       answers.each do |answer|
         if @show_solutions
           render_answer_for_solutions(answer, q.raw?)
         else
           #if q.raw? then @h.li { |l| l << answer.answer_text } else @h.li answer.answer_text end
-          @h.input(:type => 'checkbox', :name => 'b', :class => 'check') { |p| 
+          @h.input(:type => 'checkbox', :id => "qsm#{index}-#{id_answer}", :class => 'check') { |p| 
             p << answer.answer_text
             p << '</br>'
           }
         end
+        id_answer += 1
       end
     end
   end
@@ -169,7 +175,7 @@ class HtmlFormRenderer
           qtext.each_line do |p|
             @h.p do |par|
               par << p # preserves HTML markup
-              @h.input(:type => 'text', :class => 'fillin') if (question.class == FillIn)
+              @h.input(:type => 'text', :id => "qfi#{index + 1}", :class => 'fillin') if (question.class == FillIn)
             end
           end
         #end

@@ -1,15 +1,17 @@
 <html>
   <head>
     <title>Example quiz</title>
+    <script type="text/javascript" src="http://code.jquery.com/jquery-2.1.0.min.js">
+    </script>
   </head>
   <body>
-    <!-- Seed: 193198071281985290800198331169288892539 -->
+    <!-- Seed: 5444704420330326195372329717352928254 -->
     <form>
       <ol class="questions">
         <li id="question-0" class="question fillin ">
           <div class="text">
             <p>
-[2 points] The capital of California is               <input type="text" class="fillin"/>
+[2 points] The capital of California is               <input type="text" id="qfi1" class="fillin"/>
             </p>
           </div>
         </li>
@@ -19,11 +21,11 @@
 [1 point] What is the largest US state?            </p>
           </div>
           <ol class="answers">
-            <input type="radio" name="a" class="select">
+            <input type="radio" id="qmc1-1" class="select">
 Alaska</br>            </input>
-            <input type="radio" name="a" class="select">
+            <input type="radio" id="qmc1-2" class="select">
 Texas</br>            </input>
-            <input type="radio" name="a" class="select">
+            <input type="radio" id="qmc1-3" class="select">
 Hawaii</br>            </input>
           </ol>
         </li>
@@ -33,15 +35,15 @@ Hawaii</br>            </input>
 [1 point] Select ALL that apply: Which are American political parties?            </p>
           </div>
           <ol class="answers">
-            <input type="checkbox" name="b" class="check">
+            <input type="checkbox" id="qsm2-1" class="check">
 Democrats</br>            </input>
-            <input type="checkbox" name="b" class="check">
+            <input type="checkbox" id="qsm2-2" class="check">
 Republicans</br>            </input>
-            <input type="checkbox" name="b" class="check">
+            <input type="checkbox" id="qsm2-3" class="check">
 Greens</br>            </input>
-            <input type="checkbox" name="b" class="check">
+            <input type="checkbox" id="qsm2-4" class="check">
 Tories</br>            </input>
-            <input type="checkbox" name="b" class="check">
+            <input type="checkbox" id="qsm2-5" class="check">
 Social Democrats</br>            </input>
           </ol>
         </li>
@@ -51,15 +53,15 @@ Social Democrats</br>            </input>
 [1 point] Select ALL that apply: Which are American political parties?            </p>
           </div>
           <ol class="answers">
-            <input type="checkbox" name="b" class="check">
+            <input type="checkbox" id="qsm3-1" class="check">
 Democrats</br>            </input>
-            <input type="checkbox" name="b" class="check">
+            <input type="checkbox" id="qsm3-2" class="check">
 Republicans</br>            </input>
-            <input type="checkbox" name="b" class="check">
+            <input type="checkbox" id="qsm3-3" class="check">
 Greens</br>            </input>
-            <input type="checkbox" name="b" class="check">
+            <input type="checkbox" id="qsm3-4" class="check">
 Tories</br>            </input>
-            <input type="checkbox" name="b" class="check">
+            <input type="checkbox" id="qsm3-5" class="check">
 Social Democrats</br>            </input>
           </ol>
         </li>
@@ -69,9 +71,9 @@ Social Democrats</br>            </input>
 [1 point] True or False: The week has 7 days.            </p>
           </div>
           <ol class="answers">
-            <input type="radio" name="a" class="select">
+            <input type="radio" id="qmc4-1" class="select">
 True</br>            </input>
-            <input type="radio" name="a" class="select">
+            <input type="radio" id="qmc4-2" class="select">
 False</br>            </input>
           </ol>
         </li>
@@ -81,14 +83,16 @@ False</br>            </input>
 [1 point] True or False: The earth is flat.            </p>
           </div>
           <ol class="answers">
-            <input type="radio" name="a" class="select">
+            <input type="radio" id="qmc5-1" class="select">
 True</br>            </input>
-            <input type="radio" name="a" class="select">
+            <input type="radio" id="qmc5-2" class="select">
 False</br>            </input>
           </ol>
         </li>
       </ol>
       <input type="submit" value="Enviar"/>
     </form>
+    <script type="text/javascript" src="prueba.js">
+    </script>
   </body>
 </html>
