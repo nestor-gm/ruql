@@ -1,6 +1,7 @@
 class HtmlFormRenderer
   require 'builder'
   require 'erb'
+  require 'json'
   
   attr_reader :output
 
@@ -9,11 +10,11 @@ class HtmlFormRenderer
     @js = options.delete('j') || options.delete('js')
     @show_solutions = options.delete('s') || options.delete('solutions')
     @template = options.delete('t') ||
-      options.delete('template') #||
-      #File.join(Gem.loaded_specs['ruql'].full_gem_path, 'templates/htmlform.html.erb')
+      options.delete('template')
     @output = ''
     @quiz = quiz
     @h = Builder::XmlMarkup.new(:target => @output, :indent => 2)
+    @data = {}
   end
 
   def render_quiz
@@ -32,7 +33,11 @@ class HtmlFormRenderer
         end
         @h.body do
           render_questions
-          @h.script(:type => 'text/javascript', :src => @js) do
+          @h.script(:type => 'text/javascript') do |j|
+            j <<"#{<<JS}"
+      data = #{@data.to_json};
+      //JavaScript here.      
+JS
           end if @js
         end
       end
@@ -78,10 +83,12 @@ class HtmlFormRenderer
       @h.ol :class => 'answers' do
         id_answer = 1
         answers.each do |answer|
+          # Store answers for question-index
+          @data[:"question-#{index}"][1][answer.answer_text.to_sym] = [answer.correct, answer.explanation]
+          
           if @show_solutions
             render_answer_for_solutions(answer, q.raw?)
           else
-            #if q.raw? then @h.li { |l| l << answer.answer_text } else @h.li answer.answer_text end
             @h.input(:type => 'radio', :id => "qmc#{index}-#{id_answer}", :class => 'select') { |p| 
               p << answer.answer_text
               p << '</br>'
@@ -97,30 +104,35 @@ class HtmlFormRenderer
   def render_select_multiple(q,index)
     render_question_text(q, index) do
       answers =
-        if q.randomize then q.answers.sort_by { rand }
-    else q.answers
-    end
-    @h.ol :class => 'answers' do
-      id_answer = 1
-      answers.each do |answer|
-        if @show_solutions
-          render_answer_for_solutions(answer, q.raw?)
-        else
-          #if q.raw? then @h.li { |l| l << answer.answer_text } else @h.li answer.answer_text end
-          @h.input(:type => 'checkbox', :id => "qsm#{index}-#{id_answer}", :class => 'check') { |p| 
-            p << answer.answer_text
-            p << '</br>'
-          }
+      if q.randomize then q.answers.sort_by { rand }
+      else q.answers
+      end
+      @h.ol :class => 'answers' do
+        id_answer = 1
+        answers.each do |answer|
+          # Store answers for question-index
+          @data[:"question-#{index}"][1][answer.answer_text.to_sym] = [answer.correct, answer.explanation]
+          
+          if @show_solutions
+            render_answer_for_solutions(answer, q.raw?)
+          else
+            @h.input(:type => 'checkbox', :id => "qsm#{index}-#{id_answer}", :class => 'check') { |p| 
+              p << answer.answer_text
+              p << '</br>'
+            }
+          end
+          id_answer += 1
         end
-        id_answer += 1
       end
     end
-  end
-  self
+    self
   end
   
   def render_fill_in(q, idx)
     render_question_text(q, idx) do
+      # Store answers for question-idx
+      @data[:"question-#{idx}"][1][q.answers[idx].answer_text.to_sym] = [q.answers[idx].correct, q.answers[idx].explanation]
+      
       if @show_solutions
         answer = q.answers[0]
         if answer.has_explanation?
@@ -166,19 +178,20 @@ class HtmlFormRenderer
       @h.div :class => 'text' do
         qtext = "[#{question.points} point#{'s' if question.points>1}] " <<
           ('Select ALL that apply: ' if question.multiple).to_s <<
-          if question.class == FillIn then question.question_text.gsub(/\-+/, '')
-          else question.question_text
+          if question.class == FillIn then question.question_text.gsub!(/\-+/, '')
+          else 
+            question.question_text
           end
-        #if question.raw?
-        #  @h.p { |p| p << qtext }
-        #else
+          
+          # Hash with questions and all posibles answers
+          @data[html_args[:id].to_sym] = [question.question_text, {}]
+          
           qtext.each_line do |p|
             @h.p do |par|
               par << p # preserves HTML markup
               @h.input(:type => 'text', :id => "qfi#{index + 1}", :class => 'fillin') if (question.class == FillIn)
             end
           end
-        #end
       end
       yield # render answers
     end
