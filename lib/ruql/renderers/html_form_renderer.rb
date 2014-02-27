@@ -36,7 +36,51 @@ class HtmlFormRenderer
           @h.script(:type => 'text/javascript') do |j|
             j <<"#{<<JS}"
       data = #{@data.to_json};
-      //JavaScript here.      
+      
+      function checkFIQEmpty(textBox) {
+        if (textBox == "")
+          return true;
+        else
+          return false;
+      }
+      
+      function checkMCQEmpty(inputs) {
+        if (inputs.is(':checked'))
+          return false;
+        else
+          return true;
+      }
+      
+      function checkEmpty() {
+        empty = []
+        
+        for (question in data) {
+          q = $("#" + question.toString() + " input");
+          if (q.length == 1)
+            empty.push(checkFIQEmpty(q.val()));
+          else
+            empty.push(checkMCQEmpty(q));
+        }
+        
+        if (($.inArray(true, empty)) !== -1)
+          return true;
+        else
+          return false; 
+      }
+      
+      function checkForm() {
+        if (!checkEmpty()) {
+          alert('OK');
+          // Comprobar respuestas: accedo a respueta correcta en data, cojo su id y compruebo que este marcado en el DOM
+        }
+        else {
+          alert('ERROR, hay campos vacios');
+        }
+      }
+      
+      $("#btn").click(function() {
+        checkForm();
+      });     
 JS
           end if @js
         end
@@ -56,7 +100,7 @@ JS
     
   def render_questions
     render_random_seed
-    @h.form do
+    @h.form(:id => 'form') do
       @h.ol :class => 'questions' do
         @quiz.questions.each_with_index do |q,i|
           case q
@@ -68,7 +112,9 @@ JS
           end
         end
       end
-      @h.input(:type => 'submit', :value => 'Enviar')
+      @h.button(:type => 'button', :id => 'btn') do |b|
+        b << "Enviar"
+      end
     end
   end
 
@@ -84,12 +130,12 @@ JS
         id_answer = 1
         answers.each do |answer|
           # Store answers for question-index
-          @data[:"question-#{index}"][1][answer.answer_text.to_sym] = [answer.correct, answer.explanation]
+          @data[:"question-#{index}"][1][answer.answer_text.to_sym] = ["qmc#{index + 1}-#{id_answer}", answer.correct, answer.explanation]
           
           if @show_solutions
             render_answer_for_solutions(answer, q.raw?)
           else
-            @h.input(:type => 'radio', :id => "qmc#{index}-#{id_answer}", :class => 'select') { |p| 
+            @h.input(:type => 'radio', :id => "qmc#{index + 1}-#{id_answer}", :name => "qmc#{index + 1}", :class => 'select') { |p| 
               p << answer.answer_text
               p << '</br>'
             }
@@ -111,12 +157,12 @@ JS
         id_answer = 1
         answers.each do |answer|
           # Store answers for question-index
-          @data[:"question-#{index}"][1][answer.answer_text.to_sym] = [answer.correct, answer.explanation]
+          @data[:"question-#{index}"][1][answer.answer_text.to_sym] = ["qsm#{index + 1}-#{id_answer}", answer.correct, answer.explanation]
           
           if @show_solutions
             render_answer_for_solutions(answer, q.raw?)
           else
-            @h.input(:type => 'checkbox', :id => "qsm#{index}-#{id_answer}", :class => 'check') { |p| 
+            @h.input(:type => 'checkbox', :id => "qsm#{index + 1}-#{id_answer}", :class => 'check') { |p| 
               p << answer.answer_text
               p << '</br>'
             }
@@ -131,7 +177,7 @@ JS
   def render_fill_in(q, idx)
     render_question_text(q, idx) do
       # Store answers for question-idx
-      @data[:"question-#{idx}"][1][q.answers[idx].answer_text.to_sym] = [q.answers[idx].correct, q.answers[idx].explanation]
+      @data[:"question-#{idx}"][1][q.answers[idx].answer_text.to_sym] = ["qfi#{idx + 1}", q.answers[idx].correct, q.answers[idx].explanation]
       
       if @show_solutions
         answer = q.answers[0]

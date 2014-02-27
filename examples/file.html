@@ -5,8 +5,8 @@
     </script>
   </head>
   <body>
-    <!-- Seed: 310272741888643249291426721628319176278 -->
-    <form>
+    <!-- Seed: 59604295682834334777002071787522005954 -->
+    <form id="form">
       <ol class="questions">
         <li id="question-0" class="question fillin ">
           <div class="text">
@@ -21,33 +21,15 @@
 [1 point] What is the largest US state?            </p>
           </div>
           <ol class="answers">
-            <input type="radio" id="qmc1-1" class="select">
-Alaska</br>            </input>
-            <input type="radio" id="qmc1-2" class="select">
-Texas</br>            </input>
-            <input type="radio" id="qmc1-3" class="select">
+            <input type="radio" id="qmc2-1" name="qmc2" class="select">
 Hawaii</br>            </input>
+            <input type="radio" id="qmc2-2" name="qmc2" class="select">
+Alaska</br>            </input>
+            <input type="radio" id="qmc2-3" name="qmc2" class="select">
+Texas</br>            </input>
           </ol>
         </li>
         <li id="question-2" class="question selectmultiple multiple">
-          <div class="text">
-            <p>
-[1 point] Select ALL that apply: Which are American political parties?            </p>
-          </div>
-          <ol class="answers">
-            <input type="checkbox" id="qsm2-1" class="check">
-Democrats</br>            </input>
-            <input type="checkbox" id="qsm2-2" class="check">
-Republicans</br>            </input>
-            <input type="checkbox" id="qsm2-3" class="check">
-Greens</br>            </input>
-            <input type="checkbox" id="qsm2-4" class="check">
-Tories</br>            </input>
-            <input type="checkbox" id="qsm2-5" class="check">
-Social Democrats</br>            </input>
-          </ol>
-        </li>
-        <li id="question-3" class="question selectmultiple multiple">
           <div class="text">
             <p>
 [1 point] Select ALL that apply: Which are American political parties?            </p>
@@ -65,15 +47,33 @@ Tories</br>            </input>
 Social Democrats</br>            </input>
           </ol>
         </li>
+        <li id="question-3" class="question selectmultiple multiple">
+          <div class="text">
+            <p>
+[1 point] Select ALL that apply: Which are American political parties?            </p>
+          </div>
+          <ol class="answers">
+            <input type="checkbox" id="qsm4-1" class="check">
+Democrats</br>            </input>
+            <input type="checkbox" id="qsm4-2" class="check">
+Republicans</br>            </input>
+            <input type="checkbox" id="qsm4-3" class="check">
+Greens</br>            </input>
+            <input type="checkbox" id="qsm4-4" class="check">
+Tories</br>            </input>
+            <input type="checkbox" id="qsm4-5" class="check">
+Social Democrats</br>            </input>
+          </ol>
+        </li>
         <li id="question-4" class="question truefalse ">
           <div class="text">
             <p>
 [1 point] True or False: The week has 7 days.            </p>
           </div>
           <ol class="answers">
-            <input type="radio" id="qmc4-1" class="select">
+            <input type="radio" id="qmc5-1" name="qmc5" class="select">
 True</br>            </input>
-            <input type="radio" id="qmc4-2" class="select">
+            <input type="radio" id="qmc5-2" name="qmc5" class="select">
 False</br>            </input>
           </ol>
         </li>
@@ -83,18 +83,63 @@ False</br>            </input>
 [1 point] True or False: The earth is flat.            </p>
           </div>
           <ol class="answers">
-            <input type="radio" id="qmc5-1" class="select">
+            <input type="radio" id="qmc6-1" name="qmc6" class="select">
 True</br>            </input>
-            <input type="radio" id="qmc5-2" class="select">
+            <input type="radio" id="qmc6-2" name="qmc6" class="select">
 False</br>            </input>
           </ol>
         </li>
       </ol>
-      <input type="submit" value="Enviar"/>
+      <button type="button" id="btn">
+Enviar      </button>
     </form>
     <script type="text/javascript">
-      data = {"question-0":["The capital of California is ",{"sacramento":[true,null]}],"question-1":["What is the largest US state?",{"Alaska":[true,null],"Texas":[false,"That's pretty big, but think colder."],"Hawaii":[false,null]}],"question-2":["Which are American political parties?",{"Democrats":[true,null],"Republicans":[true,null],"Greens":[true,"Yes, they're a party!"],"Tories":[false,"They're British"],"Social Democrats":[false,null]}],"question-3":["Which are American political parties?",{"Democrats":[true,null],"Republicans":[true,null],"Greens":[true,"Yes, they're a party!"],"Tories":[false,"They're British"],"Social Democrats":[false,null]}],"question-4":["True or False: The week has 7 days.",{"True":[true,null],"False":[false,""]}],"question-5":["True or False: The earth is flat.",{"True":[false,"No, just looks that way"],"False":[true,null]}]};
-      //JavaScript here.      
+      data = {"question-0":["The capital of California is ",{"sacramento":["qfi1",true,null]}],"question-1":["What is the largest US state?",{"Hawaii":["qmc2-1",false,null],"Alaska":["qmc2-2",true,null],"Texas":["qmc2-3",false,"That's pretty big, but think colder."]}],"question-2":["Which are American political parties?",{"Democrats":["qsm3-1",true,null],"Republicans":["qsm3-2",true,null],"Greens":["qsm3-3",true,"Yes, they're a party!"],"Tories":["qsm3-4",false,"They're British"],"Social Democrats":["qsm3-5",false,null]}],"question-3":["Which are American political parties?",{"Democrats":["qsm4-1",true,null],"Republicans":["qsm4-2",true,null],"Greens":["qsm4-3",true,"Yes, they're a party!"],"Tories":["qsm4-4",false,"They're British"],"Social Democrats":["qsm4-5",false,null]}],"question-4":["True or False: The week has 7 days.",{"True":["qmc5-1",true,null],"False":["qmc5-2",false,""]}],"question-5":["True or False: The earth is flat.",{"True":["qmc6-1",false,"No, just looks that way"],"False":["qmc6-2",true,null]}]};
+      
+      function checkFIQEmpty(textBox) {
+        if (textBox == "")
+          return true;
+        else
+          return false;
+      }
+      
+      function checkMCQEmpty(inputs) {
+        if (inputs.is(':checked'))
+          return false;
+        else
+          return true;
+      }
+      
+      function checkEmpty() {
+        empty = []
+        
+        for (question in data) {
+          q = $("#" + question.toString() + " input");
+          if (q.length == 1)
+            empty.push(checkFIQEmpty(q.val()));
+          else
+            empty.push(checkMCQEmpty(q));
+        }
+        
+        if (($.inArray(true, empty)) !== -1)
+          return true;
+        else
+          return false; 
+      }
+      
+      function checkForm() {
+        if (!checkEmpty()) {
+          alert('OK');
+          // Comprobar respuestas: accedo a respueta correcta en data, cojo su id y compruebo que este marcado en el DOM
+        }
+        else {
+          alert('ERROR, hay campos vacios');
+        }
+      }
+      
+      $("#btn").click(function() {
+        checkForm();
+      });     
     </script>
   </body>
 </html>
