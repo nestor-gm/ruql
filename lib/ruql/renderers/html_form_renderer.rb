@@ -28,6 +28,11 @@ class HtmlFormRenderer
         @h.head do
           @h.title @quiz.title
           @h.link(:rel => 'stylesheet', :type =>'text/css', :href =>@css) if @css
+          @h.style do |s|
+            s << "div, p {display:inline;}"
+            s << "strong.correct {color:rgb(0,255,0);}"
+            s << "strong.incorrect {color:rgb(255,0,0);}"
+          end
           @h.script(:type => 'text/javascript', :src => "http://code.jquery.com/jquery-2.1.0.min.js") do
           end if @js
         end
@@ -68,19 +73,108 @@ class HtmlFormRenderer
           return false; 
       }
       
+      function findCorrectAnswer(idQuestion, questionType) {
+        correctIds = [];
+        for (id in data[idQuestion][1]) {
+          if(data[idQuestion][1][id.toString()][1] == true)
+            if (questionType == 0)
+              return id.toString();
+            else {
+              correctIds.push(id.toString());
+            } 
+        }
+        return correctIds;
+      }
+      
+      function checkSelectMultiple(x, checkedIds, correctIds) {
+        results = [];
+        $.each(checkedIds, function(index, value){
+          if (correctIds.indexOf(value) == -1) {
+            results.push(false);
+            printResults(value, 0, data[x.toString()][1][value][2], "");
+          }
+          else {
+            results.push(true);
+            printResults(value, 1, "");
+          }
+        });
+        
+        if (($.inArray(false, results)) !== -1)
+          return false;
+        else
+          if (checkedIds.length == correctIds.length)
+            return true;
+        else
+          return false;
+      }
+      
+      function printResults(id, type, explanation) {
+        $("br[class=" + id + "br" + "]").detach();
+        if (type == 1)
+          $("div[id ~= " + id + "r" + "]").html("<strong class=correct> Correct</strong></br>");
+        else {
+          if ((explanation == "") || (explanation == null))
+            $("div[id ~= " + id + "r" + "]").html("<strong class=incorrect> Incorrect</strong></br>");
+          else
+            $("div[id ~= " + id + "r" + "]").html("<strong class=incorrect> Incorrect - " + explanation + "</strong></br>");
+        }
+      }
+      
+      function checkAnswers() {
+        
+        for (x in data) {
+          answers = $("#" + x.toString() + " input");
+          
+          if (answers.attr('class') == "fillin") {
+            if ($("#" + answers.attr('id')).val().toLowerCase() == data[x.toString()][1][answers.attr('id')][0]) {
+              printResults(answers.attr('id'), 1, "");
+            }
+            else
+              printResults(answers.attr('id'), 0, "");
+          }
+          
+          else if (answers.attr('class') == "select") {
+            idCorrectAnswer = findCorrectAnswer(x.toString(), 0);
+            
+            if ($("#" + x.toString() + " :checked").attr('id') == idCorrectAnswer)
+              printResults($("#" + x.toString() + " :checked").attr('id'), 1, "");
+            else {
+              id = $("#" + x.toString() + " :checked").attr('id');
+              printResults(id, 0, data[x.toString()][1][id][2]);
+            }
+          }
+          
+          else {
+            answers = $("#" + x.toString() + " :checked");
+            checkedIds = [];
+            
+            $.each(answers, function(index, value){
+              checkedIds.push(value['id']);
+            });
+            
+            correctIds = [];
+            correctIds = findCorrectAnswer(x.toString(), 1);
+            valid = checkSelectMultiple(x, checkedIds, correctIds);   
+          } 
+        }
+      }
+      
       function checkForm() {
         if (!checkEmpty()) {
-          alert('OK');
-          // Comprobar respuestas: accedo a respueta correcta en data, cojo su id y compruebo que este marcado en el DOM
+          checkAnswers();
         }
         else {
-          alert('ERROR, hay campos vacios');
+          alert('ERROR. Some fields are empty');
         }
       }
       
       $("#btn").click(function() {
         checkForm();
-      });     
+      });
+      
+      $("#reset").click(function() {
+        window.location.reload();
+      });
 JS
           end if @js
         end
@@ -115,6 +209,9 @@ JS
       @h.button(:type => 'button', :id => 'btn') do |b|
         b << "Enviar"
       end
+      @h.button(:type => 'button', :id => 'reset') do |b|
+        b << "Reintentar"
+      end
     end
   end
 
@@ -130,18 +227,21 @@ JS
         id_answer = 1
         answers.each do |answer|
           # Store answers for question-index
-          @data[:"question-#{index}"][1][answer.answer_text.to_sym] = ["qmc#{index + 1}-#{id_answer}", answer.correct, answer.explanation]
+          @data[:"question-#{index}"][1]["qmc#{index + 1}-#{id_answer}".to_sym] = [answer.answer_text, answer.correct, answer.explanation]
           
           if @show_solutions
             render_answer_for_solutions(answer, q.raw?)
           else
             @h.input(:type => 'radio', :id => "qmc#{index + 1}-#{id_answer}", :name => "qmc#{index + 1}", :class => 'select') { |p| 
               p << answer.answer_text
-              p << '</br>'
+              p << "<br class=qmc#{index + 1}-#{id_answer}br>"
             }
+            @h.div(:id => "qmc#{index + 1}-#{id_answer}r") do
+            end
           end
           id_answer += 1
         end
+        @h.br
       end
     end
     self
@@ -157,18 +257,21 @@ JS
         id_answer = 1
         answers.each do |answer|
           # Store answers for question-index
-          @data[:"question-#{index}"][1][answer.answer_text.to_sym] = ["qsm#{index + 1}-#{id_answer}", answer.correct, answer.explanation]
+          @data[:"question-#{index}"][1]["qsm#{index + 1}-#{id_answer}".to_sym] = [answer.answer_text, answer.correct, answer.explanation]
           
           if @show_solutions
             render_answer_for_solutions(answer, q.raw?)
           else
             @h.input(:type => 'checkbox', :id => "qsm#{index + 1}-#{id_answer}", :class => 'check') { |p| 
               p << answer.answer_text
-              p << '</br>'
+              p << "<br class=qsm#{index + 1}-#{id_answer}br>"
             }
+            @h.div(:id => "qsm#{index + 1}-#{id_answer}r") do
+            end
           end
           id_answer += 1
         end
+        @h.br
       end
     end
     self
@@ -177,7 +280,7 @@ JS
   def render_fill_in(q, idx)
     render_question_text(q, idx) do
       # Store answers for question-idx
-      @data[:"question-#{idx}"][1][q.answers[idx].answer_text.to_sym] = ["qfi#{idx + 1}", q.answers[idx].correct, q.answers[idx].explanation]
+      @data[:"question-#{idx}"][1]["qfi#{idx + 1}".to_sym] = [q.answers[idx].answer_text, q.answers[idx].correct, q.answers[idx].explanation]
       
       if @show_solutions
         answer = q.answers[0]
@@ -230,12 +333,17 @@ JS
           end
           
           # Hash with questions and all posibles answers
-          @data[html_args[:id].to_sym] = [question.question_text, {}]
+          @data[html_args[:id].to_sym] = [question.question_text.downcase, {}]
           
           qtext.each_line do |p|
             @h.p do |par|
               par << p # preserves HTML markup
-              @h.input(:type => 'text', :id => "qfi#{index + 1}", :class => 'fillin') if (question.class == FillIn)
+              @h.input(:type => 'text', :id => "qfi#{index + 1}", :class => 'fillin') do
+              end if (question.class == FillIn)
+              @h.div(:id => "qfi#{index + 1}r") do
+              end
+              @h.br
+              @h.br
             end
           end
       end
