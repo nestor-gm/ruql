@@ -4,7 +4,7 @@ quiz 'Example quiz' do
     text 'The capital of California is ---'
     answer 'sacramento'
   end
-  
+ 
   choice_answer :randomize => true do
     text  "What is the largest US state?"
     explanation "Not big enough." # for distractors without their own explanation

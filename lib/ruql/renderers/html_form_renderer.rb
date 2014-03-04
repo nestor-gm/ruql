@@ -25,16 +25,23 @@ class HtmlFormRenderer
       end
     else
       @h.html do
-        @h.head do
+        @h.head do |h|
           @h.title @quiz.title
           @h.link(:rel => 'stylesheet', :type =>'text/css', :href =>@css) if @css
           @h.style do |s|
             s << "div, p {display:inline;}"
             s << "strong.correct {color:rgb(0,255,0);}"
             s << "strong.incorrect {color:rgb(255,0,0);}"
+            s << "strong.partial {color:rgb(255,128,0);}"
           end
-          @h.script(:type => 'text/javascript', :src => "http://code.jquery.com/jquery-2.1.0.min.js") do
-          end if @js
+          if @js
+            @h.script(:type => 'text/javascript', :src => "http://code.jquery.com/jquery-2.1.0.min.js") do
+            end
+            h << "<!-[if lt IE 8]>"
+            @h.script(:type => 'text/javascript', :src => "http://code.jquery.com/jquery-1.11.0.min.js") do
+            end
+            h << "<![endif]->"
+          end
         end
         @h.body do
           render_questions
@@ -104,19 +111,24 @@ class HtmlFormRenderer
         else
           if (checkedIds.length == correctIds.length)
             return true;
-        else
+        else {
+          printResults(x.toString(), 2, "");
           return false;
+        }
       }
       
       function printResults(id, type, explanation) {
         $("br[class=" + id + "br" + "]").detach();
         if (type == 1)
           $("div[id ~= " + id + "r" + "]").html("<strong class=correct> Correct</strong></br>");
-        else {
+        else if (type == 0){
           if ((explanation == "") || (explanation == null))
             $("div[id ~= " + id + "r" + "]").html("<strong class=incorrect> Incorrect</strong></br>");
           else
             $("div[id ~= " + id + "r" + "]").html("<strong class=incorrect> Incorrect - " + explanation + "</strong></br>");
+        }
+        else {
+          $("#" + id).append("<strong class=partial> Partially correct</strong></br></br>");
         }
       }
       
@@ -207,10 +219,10 @@ JS
         end
       end
       @h.button(:type => 'button', :id => 'btn') do |b|
-        b << "Enviar"
+        b << "Submit"
       end
       @h.button(:type => 'button', :id => 'reset') do |b|
-        b << "Reintentar"
+        b << "Retry"
       end
     end
   end
@@ -280,7 +292,7 @@ JS
   def render_fill_in(q, idx)
     render_question_text(q, idx) do
       # Store answers for question-idx
-      @data[:"question-#{idx}"][1]["qfi#{idx + 1}".to_sym] = [q.answers[idx].answer_text, q.answers[idx].correct, q.answers[idx].explanation]
+      @data[:"question-#{idx}"][1]["qfi#{idx + 1}".to_sym] = [q.answers[0].answer_text, q.answers[0].correct, q.answers[0].explanation]
       
       if @show_solutions
         answer = q.answers[0]
@@ -338,9 +350,11 @@ JS
           qtext.each_line do |p|
             @h.p do |par|
               par << p # preserves HTML markup
-              @h.input(:type => 'text', :id => "qfi#{index + 1}", :class => 'fillin') do
-              end if (question.class == FillIn)
-              @h.div(:id => "qfi#{index + 1}r") do
+              if (question.class == FillIn)
+                @h.input(:type => 'text', :id => "qfi#{index + 1}", :class => 'fillin') do
+                end 
+                @h.div(:id => "qfi#{index + 1}r") do
+                end
               end
               @h.br
               @h.br

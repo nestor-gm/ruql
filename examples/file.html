@@ -2,12 +2,14 @@
   <head>
     <title>Example quiz</title>
     <style>
-div, p {display:inline;}strong.correct {color:rgb(0,255,0);}strong.incorrect {color:rgb(255,0,0);}    </style>
+div, p {display:inline;}strong.correct {color:rgb(0,255,0);}strong.incorrect {color:rgb(255,0,0);}strong.partial {color:rgb(255,128,0);}    </style>
     <script type="text/javascript" src="http://code.jquery.com/jquery-2.1.0.min.js">
     </script>
-  </head>
+<!-[if lt IE 8]>    <script type="text/javascript" src="http://code.jquery.com/jquery-1.11.0.min.js">
+    </script>
+<![endif]->  </head>
   <body>
-    <!-- Seed: 36315972843632068610244945982454071522 -->
+    <!-- Seed: 263104396066062978982929094154904578644 -->
     <form id="form">
       <ol class="questions">
         <li id="question-0" class="question fillin ">
@@ -25,19 +27,17 @@ div, p {display:inline;}strong.correct {color:rgb(0,255,0);}strong.incorrect {co
         <li id="question-1" class="question multiplechoice ">
           <div class="text">
             <p>
-[1 point] What is the largest US state?              <div id="qfi2r">
-              </div>
-              <br/>
+[1 point] What is the largest US state?              <br/>
               <br/>
             </p>
           </div>
           <ol class="answers">
             <input type="radio" id="qmc2-1" name="qmc2" class="select">
-Texas<br class=qmc2-1br>            </input>
+Alaska<br class=qmc2-1br>            </input>
             <div id="qmc2-1r">
             </div>
             <input type="radio" id="qmc2-2" name="qmc2" class="select">
-Alaska<br class=qmc2-2br>            </input>
+Texas<br class=qmc2-2br>            </input>
             <div id="qmc2-2r">
             </div>
             <input type="radio" id="qmc2-3" name="qmc2" class="select">
@@ -50,9 +50,7 @@ Hawaii<br class=qmc2-3br>            </input>
         <li id="question-2" class="question selectmultiple multiple">
           <div class="text">
             <p>
-[1 point] Select ALL that apply: Which are American political parties?              <div id="qfi3r">
-              </div>
-              <br/>
+[1 point] Select ALL that apply: Which are American political parties?              <br/>
               <br/>
             </p>
           </div>
@@ -83,9 +81,7 @@ Social Democrats<br class=qsm3-5br>            </input>
         <li id="question-3" class="question selectmultiple multiple">
           <div class="text">
             <p>
-[1 point] Select ALL that apply: Which are American political parties?              <div id="qfi4r">
-              </div>
-              <br/>
+[1 point] Select ALL that apply: Which are American political parties?              <br/>
               <br/>
             </p>
           </div>
@@ -116,9 +112,7 @@ Social Democrats<br class=qsm4-5br>            </input>
         <li id="question-4" class="question truefalse ">
           <div class="text">
             <p>
-[1 point] True or False: The week has 7 days.              <div id="qfi5r">
-              </div>
-              <br/>
+[1 point] True or False: The week has 7 days.              <br/>
               <br/>
             </p>
           </div>
@@ -137,9 +131,7 @@ False<br class=qmc5-2br>            </input>
         <li id="question-5" class="question truefalse ">
           <div class="text">
             <p>
-[1 point] True or False: The earth is flat.              <div id="qfi6r">
-              </div>
-              <br/>
+[1 point] True or False: The earth is flat.              <br/>
               <br/>
             </p>
           </div>
@@ -157,12 +149,12 @@ False<br class=qmc6-2br>            </input>
         </li>
       </ol>
       <button type="button" id="btn">
-Enviar      </button>
+Submit      </button>
       <button type="button" id="reset">
-Reintentar      </button>
+Retry      </button>
     </form>
     <script type="text/javascript">
-      data = {"question-0":["the capital of california is ",{"qfi1":["sacramento",true,null]}],"question-1":["what is the largest us state?",{"qmc2-1":["Texas",false,"That's pretty big, but think colder."],"qmc2-2":["Alaska",true,null],"qmc2-3":["Hawaii",false,null]}],"question-2":["which are american political parties?",{"qsm3-1":["Democrats",true,null],"qsm3-2":["Republicans",true,null],"qsm3-3":["Greens",true,"Yes, they're a party!"],"qsm3-4":["Tories",false,"They're British"],"qsm3-5":["Social Democrats",false,null]}],"question-3":["which are american political parties?",{"qsm4-1":["Democrats",true,null],"qsm4-2":["Republicans",true,null],"qsm4-3":["Greens",true,"Yes, they're a party!"],"qsm4-4":["Tories",false,"They're British"],"qsm4-5":["Social Democrats",false,null]}],"question-4":["true or false: the week has 7 days.",{"qmc5-1":["True",true,null],"qmc5-2":["False",false,""]}],"question-5":["true or false: the earth is flat.",{"qmc6-1":["True",false,"No, just looks that way"],"qmc6-2":["False",true,null]}]};
+      data = {"question-0":["the capital of california is ",{"qfi1":["sacramento",true,null]}],"question-1":["what is the largest us state?",{"qmc2-1":["Alaska",true,null],"qmc2-2":["Texas",false,"That's pretty big, but think colder."],"qmc2-3":["Hawaii",false,null]}],"question-2":["which are american political parties?",{"qsm3-1":["Democrats",true,null],"qsm3-2":["Republicans",true,null],"qsm3-3":["Greens",true,"Yes, they're a party!"],"qsm3-4":["Tories",false,"They're British"],"qsm3-5":["Social Democrats",false,null]}],"question-3":["which are american political parties?",{"qsm4-1":["Democrats",true,null],"qsm4-2":["Republicans",true,null],"qsm4-3":["Greens",true,"Yes, they're a party!"],"qsm4-4":["Tories",false,"They're British"],"qsm4-5":["Social Democrats",false,null]}],"question-4":["true or false: the week has 7 days.",{"qmc5-1":["True",true,null],"qmc5-2":["False",false,""]}],"question-5":["true or false: the earth is flat.",{"qmc6-1":["True",false,"No, just looks that way"],"qmc6-2":["False",true,null]}]};
       
       function checkFIQEmpty(textBox) {
         if (textBox == "")
@@ -226,19 +218,24 @@ Reintentar      </button>
         else
           if (checkedIds.length == correctIds.length)
             return true;
-        else
+        else {
+          printResults(x.toString(), 2, "");
           return false;
+        }
       }
       
       function printResults(id, type, explanation) {
         $("br[class=" + id + "br" + "]").detach();
         if (type == 1)
           $("div[id ~= " + id + "r" + "]").html("<strong class=correct> Correct</strong></br>");
-        else {
+        else if (type == 0){
           if ((explanation == "") || (explanation == null))
             $("div[id ~= " + id + "r" + "]").html("<strong class=incorrect> Incorrect</strong></br>");
           else
             $("div[id ~= " + id + "r" + "]").html("<strong class=incorrect> Incorrect - " + explanation + "</strong></br>");
+        }
+        else {
+          $("#" + id).append("<strong class=partial> Partially correct</strong></br></br>");
         }
       }
       
