@@ -117,8 +117,12 @@ class HtmlFormRenderer
       
       function printResults(id, type, explanation) {
         $("br[class=" + id + "br" + "]").detach();
-        if (type == 1)
-          $("div[id ~= " + id + "r" + "]").html("<strong class=correct> Correct</strong></br>");
+        if (type == 1) {
+          if ((explanation == "") || (explanation == null))
+            $("div[id ~= " + id + "r" + "]").html("<strong class=correct> Correct</strong></br>");
+          else
+            $("div[id ~= " + id + "r" + "]").html("<strong class=correct> Correct - " + explanation + "</strong></br>");
+        }
         else {
           if ((explanation == "") || (explanation == null))
             $("div[id ~= " + id + "r" + "]").html("<strong class=incorrect> Incorrect</strong></br>");
