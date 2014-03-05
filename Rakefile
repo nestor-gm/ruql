@@ -1,11 +1,11 @@
 task :default => :ruql
 
-desc "Run Ruql with HtmlForm renderer"
+desc "Run Ruql with HtmlForm renderer (with JavaScript validation)"
 task :ruql do
   sh "ruby -Ilib bin/ruql examples/example.rb HtmlForm > examples/file.html"
 end
 
-desc "Run Ruql with HtmlForm renderer and JavaScript"
+desc "Run Ruql with HtmlForm renderer with JavaScript"
 task :js do
   sh "ruby -Ilib bin/ruql examples/example.rb HtmlForm -j prueba.js > examples/file.html"
 end

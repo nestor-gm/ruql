@@ -27,21 +27,21 @@ class HtmlFormRenderer
       @h.html do
         @h.head do |h|
           @h.title @quiz.title
-          @h.link(:rel => 'stylesheet', :type =>'text/css', :href =>@css) if @css
+          @h.link(:rel => 'stylesheet', :type =>'text/css', :href => @css) if @css
           @h.style do |s|
             s << "div, p {display:inline;}"
             s << "strong.correct {color:rgb(0,255,0);}"
             s << "strong.incorrect {color:rgb(255,0,0);}"
             s << "strong.mark {color:rgb(255,128,0);}"
           end
-          if @js
-            @h.script(:type => 'text/javascript', :src => "http://code.jquery.com/jquery-2.1.0.min.js") do
-            end
-            h << "<!-[if lt IE 8]>"
-            @h.script(:type => 'text/javascript', :src => "http://code.jquery.com/jquery-1.11.0.min.js") do
-            end
-            h << "<![endif]->"
+          @h.script(:type => 'text/javascript', :src => "http://code.jquery.com/jquery-2.1.0.min.js") do
           end
+          h << "<!-[if lt IE 8]>"
+          @h.script(:type => 'text/javascript', :src => "http://code.jquery.com/jquery-1.11.0.min.js") do
+          end
+          h << "<![endif]->"
+          @h.script(:type => 'text/javascript', :src => @js) do
+          end if @js
         end
         @h.body do
           render_questions
@@ -212,7 +212,7 @@ class HtmlFormRenderer
         window.location.reload();
       });
 JS
-          end if @js
+          end
         end
       end
     end
