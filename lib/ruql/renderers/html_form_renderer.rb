@@ -32,7 +32,7 @@ class HtmlFormRenderer
             s << "div, p {display:inline;}"
             s << "strong.correct {color:rgb(0,255,0);}"
             s << "strong.incorrect {color:rgb(255,0,0);}"
-            s << "strong.partial {color:rgb(255,128,0);}"
+            s << "strong.mark {color:rgb(255,128,0);}"
           end
           if @js
             @h.script(:type => 'text/javascript', :src => "http://code.jquery.com/jquery-2.1.0.min.js") do
@@ -106,54 +106,74 @@ class HtmlFormRenderer
           }
         });
         
-        if (($.inArray(false, results)) !== -1)
-          return false;
-        else
-          if (checkedIds.length == correctIds.length)
-            return true;
-        else {
-          printResults(x.toString(), 2, "");
-          return false;
-        }
+        nCorrects = 0;
+        $.each(results, function(index, value){
+          if (value == true)
+            nCorrects += 1;
+        });
+        
+        calculateMark(data[x.toString()], x.toString(), correct, 3, nCorrects);
       }
       
       function printResults(id, type, explanation) {
         $("br[class=" + id + "br" + "]").detach();
         if (type == 1)
           $("div[id ~= " + id + "r" + "]").html("<strong class=correct> Correct</strong></br>");
-        else if (type == 0){
+        else {
           if ((explanation == "") || (explanation == null))
             $("div[id ~= " + id + "r" + "]").html("<strong class=incorrect> Incorrect</strong></br>");
           else
             $("div[id ~= " + id + "r" + "]").html("<strong class=incorrect> Incorrect - " + explanation + "</strong></br>");
         }
+      }
+      
+      function calculateMark(question, id, result, typeQuestion, numberCorrects) {
+        if (typeQuestion != 3) {
+          if (result)
+            $("#" + id).append("<strong class=mark> " + question[2] + "/" + question[2] + " points</strong></br></br>");
+          else
+            $("#" + id).append("<strong class=mark> 0/" + question[2] + " points</strong></br></br>");
+        }
         else {
-          $("#" + id).append("<strong class=partial> Partially correct</strong></br></br>");
+          size = 0;
+          for (y in question) {
+            size += 1;
+          }
+          
+          $("#" + id).append("<strong class=mark> " + ((question[2] / size) * numberCorrects).toFixed(2) + "/" + question[2] + " points</strong></br></br>");
         }
       }
       
       function checkAnswers() {
         
         for (x in data) {
+          correct = false;
           answers = $("#" + x.toString() + " input");
           
           if (answers.attr('class') == "fillin") {
             if ($("#" + answers.attr('id')).val().toLowerCase() == data[x.toString()][1][answers.attr('id')][0]) {
               printResults(answers.attr('id'), 1, "");
+              correct = true;
             }
             else
               printResults(answers.attr('id'), 0, "");
+            
+            calculateMark(data[x.toString()], x.toString(), correct, 1, null);
           }
           
           else if (answers.attr('class') == "select") {
             idCorrectAnswer = findCorrectAnswer(x.toString(), 0);
             
-            if ($("#" + x.toString() + " :checked").attr('id') == idCorrectAnswer)
+            if ($("#" + x.toString() + " :checked").attr('id') == idCorrectAnswer) {
               printResults($("#" + x.toString() + " :checked").attr('id'), 1, "");
+              correct = true;
+            }
             else {
               id = $("#" + x.toString() + " :checked").attr('id');
               printResults(id, 0, data[x.toString()][1][id][2]);
             }
+            
+            calculateMark(data[x.toString()], x.toString(), correct, 2, null);
           }
           
           else {
@@ -166,8 +186,8 @@ class HtmlFormRenderer
             
             correctIds = [];
             correctIds = findCorrectAnswer(x.toString(), 1);
-            valid = checkSelectMultiple(x, checkedIds, correctIds);   
-          } 
+            checkSelectMultiple(x, checkedIds, correctIds);   
+          }
         }
       }
       
@@ -345,7 +365,7 @@ JS
           end
           
           # Hash with questions and all posibles answers
-          @data[html_args[:id].to_sym] = [question.question_text.downcase, {}]
+          @data[html_args[:id].to_sym] = [question.question_text.downcase, {}, question.points]
           
           qtext.each_line do |p|
             @h.p do |par|

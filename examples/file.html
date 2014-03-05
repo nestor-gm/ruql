@@ -2,14 +2,14 @@
   <head>
     <title>Example quiz</title>
     <style>
-div, p {display:inline;}strong.correct {color:rgb(0,255,0);}strong.incorrect {color:rgb(255,0,0);}strong.partial {color:rgb(255,128,0);}    </style>
+div, p {display:inline;}strong.correct {color:rgb(0,255,0);}strong.incorrect {color:rgb(255,0,0);}strong.mark {color:rgb(255,128,0);}    </style>
     <script type="text/javascript" src="http://code.jquery.com/jquery-2.1.0.min.js">
     </script>
 <!-[if lt IE 8]>    <script type="text/javascript" src="http://code.jquery.com/jquery-1.11.0.min.js">
     </script>
 <![endif]->  </head>
   <body>
-    <!-- Seed: 263104396066062978982929094154904578644 -->
+    <!-- Seed: 176107527946619482079129341569172638494 -->
     <form id="form">
       <ol class="questions">
         <li id="question-0" class="question fillin ">
@@ -33,15 +33,15 @@ div, p {display:inline;}strong.correct {color:rgb(0,255,0);}strong.incorrect {co
           </div>
           <ol class="answers">
             <input type="radio" id="qmc2-1" name="qmc2" class="select">
-Alaska<br class=qmc2-1br>            </input>
+Hawaii<br class=qmc2-1br>            </input>
             <div id="qmc2-1r">
             </div>
             <input type="radio" id="qmc2-2" name="qmc2" class="select">
-Texas<br class=qmc2-2br>            </input>
+Alaska<br class=qmc2-2br>            </input>
             <div id="qmc2-2r">
             </div>
             <input type="radio" id="qmc2-3" name="qmc2" class="select">
-Hawaii<br class=qmc2-3br>            </input>
+Texas<br class=qmc2-3br>            </input>
             <div id="qmc2-3r">
             </div>
             <br/>
@@ -154,7 +154,7 @@ Submit      </button>
 Retry      </button>
     </form>
     <script type="text/javascript">
-      data = {"question-0":["the capital of california is ",{"qfi1":["sacramento",true,null]}],"question-1":["what is the largest us state?",{"qmc2-1":["Alaska",true,null],"qmc2-2":["Texas",false,"That's pretty big, but think colder."],"qmc2-3":["Hawaii",false,null]}],"question-2":["which are american political parties?",{"qsm3-1":["Democrats",true,null],"qsm3-2":["Republicans",true,null],"qsm3-3":["Greens",true,"Yes, they're a party!"],"qsm3-4":["Tories",false,"They're British"],"qsm3-5":["Social Democrats",false,null]}],"question-3":["which are american political parties?",{"qsm4-1":["Democrats",true,null],"qsm4-2":["Republicans",true,null],"qsm4-3":["Greens",true,"Yes, they're a party!"],"qsm4-4":["Tories",false,"They're British"],"qsm4-5":["Social Democrats",false,null]}],"question-4":["true or false: the week has 7 days.",{"qmc5-1":["True",true,null],"qmc5-2":["False",false,""]}],"question-5":["true or false: the earth is flat.",{"qmc6-1":["True",false,"No, just looks that way"],"qmc6-2":["False",true,null]}]};
+      data = {"question-0":["the capital of california is ",{"qfi1":["sacramento",true,null]},2],"question-1":["what is the largest us state?",{"qmc2-1":["Hawaii",false,null],"qmc2-2":["Alaska",true,null],"qmc2-3":["Texas",false,"That's pretty big, but think colder."]},1],"question-2":["which are american political parties?",{"qsm3-1":["Democrats",true,null],"qsm3-2":["Republicans",true,null],"qsm3-3":["Greens",true,"Yes, they're a party!"],"qsm3-4":["Tories",false,"They're British"],"qsm3-5":["Social Democrats",false,null]},1],"question-3":["which are american political parties?",{"qsm4-1":["Democrats",true,null],"qsm4-2":["Republicans",true,null],"qsm4-3":["Greens",true,"Yes, they're a party!"],"qsm4-4":["Tories",false,"They're British"],"qsm4-5":["Social Democrats",false,null]},1],"question-4":["true or false: the week has 7 days.",{"qmc5-1":["True",true,null],"qmc5-2":["False",false,""]},1],"question-5":["true or false: the earth is flat.",{"qmc6-1":["True",false,"No, just looks that way"],"qmc6-2":["False",true,null]},1]};
       
       function checkFIQEmpty(textBox) {
         if (textBox == "")
@@ -213,54 +213,74 @@ Retry      </button>
           }
         });
         
-        if (($.inArray(false, results)) !== -1)
-          return false;
-        else
-          if (checkedIds.length == correctIds.length)
-            return true;
-        else {
-          printResults(x.toString(), 2, "");
-          return false;
-        }
+        nCorrects = 0;
+        $.each(results, function(index, value){
+          if (value == true)
+            nCorrects += 1;
+        });
+        
+        calculateMark(data[x.toString()], x.toString(), correct, 3, nCorrects);
       }
       
       function printResults(id, type, explanation) {
         $("br[class=" + id + "br" + "]").detach();
         if (type == 1)
           $("div[id ~= " + id + "r" + "]").html("<strong class=correct> Correct</strong></br>");
-        else if (type == 0){
+        else {
           if ((explanation == "") || (explanation == null))
             $("div[id ~= " + id + "r" + "]").html("<strong class=incorrect> Incorrect</strong></br>");
           else
             $("div[id ~= " + id + "r" + "]").html("<strong class=incorrect> Incorrect - " + explanation + "</strong></br>");
         }
+      }
+      
+      function calculateMark(question, id, result, typeQuestion, numberCorrects) {
+        if (typeQuestion != 3) {
+          if (result)
+            $("#" + id).append("<strong class=mark> " + question[2] + "/" + question[2] + " points</strong></br></br>");
+          else
+            $("#" + id).append("<strong class=mark> 0/" + question[2] + " points</strong></br></br>");
+        }
         else {
-          $("#" + id).append("<strong class=partial> Partially correct</strong></br></br>");
+          size = 0;
+          for (y in question) {
+            size += 1;
+          }
+          
+          $("#" + id).append("<strong class=mark> " + ((question[2] / size) * numberCorrects).toFixed(2) + "/" + question[2] + " points</strong></br></br>");
         }
       }
       
       function checkAnswers() {
         
         for (x in data) {
+          correct = false;
           answers = $("#" + x.toString() + " input");
           
           if (answers.attr('class') == "fillin") {
             if ($("#" + answers.attr('id')).val().toLowerCase() == data[x.toString()][1][answers.attr('id')][0]) {
               printResults(answers.attr('id'), 1, "");
+              correct = true;
             }
             else
               printResults(answers.attr('id'), 0, "");
+            
+            calculateMark(data[x.toString()], x.toString(), correct, 1, null);
           }
           
           else if (answers.attr('class') == "select") {
             idCorrectAnswer = findCorrectAnswer(x.toString(), 0);
             
-            if ($("#" + x.toString() + " :checked").attr('id') == idCorrectAnswer)
+            if ($("#" + x.toString() + " :checked").attr('id') == idCorrectAnswer) {
               printResults($("#" + x.toString() + " :checked").attr('id'), 1, "");
+              correct = true;
+            }
             else {
               id = $("#" + x.toString() + " :checked").attr('id');
               printResults(id, 0, data[x.toString()][1][id][2]);
             }
+            
+            calculateMark(data[x.toString()], x.toString(), correct, 2, null);
           }
           
           else {
@@ -273,8 +293,8 @@ Retry      </button>
             
             correctIds = [];
             correctIds = findCorrectAnswer(x.toString(), 1);
-            valid = checkSelectMultiple(x, checkedIds, correctIds);   
-          } 
+            checkSelectMultiple(x, checkedIds, correctIds);   
+          }
         }
       }
       
