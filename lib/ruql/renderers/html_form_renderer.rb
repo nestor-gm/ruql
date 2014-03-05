@@ -82,8 +82,8 @@ class HtmlFormRenderer
       
       function findCorrectAnswer(idQuestion, questionType) {
         correctIds = [];
-        for (id in data[idQuestion][1]) {
-          if(data[idQuestion][1][id.toString()][1] == true)
+        for (id in data[idQuestion]['answers']) {
+          if(data[idQuestion]['answers'][id.toString()]['correct'] == true)
             if (questionType == 0)
               return id.toString();
             else {
@@ -98,7 +98,7 @@ class HtmlFormRenderer
         $.each(checkedIds, function(index, value){
           if (correctIds.indexOf(value) == -1) {
             results.push(false);
-            printResults(value, 0, data[x.toString()][1][value][2], "");
+            printResults(value, 0, data[x.toString()]['answers'][value]['explanation'], "");
           }
           else {
             results.push(true);
@@ -112,7 +112,7 @@ class HtmlFormRenderer
             nCorrects += 1;
         });
         
-        calculateMark(data[x.toString()], x.toString(), correct, 3, nCorrects);
+        calculateMark(data[x.toString()], x.toString(), null, 3, nCorrects);
       }
       
       function printResults(id, type, explanation) {
@@ -134,9 +134,9 @@ class HtmlFormRenderer
       function calculateMark(question, id, result, typeQuestion, numberCorrects) {
         if (typeQuestion != 3) {
           if (result)
-            $("#" + id).append("<strong class=mark> " + question[2] + "/" + question[2] + " points</strong></br></br>");
+            $("#" + id).append("<strong class=mark> " + question['points'] + "/" + question['points'] + " points</strong></br></br>");
           else
-            $("#" + id).append("<strong class=mark> 0/" + question[2] + " points</strong></br></br>");
+            $("#" + id).append("<strong class=mark> 0/" + question['points'] + " points</strong></br></br>");
         }
         else {
           size = 0;
@@ -144,7 +144,7 @@ class HtmlFormRenderer
             size += 1;
           }
           
-          $("#" + id).append("<strong class=mark> " + ((question[2] / size) * numberCorrects).toFixed(2) + "/" + question[2] + " points</strong></br></br>");
+          $("#" + id).append("<strong class=mark> " + ((question['points'] / size) * numberCorrects).toFixed(2) + "/" + question['points'] + " points</strong></br></br>");
         }
       }
       
@@ -155,7 +155,7 @@ class HtmlFormRenderer
           answers = $("#" + x.toString() + " input");
           
           if (answers.attr('class') == "fillin") {
-            if ($("#" + answers.attr('id')).val().toLowerCase() == data[x.toString()][1][answers.attr('id')][0]) {
+            if ($("#" + answers.attr('id')).val().toLowerCase() == data[x.toString()]['answers'][answers.attr('id')]['answer_text']) {
               printResults(answers.attr('id'), 1, "");
               correct = true;
             }
@@ -174,7 +174,7 @@ class HtmlFormRenderer
             }
             else {
               id = $("#" + x.toString() + " :checked").attr('id');
-              printResults(id, 0, data[x.toString()][1][id][2]);
+              printResults(id, 0, data[x.toString()]['answers'][id]['explanation']);
             }
             
             calculateMark(data[x.toString()], x.toString(), correct, 2, null);
@@ -263,8 +263,9 @@ JS
         id_answer = 1
         answers.each do |answer|
           # Store answers for question-index
-          @data[:"question-#{index}"][1]["qmc#{index + 1}-#{id_answer}".to_sym] = [answer.answer_text, answer.correct, answer.explanation]
-          
+          @data[:"question-#{index}"][:answers]["qmc#{index + 1}-#{id_answer}".to_sym] = {:answer_text => answer.answer_text, :correct => answer.correct, 
+                                                                                          :explanation => answer.explanation} 
+                   
           if @show_solutions
             render_answer_for_solutions(answer, q.raw?)
           else
@@ -293,7 +294,8 @@ JS
         id_answer = 1
         answers.each do |answer|
           # Store answers for question-index
-          @data[:"question-#{index}"][1]["qsm#{index + 1}-#{id_answer}".to_sym] = [answer.answer_text, answer.correct, answer.explanation]
+          @data[:"question-#{index}"][:answers]["qsm#{index + 1}-#{id_answer}".to_sym] = {:answer_text => answer.answer_text, :correct => answer.correct, 
+                                                                                          :explanation => answer.explanation}
           
           if @show_solutions
             render_answer_for_solutions(answer, q.raw?)
@@ -316,8 +318,9 @@ JS
   def render_fill_in(q, idx)
     render_question_text(q, idx) do
       # Store answers for question-idx
-      @data[:"question-#{idx}"][1]["qfi#{idx + 1}".to_sym] = [q.answers[0].answer_text, q.answers[0].correct, q.answers[0].explanation]
-      
+      @data[:"question-#{idx}"][:answers]["qfi#{idx + 1}".to_sym] = {:answer_text => q.answers[0].answer_text, :correct => q.answers[0].correct, 
+                                                                     :explanation => q.answers[0].explanation}
+                  
       if @show_solutions
         answer = q.answers[0]
         if answer.has_explanation?
@@ -369,8 +372,8 @@ JS
           end
           
           # Hash with questions and all posibles answers
-          @data[html_args[:id].to_sym] = [question.question_text.downcase, {}, question.points]
-          
+          @data[html_args[:id].to_sym] = {:question_text => question.question_text.downcase, :answers => {}, :points => question.points}
+                  
           qtext.each_line do |p|
             @h.p do |par|
               par << p # preserves HTML markup
