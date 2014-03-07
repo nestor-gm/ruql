@@ -7,10 +7,10 @@ quiz 'Example quiz' do
  
   choice_answer :randomize => true do
     text  "What is the largest US state?"
-    explanation "Not big enough." # for distractors without their own explanation
     answer 'Alaska'
     distractor 'Hawaii'
     distractor 'Texas', :explanation => "That's pretty big, but think colder."
+    explanation "Not big enough." # for distractors without their own explanation
   end
   
   select_multiple do

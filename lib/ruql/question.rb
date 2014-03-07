@@ -16,7 +16,11 @@ class Question
   def text(s) ; @question_text = s ; end
   
   def explanation(text)
-    @answers.each { |answer| answer.explanation ||= text }
+    @answers.each { |answer| 
+                    if (!answer.correct)
+                      answer.explanation ||= text
+                    end
+                  }
   end
 
   def answer(text, opts={})
