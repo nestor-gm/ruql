@@ -1,10 +1,10 @@
 quiz 'Example quiz' do
-  
+ 
   fill_in :points => 2 do
     text 'The capital of California is ---'
-    answer 'sacramento'
+    answer '/^\s*[sS]acramento\s*$/'
   end
- 
+  
   choice_answer :randomize => true do
     text  "What is the largest US state?"
     answer 'Alaska'

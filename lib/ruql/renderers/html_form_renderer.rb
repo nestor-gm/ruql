@@ -155,7 +155,10 @@ class HtmlFormRenderer
           answers = $("#" + x.toString() + " input");
           
           if (answers.attr('class') == "fillin") {
-            if ($("#" + answers.attr('id')).val().toLowerCase() == data[x.toString()]['answers'][answers.attr('id')]['answer_text']) {
+            string = data[x.toString()]['answers'][answers.attr('id')]['answer_text'];
+            regexp = string.split('/').join('')
+            
+            if ($("#" + answers.attr('id')).val().toLowerCase().match(RegExp(regexp))) {
               printResults(answers.attr('id'), 1, "");
               correct = true;
             }
