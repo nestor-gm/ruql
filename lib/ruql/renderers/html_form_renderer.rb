@@ -196,14 +196,20 @@ class HtmlFormRenderer
             }
             
             results = checkFillin(correctAnswers, userAnswers, 0);
-            printResults(results, null, explanation, 1);
+            allEmpty = true;
             
             nCorrects = 0;
-            for (r in results)
+            for (r in results) {
               if (results[r] == true)
                 nCorrects += 1;
+              if (results[r] != "n/a")
+                allEmpty = false;
+            }
             
-            calculateMark(data[x.toString()], x.toString(), null, 1, nCorrects);
+            if (!allEmpty) {
+              printResults(results, null, explanation, 1);
+              calculateMark(data[x.toString()], x.toString(), null, 1, nCorrects);
+            }
           }
           
           else if (answers.attr('class') == "select") {
