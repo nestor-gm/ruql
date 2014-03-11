@@ -44,4 +44,14 @@ quiz 'Example quiz' do
   truefalse 'The week has 7 days.', true
   truefalse 'The earth is flat.', false, :explanation => 'No, just looks that way'
   
+  choice_answer :raw => true do
+    text %Q{What does the following code do:
+    <pre>
+    puts "Hello world!"
+    </pre>
+    }
+    distractor 'Throws an exception', :explanation => "Don't be an idiot."
+    answer 'Prints a friendly message'
+  end
+  
 end

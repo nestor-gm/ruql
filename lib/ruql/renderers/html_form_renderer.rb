@@ -439,9 +439,15 @@ JS
             @data[html_args[:id].to_sym] = {:question_text => questionText, :answers => {}, :points => question.points}
           end
           
-          qtext.each_line do |p|
-            @h.p do |par|
-              par << p # preserves HTML markup
+          if (question.raw?)
+            @h.p do |p|
+              p << qtext
+            end
+          else
+            qtext.each_line do |p|
+              @h.p do |par|
+                par << p # preserves HTML markup
+              end 
             end
           end
       end
