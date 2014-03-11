@@ -195,10 +195,14 @@ class HtmlFormRenderer
                 userAnswers[answers[i].id.toString()] = answers[i].value.toLowerCase();
             }
             
-            results = checkFillin(correctAnswers, userAnswers, 0);
+            if (data[x.toString()]['order'] == false)
+              results = checkFillin(correctAnswers, userAnswers, 0);
+            else
+              results = checkFillin(correctAnswers, userAnswers, 1);
+              
             allEmpty = true;
-            
             nCorrects = 0;
+            
             for (r in results) {
               if (results[r] == true)
                 nCorrects += 1;
@@ -429,8 +433,12 @@ JS
           end
           
           # Hash with questions and all posibles answers
-          @data[html_args[:id].to_sym] = {:question_text => questionText, :answers => {}, :points => question.points}
-                  
+          if (question.class == FillIn)
+            @data[html_args[:id].to_sym] = {:question_text => questionText, :answers => {}, :points => question.points, :order => question.order}
+          else
+            @data[html_args[:id].to_sym] = {:question_text => questionText, :answers => {}, :points => question.points}
+          end
+          
           qtext.each_line do |p|
             @h.p do |par|
               par << p # preserves HTML markup
