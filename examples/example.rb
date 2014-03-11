@@ -4,6 +4,16 @@ quiz 'Example quiz' do
     text 'The capital of California is ---'
     answer '/^\s*[sS]acramento\s*$/'
   end
+
+  fill_in do
+    text 'The --- brown fox jumped over the lazy ---'
+    answer ['/fox/', '/dog/'], :explanation => 'This sentence contains all of the letters of the English Alphabet'
+  end
+  
+  fill_in do
+    text 'The three stooges are ---, ---, and ---.'
+    answer %w(larry moe curly), :order => false
+  end
   
   choice_answer :randomize => true do
     text  "What is the largest US state?"

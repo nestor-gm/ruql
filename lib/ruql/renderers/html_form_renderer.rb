@@ -33,6 +33,8 @@ class HtmlFormRenderer
             s << "strong.correct {color:rgb(0,255,0);}"
             s << "strong.incorrect {color:rgb(255,0,0);}"
             s << "strong.mark {color:rgb(255,128,0);}"
+            s << "input.correct {color:rgb(0,255,0); font-weight: bold;}"
+            s << "input.incorrect {color:rgb(255,0,0); font-weight: bold;}"
           end
           @h.script(:type => 'text/javascript', :src => "http://code.jquery.com/jquery-2.1.0.min.js") do
           end
@@ -49,11 +51,11 @@ class HtmlFormRenderer
             j <<"#{<<JS}"
       data = #{@data.to_json};
       
-      function checkFIQEmpty(textBox) {
-        if (textBox == "")
-          return true;
-        else
-          return false;
+      function checkFIQEmpty(list) {
+        for (i = 0; i < list.length; i++)
+          if (list[i].value == "")
+            return true;
+        return false;
       }
       
       function checkMCQEmpty(inputs) {
@@ -68,8 +70,8 @@ class HtmlFormRenderer
         
         for (question in data) {
           q = $("#" + question.toString() + " input");
-          if (q.length == 1)
-            empty.push(checkFIQEmpty(q.val()));
+          if (q.attr('class') == 'fillin')
+            empty.push(checkFIQEmpty(q));
           else
             empty.push(checkMCQEmpty(q));
         }
@@ -98,11 +100,11 @@ class HtmlFormRenderer
         $.each(checkedIds, function(index, value){
           if (correctIds.indexOf(value) == -1) {
             results.push(false);
-            printResults(value, 0, data[x.toString()]['answers'][value]['explanation'], "");
+            printResults(value, 0, data[x.toString()]['answers'][value]['explanation'], 0);
           }
           else {
             results.push(true);
-            printResults(value, 1, "");
+            printResults(value, 1, data[x.toString()]['answers'][value]['explanation'], 0);
           }
         });
         
@@ -115,24 +117,39 @@ class HtmlFormRenderer
         calculateMark(data[x.toString()], x.toString(), null, 3, nCorrects);
       }
       
-      function printResults(id, type, explanation) {
-        $("br[class=" + id + "br" + "]").detach();
-        if (type == 1) {
-          if ((explanation == "") || (explanation == null))
-            $("div[id ~= " + id + "r" + "]").html("<strong class=correct> Correct</strong></br>");
-          else
-            $("div[id ~= " + id + "r" + "]").html("<strong class=correct> Correct - " + explanation + "</strong></br>");
+      function printResults(id, type, explanation, typeQuestion) {
+        if (typeQuestion == 0) {                                        // MultipleChoice and SelectMultiple
+          $("br[class=" + id + "br" + "]").detach();
+          if (type == 1) {
+            if ((explanation == "") || (explanation == null))
+              $("div[id ~= " + id + "r" + "]").html("<strong class=correct> Correct</strong></br>");
+            else
+              $("div[id ~= " + id + "r" + "]").html("<strong class=correct> Correct - " + explanation + "</strong></br>");
+          }
+          else {
+            if ((explanation == "") || (explanation == null))
+              $("div[id ~= " + id + "r" + "]").html("<strong class=incorrect> Incorrect</strong></br>");
+            else
+              $("div[id ~= " + id + "r" + "]").html("<strong class=incorrect> Incorrect - " + explanation + "</strong></br>");
+          }
         }
-        else {
-          if ((explanation == "") || (explanation == null))
-            $("div[id ~= " + id + "r" + "]").html("<strong class=incorrect> Incorrect</strong></br>");
-          else
-            $("div[id ~= " + id + "r" + "]").html("<strong class=incorrect> Incorrect - " + explanation + "</strong></br>");
+        else {          // FillIn
+          for (r in id) {
+            input = $("#" + r.toString());
+            if (id[r] == true)
+              input.attr('class', 'fillin correct');
+            else { 
+              if (id[r] == false)
+                input.attr('class', 'fillin incorrect');
+            }
+            if (explanation != null)
+              $("div[id ~= " + r + "r" + "]").html("Explanation: " + explanation);
+          }
         }
       }
       
       function calculateMark(question, id, result, typeQuestion, numberCorrects) {
-        if (typeQuestion != 3) {
+        if (typeQuestion == 2) {
           if (result)
             $("#" + id).append("<strong class=mark> " + question['points'] + "/" + question['points'] + " points</strong></br></br>");
           else
@@ -140,12 +157,50 @@ class HtmlFormRenderer
         }
         else {
           size = 0;
-          for (y in question) {
+          for (y in question['answers']) {
             size += 1;
           }
           
           $("#" + id).append("<strong class=mark> " + ((question['points'] / size) * numberCorrects).toFixed(2) + "/" + question['points'] + " points</strong></br></br>");
         }
+      }
+      
+      function checkFillin(correctAnswers, userAnswers, typeCorrection) {
+        correction = {};
+        checkedAnswers = {};
+      
+        if (typeCorrection == 0) {          // Order doesn't matter
+          for (u in userAnswers) {
+            if (userAnswers[u] != undefined) {
+              matched = false;
+              for (y in correctAnswers) {
+                if ((checkAnswers[u] == undefined) && (userAnswers[u].match(RegExp(correctAnswers[y])))) {
+                  correction[u] = true;
+                  checkedAnswers[u] = userAnswers[u];
+                  matched = true;
+                  break;
+                }
+              }
+              if (!matched)
+                correction[u] = false;
+            }
+            else
+              correction[u] = "n/a";
+          }
+        }
+        else {                            // Order matters
+          for (u in userAnswers) {
+            if (userAnswers[u] != undefined) {
+              if (userAnswers[u].match(RegExp(correctAnswers[u])))
+                correction[u] = true;
+              else
+                correction[u] = false;
+            }
+            else
+              correction[u] = "n/a";
+          }
+        }
+        return correction;
       }
       
       function checkAnswers() {
@@ -155,56 +210,73 @@ class HtmlFormRenderer
           answers = $("#" + x.toString() + " input");
           
           if (answers.attr('class') == "fillin") {
-            string = data[x.toString()]['answers'][answers.attr('id')]['answer_text'];
-            regexp = string.split('/').join('')
+            correctAnswers = {};
+            explanation = "";
             
-            if ($("#" + answers.attr('id')).val().toLowerCase().match(RegExp(regexp))) {
-              printResults(answers.attr('id'), 1, "");
-              correct = true;
+            for (ans in data[x.toString()]['answers']) {
+              correctAnswers[ans.toString()] = data[x.toString()]['answers'][ans]['answer_text'].split('/').join('')
+              explanation = data[x.toString()]['answers'][ans]['explanation'];
             }
-            else
-              printResults(answers.attr('id'), 0, "");
+           
+            userAnswers = {};
+            for (i = 0; i < answers.length; i++) {
+              if (answers[i].value == '')
+                userAnswers[answers[i].id.toString()] = undefined;
+              else
+                userAnswers[answers[i].id.toString()] = answers[i].value.toLowerCase();
+            }
             
-            calculateMark(data[x.toString()], x.toString(), correct, 1, null);
+            results = checkFillin(correctAnswers, userAnswers, 0);
+            printResults(results, null, explanation, 1);
+            
+            nCorrects = 0;
+            for (r in results)
+              if (results[r] == true)
+                nCorrects += 1;
+            
+            calculateMark(data[x.toString()], x.toString(), null, 1, nCorrects);
           }
           
           else if (answers.attr('class') == "select") {
             idCorrectAnswer = findCorrectAnswer(x.toString(), 0);
             
-            if ($("#" + x.toString() + " :checked").attr('id') == idCorrectAnswer) {
-              printResults($("#" + x.toString() + " :checked").attr('id'), 1, "");
-              correct = true;
+            if ($("#" + x.toString() + " :checked").size() != 0) {
+              if ($("#" + x.toString() + " :checked").attr('id') == idCorrectAnswer) {
+                printResults($("#" + x.toString() + " :checked").attr('id'), 1, "", 0);
+                correct = true;
+              }
+              else {
+                id = $("#" + x.toString() + " :checked").attr('id');
+                printResults(id, 0, data[x.toString()]['answers'][id]['explanation'], 0);
+              }
+              calculateMark(data[x.toString()], x.toString(), correct, 2, null);
             }
-            else {
-              id = $("#" + x.toString() + " :checked").attr('id');
-              printResults(id, 0, data[x.toString()]['answers'][id]['explanation']);
-            }
-            
-            calculateMark(data[x.toString()], x.toString(), correct, 2, null);
           }
           
           else {
-            answers = $("#" + x.toString() + " :checked");
-            checkedIds = [];
-            
-            $.each(answers, function(index, value){
-              checkedIds.push(value['id']);
-            });
-            
-            correctIds = [];
-            correctIds = findCorrectAnswer(x.toString(), 1);
-            checkSelectMultiple(x, checkedIds, correctIds);   
+            if ($("#" + x.toString() + " :checked").size() != 0) {
+              answers = $("#" + x.toString() + " :checked");
+              checkedIds = [];
+              
+              $.each(answers, function(index, value){
+                checkedIds.push(value['id']);
+              });
+              
+              correctIds = [];
+              correctIds = findCorrectAnswer(x.toString(), 1);
+              checkSelectMultiple(x, checkedIds, correctIds);
+            }
           }
         }
       }
       
       function checkForm() {
-        if (!checkEmpty()) {
+        //if (!checkEmpty()) {
           checkAnswers();
-        }
-        else {
-          alert('ERROR. Some fields are empty');
-        }
+        //}
+        //else {
+        //  alert('ERROR. Some fields are empty');
+        //}
       }
       
       $("#btn").click(function() {
@@ -321,9 +393,15 @@ JS
   def render_fill_in(q, idx)
     render_question_text(q, idx) do
       # Store answers for question-idx
-      @data[:"question-#{idx}"][:answers]["qfi#{idx + 1}".to_sym] = {:answer_text => q.answers[0].answer_text, :correct => q.answers[0].correct, 
-                                                                     :explanation => q.answers[0].explanation}
-                  
+      answer = q.answers[0]
+      answers = (answer.answer_text.kind_of?(Array) ? answer.answer_text : [answer.answer_text])
+      id_answer = 1
+      answers.each do |ans|
+        @data[:"question-#{idx}"][:answers]["qfi#{idx + 1}-#{id_answer}".to_sym] = {:answer_text => ans, :correct => answer.correct, 
+                                                                                    :explanation => answer.explanation}
+        id_answer += 1
+      end
+      
       if @show_solutions
         answer = q.answers[0]
         if answer.has_explanation?
@@ -367,27 +445,24 @@ JS
     }
     @h.li html_args  do
       @h.div :class => 'text' do
+        questionText = question.question_text.clone
         qtext = "[#{question.points} point#{'s' if question.points>1}] " <<
           ('Select ALL that apply: ' if question.multiple).to_s <<
-          if question.class == FillIn then question.question_text.gsub!(/\-+/, '')
+          if question.class == FillIn
+            question.question_text.chop! if question.question_text[-1] == '.'
+            nBoxes = question.question_text.split('---').length
+            nBoxes.times { |i| question.question_text.sub!(/\---/, "<input type=text id=qfi#{index + 1}-#{i + 1} class=fillin></input>") }
+            question.question_text << "<div id=qfi#{index + 1}-#{nBoxes}r></div></br></br>"
           else 
             question.question_text
           end
           
           # Hash with questions and all posibles answers
-          @data[html_args[:id].to_sym] = {:question_text => question.question_text.downcase, :answers => {}, :points => question.points}
+          @data[html_args[:id].to_sym] = {:question_text => questionText, :answers => {}, :points => question.points}
                   
           qtext.each_line do |p|
             @h.p do |par|
               par << p # preserves HTML markup
-              if (question.class == FillIn)
-                @h.input(:type => 'text', :id => "qfi#{index + 1}", :class => 'fillin') do
-                end 
-                @h.div(:id => "qfi#{index + 1}r") do
-                end
-              end
-              @h.br
-              @h.br
             end
           end
       end

@@ -2,147 +2,143 @@
   <head>
     <title>Example quiz</title>
     <style>
-div, p {display:inline;}strong.correct {color:rgb(0,255,0);}strong.incorrect {color:rgb(255,0,0);}strong.mark {color:rgb(255,128,0);}    </style>
+div, p {display:inline;}strong.correct {color:rgb(0,255,0);}strong.incorrect {color:rgb(255,0,0);}strong.mark {color:rgb(255,128,0);}input.correct {color:rgb(0,255,0); font-weight: bold;}input.incorrect {color:rgb(255,0,0); font-weight: bold;}    </style>
     <script type="text/javascript" src="http://code.jquery.com/jquery-2.1.0.min.js">
     </script>
 <!-[if lt IE 8]>    <script type="text/javascript" src="http://code.jquery.com/jquery-1.11.0.min.js">
     </script>
 <![endif]->  </head>
   <body>
-    <!-- Seed: 176107527946619482079129341569172638494 -->
+    <!-- Seed: 56828658794271915172498945648451397 -->
     <form id="form">
       <ol class="questions">
         <li id="question-0" class="question fillin ">
           <div class="text">
             <p>
-[2 points] The capital of California is               <input type="text" id="qfi1" class="fillin">
-              </input>
-              <div id="qfi1r">
-              </div>
-              <br/>
-              <br/>
-            </p>
+[2 points] The capital of California is <input type=text id=qfi1-1 class=fillin></input><div id=qfi1-1r></div></br></br>            </p>
           </div>
         </li>
-        <li id="question-1" class="question multiplechoice ">
+        <li id="question-1" class="question fillin ">
           <div class="text">
             <p>
-[1 point] What is the largest US state?              <br/>
-              <br/>
-            </p>
+[1 point] The <input type=text id=qfi2-1 class=fillin></input> brown fox jumped over the lazy <input type=text id=qfi2-2 class=fillin></input><div id=qfi2-2r></div></br></br>            </p>
+          </div>
+        </li>
+        <li id="question-2" class="question fillin ">
+          <div class="text">
+            <p>
+[1 point] The three stooges are <input type=text id=qfi3-1 class=fillin></input>, <input type=text id=qfi3-2 class=fillin></input>, and <input type=text id=qfi3-3 class=fillin></input><div id=qfi3-3r></div></br></br>            </p>
+          </div>
+        </li>
+        <li id="question-3" class="question multiplechoice ">
+          <div class="text">
+            <p>
+[1 point] What is the largest US state?            </p>
           </div>
           <ol class="answers">
-            <input type="radio" id="qmc2-1" name="qmc2" class="select">
-Hawaii<br class=qmc2-1br>            </input>
-            <div id="qmc2-1r">
+            <input type="radio" id="qmc4-1" name="qmc4" class="select">
+Alaska<br class=qmc4-1br>            </input>
+            <div id="qmc4-1r">
             </div>
-            <input type="radio" id="qmc2-2" name="qmc2" class="select">
-Alaska<br class=qmc2-2br>            </input>
-            <div id="qmc2-2r">
+            <input type="radio" id="qmc4-2" name="qmc4" class="select">
+Texas<br class=qmc4-2br>            </input>
+            <div id="qmc4-2r">
             </div>
-            <input type="radio" id="qmc2-3" name="qmc2" class="select">
-Texas<br class=qmc2-3br>            </input>
-            <div id="qmc2-3r">
+            <input type="radio" id="qmc4-3" name="qmc4" class="select">
+Hawaii<br class=qmc4-3br>            </input>
+            <div id="qmc4-3r">
             </div>
             <br/>
           </ol>
         </li>
-        <li id="question-2" class="question selectmultiple multiple">
+        <li id="question-4" class="question selectmultiple multiple">
           <div class="text">
             <p>
-[1 point] Select ALL that apply: Which are American political parties?              <br/>
-              <br/>
-            </p>
+[1 point] Select ALL that apply: Which are American political parties?            </p>
           </div>
           <ol class="answers">
-            <input type="checkbox" id="qsm3-1" class="check">
-Democrats<br class=qsm3-1br>            </input>
-            <div id="qsm3-1r">
+            <input type="checkbox" id="qsm5-1" class="check">
+Democrats<br class=qsm5-1br>            </input>
+            <div id="qsm5-1r">
             </div>
-            <input type="checkbox" id="qsm3-2" class="check">
-Republicans<br class=qsm3-2br>            </input>
-            <div id="qsm3-2r">
+            <input type="checkbox" id="qsm5-2" class="check">
+Republicans<br class=qsm5-2br>            </input>
+            <div id="qsm5-2r">
             </div>
-            <input type="checkbox" id="qsm3-3" class="check">
-Greens<br class=qsm3-3br>            </input>
-            <div id="qsm3-3r">
+            <input type="checkbox" id="qsm5-3" class="check">
+Greens<br class=qsm5-3br>            </input>
+            <div id="qsm5-3r">
             </div>
-            <input type="checkbox" id="qsm3-4" class="check">
-Tories<br class=qsm3-4br>            </input>
-            <div id="qsm3-4r">
+            <input type="checkbox" id="qsm5-4" class="check">
+Tories<br class=qsm5-4br>            </input>
+            <div id="qsm5-4r">
             </div>
-            <input type="checkbox" id="qsm3-5" class="check">
-Social Democrats<br class=qsm3-5br>            </input>
-            <div id="qsm3-5r">
+            <input type="checkbox" id="qsm5-5" class="check">
+Social Democrats<br class=qsm5-5br>            </input>
+            <div id="qsm5-5r">
             </div>
             <br/>
           </ol>
         </li>
-        <li id="question-3" class="question selectmultiple multiple">
+        <li id="question-5" class="question selectmultiple multiple">
           <div class="text">
             <p>
-[1 point] Select ALL that apply: Which are American political parties?              <br/>
-              <br/>
-            </p>
+[1 point] Select ALL that apply: Which are American political parties?            </p>
           </div>
           <ol class="answers">
-            <input type="checkbox" id="qsm4-1" class="check">
-Democrats<br class=qsm4-1br>            </input>
-            <div id="qsm4-1r">
+            <input type="checkbox" id="qsm6-1" class="check">
+Democrats<br class=qsm6-1br>            </input>
+            <div id="qsm6-1r">
             </div>
-            <input type="checkbox" id="qsm4-2" class="check">
-Republicans<br class=qsm4-2br>            </input>
-            <div id="qsm4-2r">
+            <input type="checkbox" id="qsm6-2" class="check">
+Republicans<br class=qsm6-2br>            </input>
+            <div id="qsm6-2r">
             </div>
-            <input type="checkbox" id="qsm4-3" class="check">
-Greens<br class=qsm4-3br>            </input>
-            <div id="qsm4-3r">
+            <input type="checkbox" id="qsm6-3" class="check">
+Greens<br class=qsm6-3br>            </input>
+            <div id="qsm6-3r">
             </div>
-            <input type="checkbox" id="qsm4-4" class="check">
-Tories<br class=qsm4-4br>            </input>
-            <div id="qsm4-4r">
+            <input type="checkbox" id="qsm6-4" class="check">
+Tories<br class=qsm6-4br>            </input>
+            <div id="qsm6-4r">
             </div>
-            <input type="checkbox" id="qsm4-5" class="check">
-Social Democrats<br class=qsm4-5br>            </input>
-            <div id="qsm4-5r">
+            <input type="checkbox" id="qsm6-5" class="check">
+Social Democrats<br class=qsm6-5br>            </input>
+            <div id="qsm6-5r">
             </div>
             <br/>
           </ol>
         </li>
-        <li id="question-4" class="question truefalse ">
+        <li id="question-6" class="question truefalse ">
           <div class="text">
             <p>
-[1 point] True or False: The week has 7 days.              <br/>
-              <br/>
-            </p>
+[1 point] True or False: The week has 7 days.            </p>
           </div>
           <ol class="answers">
-            <input type="radio" id="qmc5-1" name="qmc5" class="select">
-True<br class=qmc5-1br>            </input>
-            <div id="qmc5-1r">
+            <input type="radio" id="qmc7-1" name="qmc7" class="select">
+True<br class=qmc7-1br>            </input>
+            <div id="qmc7-1r">
             </div>
-            <input type="radio" id="qmc5-2" name="qmc5" class="select">
-False<br class=qmc5-2br>            </input>
-            <div id="qmc5-2r">
+            <input type="radio" id="qmc7-2" name="qmc7" class="select">
+False<br class=qmc7-2br>            </input>
+            <div id="qmc7-2r">
             </div>
             <br/>
           </ol>
         </li>
-        <li id="question-5" class="question truefalse ">
+        <li id="question-7" class="question truefalse ">
           <div class="text">
             <p>
-[1 point] True or False: The earth is flat.              <br/>
-              <br/>
-            </p>
+[1 point] True or False: The earth is flat.            </p>
           </div>
           <ol class="answers">
-            <input type="radio" id="qmc6-1" name="qmc6" class="select">
-True<br class=qmc6-1br>            </input>
-            <div id="qmc6-1r">
+            <input type="radio" id="qmc8-1" name="qmc8" class="select">
+True<br class=qmc8-1br>            </input>
+            <div id="qmc8-1r">
             </div>
-            <input type="radio" id="qmc6-2" name="qmc6" class="select">
-False<br class=qmc6-2br>            </input>
-            <div id="qmc6-2r">
+            <input type="radio" id="qmc8-2" name="qmc8" class="select">
+False<br class=qmc8-2br>            </input>
+            <div id="qmc8-2r">
             </div>
             <br/>
           </ol>
@@ -154,13 +150,13 @@ Submit      </button>
 Retry      </button>
     </form>
     <script type="text/javascript">
-      data = {"question-0":["the capital of california is ",{"qfi1":["sacramento",true,null]},2],"question-1":["what is the largest us state?",{"qmc2-1":["Hawaii",false,null],"qmc2-2":["Alaska",true,null],"qmc2-3":["Texas",false,"That's pretty big, but think colder."]},1],"question-2":["which are american political parties?",{"qsm3-1":["Democrats",true,null],"qsm3-2":["Republicans",true,null],"qsm3-3":["Greens",true,"Yes, they're a party!"],"qsm3-4":["Tories",false,"They're British"],"qsm3-5":["Social Democrats",false,null]},1],"question-3":["which are american political parties?",{"qsm4-1":["Democrats",true,null],"qsm4-2":["Republicans",true,null],"qsm4-3":["Greens",true,"Yes, they're a party!"],"qsm4-4":["Tories",false,"They're British"],"qsm4-5":["Social Democrats",false,null]},1],"question-4":["true or false: the week has 7 days.",{"qmc5-1":["True",true,null],"qmc5-2":["False",false,""]},1],"question-5":["true or false: the earth is flat.",{"qmc6-1":["True",false,"No, just looks that way"],"qmc6-2":["False",true,null]},1]};
+      data = {"question-0":{"question_text":"The capital of California is ---","answers":{"qfi1-1":{"answer_text":"/^\\s*[sS]acramento\\s*$/","correct":true,"explanation":null}},"points":2},"question-1":{"question_text":"The --- brown fox jumped over the lazy ---","answers":{"qfi2-1":{"answer_text":"/fox/","correct":true,"explanation":"This sentence contains all of the letters of the English Alphabet"},"qfi2-2":{"answer_text":"/dog/","correct":true,"explanation":"This sentence contains all of the letters of the English Alphabet"}},"points":1},"question-2":{"question_text":"The three stooges are ---, ---, and ---.","answers":{"qfi3-1":{"answer_text":"larry","correct":true,"explanation":null},"qfi3-2":{"answer_text":"moe","correct":true,"explanation":null},"qfi3-3":{"answer_text":"curly","correct":true,"explanation":null}},"points":1},"question-3":{"question_text":"What is the largest US state?","answers":{"qmc4-1":{"answer_text":"Alaska","correct":true,"explanation":null},"qmc4-2":{"answer_text":"Texas","correct":false,"explanation":"That's pretty big, but think colder."},"qmc4-3":{"answer_text":"Hawaii","correct":false,"explanation":"Not big enough."}},"points":1},"question-4":{"question_text":"Which are American political parties?","answers":{"qsm5-1":{"answer_text":"Democrats","correct":true,"explanation":null},"qsm5-2":{"answer_text":"Republicans","correct":true,"explanation":null},"qsm5-3":{"answer_text":"Greens","correct":true,"explanation":"Yes, they're a party!"},"qsm5-4":{"answer_text":"Tories","correct":false,"explanation":"They're British"},"qsm5-5":{"answer_text":"Social Democrats","correct":false,"explanation":null}},"points":1},"question-5":{"question_text":"Which are American political parties?","answers":{"qsm6-1":{"answer_text":"Democrats","correct":true,"explanation":null},"qsm6-2":{"answer_text":"Republicans","correct":true,"explanation":null},"qsm6-3":{"answer_text":"Greens","correct":true,"explanation":"Yes, they're a party!"},"qsm6-4":{"answer_text":"Tories","correct":false,"explanation":"They're British"},"qsm6-5":{"answer_text":"Social Democrats","correct":false,"explanation":null}},"points":1},"question-6":{"question_text":"True or False: The week has 7 days.","answers":{"qmc7-1":{"answer_text":"True","correct":true,"explanation":null},"qmc7-2":{"answer_text":"False","correct":false,"explanation":""}},"points":1},"question-7":{"question_text":"True or False: The earth is flat.","answers":{"qmc8-1":{"answer_text":"True","correct":false,"explanation":"No, just looks that way"},"qmc8-2":{"answer_text":"False","correct":true,"explanation":null}},"points":1}};
       
-      function checkFIQEmpty(textBox) {
-        if (textBox == "")
-          return true;
-        else
-          return false;
+      function checkFIQEmpty(list) {
+        for (i = 0; i < list.length; i++)
+          if (list[i].value == "")
+            return true;
+        return false;
       }
       
       function checkMCQEmpty(inputs) {
@@ -175,8 +171,8 @@ Retry      </button>
         
         for (question in data) {
           q = $("#" + question.toString() + " input");
-          if (q.length == 1)
-            empty.push(checkFIQEmpty(q.val()));
+          if (q.attr('class') == 'fillin')
+            empty.push(checkFIQEmpty(q));
           else
             empty.push(checkMCQEmpty(q));
         }
@@ -189,8 +185,8 @@ Retry      </button>
       
       function findCorrectAnswer(idQuestion, questionType) {
         correctIds = [];
-        for (id in data[idQuestion][1]) {
-          if(data[idQuestion][1][id.toString()][1] == true)
+        for (id in data[idQuestion]['answers']) {
+          if(data[idQuestion]['answers'][id.toString()]['correct'] == true)
             if (questionType == 0)
               return id.toString();
             else {
@@ -205,11 +201,11 @@ Retry      </button>
         $.each(checkedIds, function(index, value){
           if (correctIds.indexOf(value) == -1) {
             results.push(false);
-            printResults(value, 0, data[x.toString()][1][value][2], "");
+            printResults(value, 0, data[x.toString()]['answers'][value]['explanation'], 0);
           }
           else {
             results.push(true);
-            printResults(value, 1, "");
+            printResults(value, 1, data[x.toString()]['answers'][value]['explanation'], 0);
           }
         });
         
@@ -219,36 +215,93 @@ Retry      </button>
             nCorrects += 1;
         });
         
-        calculateMark(data[x.toString()], x.toString(), correct, 3, nCorrects);
+        calculateMark(data[x.toString()], x.toString(), null, 3, nCorrects);
       }
       
-      function printResults(id, type, explanation) {
-        $("br[class=" + id + "br" + "]").detach();
-        if (type == 1)
-          $("div[id ~= " + id + "r" + "]").html("<strong class=correct> Correct</strong></br>");
-        else {
-          if ((explanation == "") || (explanation == null))
-            $("div[id ~= " + id + "r" + "]").html("<strong class=incorrect> Incorrect</strong></br>");
-          else
-            $("div[id ~= " + id + "r" + "]").html("<strong class=incorrect> Incorrect - " + explanation + "</strong></br>");
+      function printResults(id, type, explanation, typeQuestion) {
+        if (typeQuestion == 0) {                                        // MultipleChoice and SelectMultiple
+          $("br[class=" + id + "br" + "]").detach();
+          if (type == 1) {
+            if ((explanation == "") || (explanation == null))
+              $("div[id ~= " + id + "r" + "]").html("<strong class=correct> Correct</strong></br>");
+            else
+              $("div[id ~= " + id + "r" + "]").html("<strong class=correct> Correct - " + explanation + "</strong></br>");
+          }
+          else {
+            if ((explanation == "") || (explanation == null))
+              $("div[id ~= " + id + "r" + "]").html("<strong class=incorrect> Incorrect</strong></br>");
+            else
+              $("div[id ~= " + id + "r" + "]").html("<strong class=incorrect> Incorrect - " + explanation + "</strong></br>");
+          }
+        }
+        else {          // FillIn
+          for (r in id) {
+            input = $("#" + r.toString());
+            if (id[r] == true)
+              input.attr('class', 'fillin correct');
+            else { 
+              if (id[r] == false)
+                input.attr('class', 'fillin incorrect');
+            }
+            if (explanation != null)
+              $("div[id ~= " + r + "r" + "]").html("Explanation: " + explanation);
+          }
         }
       }
       
       function calculateMark(question, id, result, typeQuestion, numberCorrects) {
-        if (typeQuestion != 3) {
+        if (typeQuestion == 2) {
           if (result)
-            $("#" + id).append("<strong class=mark> " + question[2] + "/" + question[2] + " points</strong></br></br>");
+            $("#" + id).append("<strong class=mark> " + question['points'] + "/" + question['points'] + " points</strong></br></br>");
           else
-            $("#" + id).append("<strong class=mark> 0/" + question[2] + " points</strong></br></br>");
+            $("#" + id).append("<strong class=mark> 0/" + question['points'] + " points</strong></br></br>");
         }
         else {
           size = 0;
-          for (y in question) {
+          for (y in question['answers']) {
             size += 1;
           }
           
-          $("#" + id).append("<strong class=mark> " + ((question[2] / size) * numberCorrects).toFixed(2) + "/" + question[2] + " points</strong></br></br>");
+          $("#" + id).append("<strong class=mark> " + ((question['points'] / size) * numberCorrects).toFixed(2) + "/" + question['points'] + " points</strong></br></br>");
         }
+      }
+      
+      function checkFillin(correctAnswers, userAnswers, typeCorrection) {
+        correction = {};
+        checkedAnswers = {};
+      
+        if (typeCorrection == 0) {          // Order doesn't matter
+          for (u in userAnswers) {
+            if (userAnswers[u] != undefined) {
+              matched = false;
+              for (y in correctAnswers) {
+                if ((checkAnswers[u] == undefined) && (userAnswers[u].match(RegExp(correctAnswers[y])))) {
+                  correction[u] = true;
+                  checkedAnswers[u] = userAnswers[u];
+                  matched = true;
+                  break;
+                }
+              }
+              if (!matched)
+                correction[u] = false;
+            }
+            else
+              correction[u] = "n/a";
+          }
+        }
+        else {                            // Order matters
+          for (u in userAnswers) {
+            if (userAnswers[u] != undefined) {
+              if (userAnswers[u].match(RegExp(correctAnswers[u])))
+                correction[u] = true;
+              else
+                correction[u] = false;
+            }
+            else
+              correction[u] = "n/a";
+          }
+        }
+        return correction;
       }
       
       function checkAnswers() {
@@ -258,53 +311,73 @@ Retry      </button>
           answers = $("#" + x.toString() + " input");
           
           if (answers.attr('class') == "fillin") {
-            if ($("#" + answers.attr('id')).val().toLowerCase() == data[x.toString()][1][answers.attr('id')][0]) {
-              printResults(answers.attr('id'), 1, "");
-              correct = true;
-            }
-            else
-              printResults(answers.attr('id'), 0, "");
+            correctAnswers = {};
+            explanation = "";
             
-            calculateMark(data[x.toString()], x.toString(), correct, 1, null);
+            for (ans in data[x.toString()]['answers']) {
+              correctAnswers[ans.toString()] = data[x.toString()]['answers'][ans]['answer_text'].split('/').join('')
+              explanation = data[x.toString()]['answers'][ans]['explanation'];
+            }
+           
+            userAnswers = {};
+            for (i = 0; i < answers.length; i++) {
+              if (answers[i].value == '')
+                userAnswers[answers[i].id.toString()] = undefined;
+              else
+                userAnswers[answers[i].id.toString()] = answers[i].value.toLowerCase();
+            }
+            
+            results = checkFillin(correctAnswers, userAnswers, 0);
+            printResults(results, null, explanation, 1);
+            
+            nCorrects = 0;
+            for (r in results)
+              if (results[r] == true)
+                nCorrects += 1;
+            
+            calculateMark(data[x.toString()], x.toString(), null, 1, nCorrects);
           }
           
           else if (answers.attr('class') == "select") {
             idCorrectAnswer = findCorrectAnswer(x.toString(), 0);
             
-            if ($("#" + x.toString() + " :checked").attr('id') == idCorrectAnswer) {
-              printResults($("#" + x.toString() + " :checked").attr('id'), 1, "");
-              correct = true;
+            if ($("#" + x.toString() + " :checked").size() != 0) {
+              if ($("#" + x.toString() + " :checked").attr('id') == idCorrectAnswer) {
+                printResults($("#" + x.toString() + " :checked").attr('id'), 1, "", 0);
+                correct = true;
+              }
+              else {
+                id = $("#" + x.toString() + " :checked").attr('id');
+                printResults(id, 0, data[x.toString()]['answers'][id]['explanation'], 0);
+              }
+              calculateMark(data[x.toString()], x.toString(), correct, 2, null);
             }
-            else {
-              id = $("#" + x.toString() + " :checked").attr('id');
-              printResults(id, 0, data[x.toString()][1][id][2]);
-            }
-            
-            calculateMark(data[x.toString()], x.toString(), correct, 2, null);
           }
           
           else {
-            answers = $("#" + x.toString() + " :checked");
-            checkedIds = [];
-            
-            $.each(answers, function(index, value){
-              checkedIds.push(value['id']);
-            });
-            
-            correctIds = [];
-            correctIds = findCorrectAnswer(x.toString(), 1);
-            checkSelectMultiple(x, checkedIds, correctIds);   
+            if ($("#" + x.toString() + " :checked").size() != 0) {
+              answers = $("#" + x.toString() + " :checked");
+              checkedIds = [];
+              
+              $.each(answers, function(index, value){
+                checkedIds.push(value['id']);
+              });
+              
+              correctIds = [];
+              correctIds = findCorrectAnswer(x.toString(), 1);
+              checkSelectMultiple(x, checkedIds, correctIds);
+            }
           }
         }
       }
       
       function checkForm() {
-        if (!checkEmpty()) {
+        //if (!checkEmpty()) {
           checkAnswers();
-        }
-        else {
-          alert('ERROR. Some fields are empty');
-        }
+        //}
+        //else {
+        //  alert('ERROR. Some fields are empty');
+        //}
       }
       
       $("#btn").click(function() {
