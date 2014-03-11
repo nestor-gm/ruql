@@ -251,6 +251,7 @@ class HtmlFormRenderer
       
       $("#btn").click(function() {
         checkForm();
+        $("#btn").detach();
       });
       
       $("#reset").click(function() {
