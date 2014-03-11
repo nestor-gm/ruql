@@ -51,37 +51,6 @@ class HtmlFormRenderer
             j <<"#{<<JS}"
       data = #{@data.to_json};
       
-      function checkFIQEmpty(list) {
-        for (i = 0; i < list.length; i++)
-          if (list[i].value == "")
-            return true;
-        return false;
-      }
-      
-      function checkMCQEmpty(inputs) {
-        if (inputs.is(':checked'))
-          return false;
-        else
-          return true;
-      }
-      
-      function checkEmpty() {
-        empty = []
-        
-        for (question in data) {
-          q = $("#" + question.toString() + " input");
-          if (q.attr('class') == 'fillin')
-            empty.push(checkFIQEmpty(q));
-          else
-            empty.push(checkMCQEmpty(q));
-        }
-        
-        if (($.inArray(true, empty)) !== -1)
-          return true;
-        else
-          return false; 
-      }
-      
       function findCorrectAnswer(idQuestion, questionType) {
         correctIds = [];
         for (id in data[idQuestion]['answers']) {
@@ -271,12 +240,7 @@ class HtmlFormRenderer
       }
       
       function checkForm() {
-        //if (!checkEmpty()) {
-          checkAnswers();
-        //}
-        //else {
-        //  alert('ERROR. Some fields are empty');
-        //}
+        checkAnswers();
       }
       
       $("#btn").click(function() {
