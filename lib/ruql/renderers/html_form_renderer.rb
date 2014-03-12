@@ -27,7 +27,6 @@ class HtmlFormRenderer
       @h.html do
         @h.head do |h|
           @h.title @quiz.title
-          @h.link(:rel => 'stylesheet', :type =>'text/css', :href => @css) if @css
           @h.style do |s|
             s << "div, p {display:inline;}"
             s << "strong.correct {color:rgb(0,255,0);}"
@@ -36,13 +35,18 @@ class HtmlFormRenderer
             s << "input.correct {color:rgb(0,255,0); font-weight: bold;}"
             s << "input.incorrect {color:rgb(255,0,0); font-weight: bold;}"
           end
+          @css.each do |file|
+            @h.link(:rel => 'stylesheet', :type =>'text/css', :href => file) 
+          end if @css
           @h.script(:type => 'text/javascript', :src => "http://code.jquery.com/jquery-2.1.0.min.js") do
           end
           h << "<!--[if lt IE 8]>"
           @h.script(:type => 'text/javascript', :src => "http://code.jquery.com/jquery-1.11.0.min.js") do
           end
           h << "<![endif]-->"
-          @h.script(:type => 'text/javascript', :src => @js) do
+          @js.each do |file|
+            @h.script(:type => 'text/javascript', :src => file) do
+            end
           end if @js
         end
         @h.body do
