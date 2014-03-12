@@ -15,6 +15,17 @@ quiz 'Example quiz' do
     answer %w(larry moe curly)
   end
   
+  fill_in :points => 2 do
+    text %q{
+      When $a \ne 0$, there are two solutions to \(ax^2 + bx + c = 0\)
+      and they are
+      $$x = {-b \pm \sqrt{b^2-4ac} \over 2a}.$$
+      <br/>
+      The capital of <i>California</i> is ---
+    }
+    answer '/^\s*[sS]acramento\s*$/'
+  end
+  
   choice_answer :randomize => true do
     text  "What is the largest US state?"
     answer 'Alaska'

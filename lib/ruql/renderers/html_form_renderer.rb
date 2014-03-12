@@ -8,6 +8,7 @@ class HtmlFormRenderer
   def initialize(quiz,options={})
     @css = options.delete('c') || options.delete('css')
     @js = options.delete('j') || options.delete('js')
+    @html = options.delete('h') || options.delete('html')
     @show_solutions = options.delete('s') || options.delete('solutions')
     @template = options.delete('t') ||
       options.delete('template')
@@ -35,19 +36,46 @@ class HtmlFormRenderer
             s << "input.correct {color:rgb(0,255,0); font-weight: bold;}"
             s << "input.incorrect {color:rgb(255,0,0); font-weight: bold;}"
           end
-          @css.each do |file|
-            @h.link(:rel => 'stylesheet', :type =>'text/css', :href => file) 
-          end if @css
+          
+          if @html
+            if (@html.class == Array)
+              @html.each do |file|
+                h << File.read(file)
+              end
+            else
+              h << File.read(@html)
+            end
+          end
+          
+          if @css
+            if (@css.class == Array)
+              @css.each do |file|
+                @h.link(:rel => 'stylesheet', :type =>'text/css', :href => file) 
+              end
+            else
+              @h.link(:rel => 'stylesheet', :type =>'text/css', :href => @css)
+            end
+          end
+          
           @h.script(:type => 'text/javascript', :src => "http://code.jquery.com/jquery-2.1.0.min.js") do
           end
           h << "<!--[if lt IE 8]>"
           @h.script(:type => 'text/javascript', :src => "http://code.jquery.com/jquery-1.11.0.min.js") do
           end
           h << "<![endif]-->"
-          @js.each do |file|
-            @h.script(:type => 'text/javascript', :src => file) do
+          
+          if @js
+            if (@js.class == Array)
+              @js.each do |file|
+                @h.script(:type => 'text/javascript', :src => file) do
+                end
+              end
+            else
+              @h.script(:type => 'text/javascript', :src => @js) do
+              end
             end
-          end if @js
+          end
+          
         end
         @h.body do
           render_questions

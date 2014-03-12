@@ -5,6 +5,16 @@ task :ruql do
   sh "ruby -Ilib bin/ruql examples/example.rb HtmlForm > examples/file.html"
 end
 
+desc "Run Ruql with HtmlForm renderer and HTML embed (with JavaScript validation)"
+task :html do
+  sh "ruby -Ilib bin/ruql examples/example.rb HtmlForm -h examples/mathjax.html > examples/file.html"
+end
+
+desc "Run Ruql with HtmlForm renderer and multiple HTML embed (with JavaScript validation)"
+task :mhtml do
+  sh "ruby -Ilib bin/ruql examples/example.rb HtmlForm -h examples/mathjax.html -h examples/mathjax.html > examples/file.html"
+end
+
 desc "Run Ruql with HtmlForm renderer with JavaScript"
 task :js do
   sh "ruby -Ilib bin/ruql examples/example.rb HtmlForm -j prueba.js > examples/file.html"
@@ -12,7 +22,7 @@ end
 
 desc "Run Ruql with HtmlForm renderer with multiple JavaScript"
 task :mjs do
-  sh "ruby -Ilib bin/ruql examples/example.rb HtmlForm -j prueba.js -j prueba2.js > examples/file.html"
+  sh "ruby -Ilib bin/ruql examples/example.rb HtmlForm -j prueba.js -j prueba.js > examples/file.html"
 end
 
 desc "Run Ruql with HtmlForm renderer and CSS"
@@ -22,7 +32,7 @@ end
 
 desc "Run Ruql with HtmlForm renderer and multiple CSS"
 task :mcss do
-  sh "ruby -Ilib bin/ruql examples/example.rb HtmlForm -c estilo.css -c estilo2.css > examples/file.html"
+  sh "ruby -Ilib bin/ruql examples/example.rb HtmlForm -c estilo.css -c estilo.css > examples/file.html"
 end
 
 desc "Install Ruql using RVM"
