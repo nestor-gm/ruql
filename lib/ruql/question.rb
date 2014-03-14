@@ -1,5 +1,5 @@
 class Question
-  attr_accessor :question_text, :answers, :randomize, :points, :name, :question_tags, :question_comment
+  attr_accessor :question_text, :answers, :randomize, :points, :name, :question_tags, :question_comment, :default_explanation
   
   def initialize(*args)
     options = if args[-1].kind_of?(Hash) then args[-1] else {} end
@@ -9,6 +9,7 @@ class Question
     @name = options[:name]
     @question_tags = []
     @question_comment = ''
+    @default_explanation = ''
   end
 
   def raw? ; !!@raw ; end
@@ -16,11 +17,7 @@ class Question
   def text(s) ; @question_text = s ; end
   
   def explanation(text)
-    @answers.each { |answer| 
-                    if (!answer.correct)
-                      answer.explanation ||= text
-                    end
-                  }
+    @default_explanation = text
   end
 
   def answer(text, opts={})
@@ -28,7 +25,7 @@ class Question
   end
 
   def distractor(text, opts={})
-    @answers << Answer.new(text, correct=false, opts[:explanation])
+    @answers << Answer.new(text, correct=false, opts[:explanation] || @default_explanation)
   end
 
   # these are ignored but legal for now:
