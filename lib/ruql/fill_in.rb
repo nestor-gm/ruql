@@ -6,10 +6,14 @@ class FillIn < Question
   def initialize(text='', opts={})
     super
     self.question_text = text
-    self.order =  !!opts[:order]
     self.case_sensitive = !!opts[:case_sensitive]
   end
 
   def multiple ; false ; end
 
+  def answer(text, opts={})
+    super
+    self.order = !!opts[:order]
+  end
+  
 end

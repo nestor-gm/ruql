@@ -10,9 +10,9 @@ quiz 'Example quiz' do
     answer ['/fox/', '/dog/'], :explanation => 'This sentence contains all of the letters of the English Alphabet'
   end
   
-  fill_in :order => true do
+  fill_in do
     text 'The three stooges are ---, ---, and ---.'
-    answer %w(larry moe curly)
+    answer %w(larry moe curly), :order => true 
   end
   
   fill_in :points => 2 do
