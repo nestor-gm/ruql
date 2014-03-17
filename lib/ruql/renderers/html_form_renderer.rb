@@ -111,11 +111,11 @@ class HtmlFormRenderer
           end
         end
       end
-      @h.button(:type => 'button', :id => 'btn') do |b|
+      @h.button(:type => 'button', :id => 'submit') do |b|
         b << "Submit"
       end
       @h.button(:type => 'button', :id => 'reset') do |b|
-        b << "Retry"
+        b << "Reset"
       end
     end
   end
@@ -197,7 +197,7 @@ class HtmlFormRenderer
           type = 'Regexp'
           [0, -1].each {|index| ans.insert(index, '/')}
         else
-          ans = a.downcase!
+          ans = a.downcase
           type = 'String'
         end
         
@@ -334,12 +334,15 @@ class HtmlFormRenderer
       });
       
       nCorrects = 0;
+      nIncorrects = 0;
       $.each(results, function(index, value){
         if (value == true)
           nCorrects += 1;
+        else
+          nIncorrects += 1;
       });
       
-      calculateMark(data[x.toString()], x.toString(), null, 3, nCorrects);
+      calculateMark(data[x.toString()], x.toString(), null, 3, nCorrects, nIncorrects);
     }
     
     function printResults(id, type, explanation, typeQuestion) {
@@ -373,20 +376,30 @@ class HtmlFormRenderer
       }
     }
     
-    function calculateMark(question, id, result, typeQuestion, numberCorrects) {
+    function calculateMark(question, id, result, typeQuestion, numberCorrects, numberIncorrects) {
       if (typeQuestion == 2) {
         if (result)
           $("#" + id).append("<strong class=mark> " + question['points'] + "/" + question['points'] + " points</strong></br></br>");
         else
           $("#" + id).append("<strong class=mark> 0/" + question['points'] + " points</strong></br></br>");
       }
-      else {
+      else if (typeQuestion == 1) {
         size = 0;
         for (y in question['answers']) {
           size += 1;
         }
         
         $("#" + id).append("<strong class=mark> " + ((question['points'] / size) * numberCorrects).toFixed(2) + "/" + question['points'] + " points</strong></br></br>");
+      }
+      else {
+        totalCorrects = 0;
+        for (y in question['answers']) {
+          if (question['answers'][y]['correct'] == true)
+            totalCorrects += 1;
+        }
+        correctAnswerPoints = question['points'] / totalCorrects;
+        penalty = correctAnswerPoints * numberIncorrects;
+        $("#" + id).append("<strong class=mark> " + ((correctAnswerPoints * numberCorrects) - penalty).toFixed(2) + "/" + question['points'] + " points</strong></br></br>");        
       }
     }
     
@@ -449,98 +462,103 @@ class HtmlFormRenderer
     }
     
     function checkAnswers() {
-  
+      
       for (x in data) {
-        correct = false;
-        answers = $("#" + x.toString() + " input");
-        
-        if (answers.attr('class') == "fillin") {
-          correctAnswers = {};
-          explanation = "";
-          stringAnswer = false;
+        if ($("#" + x.toString() + " strong").length == 0) {
+          correct = false;
+          answers = $("#" + x.toString() + " input");
           
-          for (ans in data[x.toString()]['answers']) {
-            if (data[x.toString()]['answers'][ans]['type'] == "Regexp")
-              correctAnswers[ans.toString()] = RegExp(data[x.toString()]['answers'][ans]['answer_text'].split('/').join(''));
-            else { // String
-              correctAnswers[ans.toString()] = data[x.toString()]['answers'][ans]['answer_text'];
-              stringAnswer = true;
+          if (answers.attr('class') == "fillin") {
+            correctAnswers = {};
+            explanation = "";
+            stringAnswer = false;
+            
+            for (ans in data[x.toString()]['answers']) {
+              if (data[x.toString()]['answers'][ans]['type'] == "Regexp")
+                correctAnswers[ans.toString()] = RegExp(data[x.toString()]['answers'][ans]['answer_text'].split('/').join(''));
+              else { // String
+                correctAnswers[ans.toString()] = data[x.toString()]['answers'][ans]['answer_text'];
+                stringAnswer = true;
+              }
+              explanation = data[x.toString()]['answers'][ans]['explanation'];
             }
-            explanation = data[x.toString()]['answers'][ans]['explanation'];
-          }
-          
-          userAnswers = {};
-          for (i = 0; i < answers.length; i++) {
-            if (answers[i].value == '')
-              userAnswers[answers[i].id.toString()] = undefined;
-            else
-              if (stringAnswer)
-                userAnswers[answers[i].id.toString()] = answers[i].value.toLowerCase();
+            
+            userAnswers = {};
+            for (i = 0; i < answers.length; i++) {
+              if (answers[i].value == '')
+                userAnswers[answers[i].id.toString()] = undefined;
               else
-                userAnswers[answers[i].id.toString()] = answers[i].value;
-          }
-          
-          if (data[x.toString()]['order'] == false)
-            results = checkFillin(correctAnswers, userAnswers, 0);
-          else
-            results = checkFillin(correctAnswers, userAnswers, 1);
-            
-          allEmpty = true;
-          nCorrects = 0;
-          
-          for (r in results) {
-            if (results[r] == true)
-              nCorrects += 1;
-            if (results[r] != "n/a")
-              allEmpty = false;
-          }
-          
-          if (!allEmpty) {
-            printResults(results, null, explanation, 1);
-            calculateMark(data[x.toString()], x.toString(), null, 1, nCorrects);
-          }
-        }
-        
-        else if (answers.attr('class') == "select") {
-          idCorrectAnswer = findCorrectAnswer(x.toString(), 0);
-          
-          if ($("#" + x.toString() + " :checked").size() != 0) {
-            if ($("#" + x.toString() + " :checked").attr('id') == idCorrectAnswer) {
-              printResults($("#" + x.toString() + " :checked").attr('id'), 1, "", 0);
-              correct = true;
+                if (stringAnswer)
+                  userAnswers[answers[i].id.toString()] = answers[i].value.toLowerCase();
+                else
+                  userAnswers[answers[i].id.toString()] = answers[i].value;
             }
-            else {
-              id = $("#" + x.toString() + " :checked").attr('id');
-              printResults(id, 0, data[x.toString()]['answers'][id]['explanation'], 0);
+            
+            if (data[x.toString()]['order'] == false)
+              results = checkFillin(correctAnswers, userAnswers, 0);
+            else
+              results = checkFillin(correctAnswers, userAnswers, 1);
+              
+            allEmpty = true;
+            nCorrects = 0;
+            
+            for (r in results) {
+              if (results[r] == true)
+                nCorrects += 1;
+              if (results[r] != "n/a")
+                allEmpty = false;
             }
-            calculateMark(data[x.toString()], x.toString(), correct, 2, null);
+            
+            if (!allEmpty) {
+              printResults(results, null, explanation, 1);
+              calculateMark(data[x.toString()], x.toString(), null, 1, nCorrects, null);
+            }
           }
-        }
-        
-        else {
-          if ($("#" + x.toString() + " :checked").size() != 0) {
-            answers = $("#" + x.toString() + " :checked");
-            checkedIds = [];
+          
+          else if (answers.attr('class') == "select") {
+            idCorrectAnswer = findCorrectAnswer(x.toString(), 0);
             
-            $.each(answers, function(index, value){
-              checkedIds.push(value['id']);
-            });
-            
-            correctIds = [];
-            correctIds = findCorrectAnswer(x.toString(), 1);
-            checkSelectMultiple(x, checkedIds, correctIds);
+            if ($("#" + x.toString() + " :checked").size() != 0) {
+              if ($("#" + x.toString() + " :checked").attr('id') == idCorrectAnswer) {
+                printResults($("#" + x.toString() + " :checked").attr('id'), 1, "", 0);
+                correct = true;
+              }
+              else {
+                id = $("#" + x.toString() + " :checked").attr('id');
+                printResults(id, 0, data[x.toString()]['answers'][id]['explanation'], 0);
+              }
+              calculateMark(data[x.toString()], x.toString(), correct, 2, null, null);
+            }
+          }
+          
+          else {
+            if ($("#" + x.toString() + " :checked").size() != 0) {
+              answers = $("#" + x.toString() + " :checked");
+              checkedIds = [];
+              
+              $.each(answers, function(index, value){
+                checkedIds.push(value['id']);
+              });
+              
+              correctIds = [];
+              correctIds = findCorrectAnswer(x.toString(), 1);
+              checkSelectMultiple(x, checkedIds, correctIds);
+            }
           }
         }
       }
     }
-    
-    function checkForm() {
-      checkAnswers();
-    }
 
-    $("#btn").click(function() {
-      checkForm();
-      $("#btn").detach();
+    $("#submit").click(function() {
+      checkAnswers();
+      filledAllQuiz = true;
+      
+      for (x in data) {
+        if ($("#" + x.toString() + " strong").length == 0)
+          filledAllQuiz = false; 
+      }
+      if (filledAllQuiz)
+        $("#submit").detach();
     });
 
     $("#reset").click(function() {
