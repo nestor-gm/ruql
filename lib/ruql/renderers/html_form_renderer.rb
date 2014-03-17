@@ -29,58 +29,17 @@ class HtmlFormRenderer
         @h.head do |h|
           @h.title @quiz.title
           @h.style do |s|
-            s << "div, p {display:inline;}"
-            s << "strong.correct {color:rgb(0,255,0);}"
-            s << "strong.incorrect {color:rgb(255,0,0);}"
-            s << "strong.mark {color:rgb(255,128,0);}"
-            s << "input.correct {color:rgb(0,255,0); font-weight: bold;}"
-            s << "input.incorrect {color:rgb(255,0,0); font-weight: bold;}"
+            s << insert_defaultCSS
           end
-          
-          if @html
-            if (@html.class == Array)
-              @html.each do |file|
-                h << File.read(file)
-              end
-            else
-              h << File.read(@html)
-            end
-          end
-          
-          if @css
-            if (@css.class == Array)
-              @css.each do |file|
-                @h.link(:rel => 'stylesheet', :type =>'text/css', :href => file) 
-              end
-            else
-              @h.link(:rel => 'stylesheet', :type =>'text/css', :href => @css)
-            end
-          end
-          
-          @h.script(:type => 'text/javascript', :src => "http://code.jquery.com/jquery-2.1.0.min.js") do
-          end
-          h << "<!--[if lt IE 8]>"
-          @h.script(:type => 'text/javascript', :src => "http://code.jquery.com/jquery-1.11.0.min.js") do
-          end
-          h << "<![endif]-->"
-          
-          if @js
-            if (@js.class == Array)
-              @js.each do |file|
-                @h.script(:type => 'text/javascript', :src => file) do
-                end
-              end
-            else
-              @h.script(:type => 'text/javascript', :src => @js) do
-              end
-            end
-          end
-          
+          insert_html(h) if @html
+          insert_css if @css
+          insert_jQuery(h)
+          insert_js if @js
         end
         @h.body do
           render_questions
           @h.script(:type => 'text/javascript') do |j|
-            j << insert_javascript
+            j << insert_defaultJS
           end
         end
       end
@@ -302,7 +261,59 @@ class HtmlFormRenderer
     @h.comment! "Seed: #{@quiz.seed}"
   end
   
-  def insert_javascript
+  def insert_html(h)
+    if (@html.class == Array)
+      @html.each do |file|
+        h << File.read(file)
+      end
+    else
+      h << File.read(@html)
+    end
+  end
+  
+  def insert_css
+    if (@css.class == Array)
+      @css.each do |file|
+        @h.link(:rel => 'stylesheet', :type =>'text/css', :href => file) 
+      end
+    else
+      @h.link(:rel => 'stylesheet', :type =>'text/css', :href => @css)
+    end
+  end
+  
+  def insert_jQuery(h)
+    @h.script(:type => 'text/javascript', :src => "http://code.jquery.com/jquery-2.1.0.min.js") do
+    end
+    h << "<!--[if lt IE 8]>"
+    @h.script(:type => 'text/javascript', :src => "http://code.jquery.com/jquery-1.11.0.min.js") do
+    end
+    h << "<![endif]-->"
+  end
+  
+  def insert_js
+    if (@js.class == Array)
+      @js.each do |file|
+        @h.script(:type => 'text/javascript', :src => file) do
+        end
+      end
+    else
+      @h.script(:type => 'text/javascript', :src => @js) do
+      end
+    end
+  end
+  
+  def insert_defaultCSS
+    <<CSS
+      div, p {display:inline;}
+      strong.correct {color:rgb(0,255,0);}
+      strong.incorrect {color:rgb(255,0,0);}
+      strong.mark {color:rgb(255,128,0);}
+      input.correct {color:rgb(0,255,0); font-weight: bold;}
+      input.incorrect {color:rgb(255,0,0); font-weight: bold;}
+CSS
+  end
+  
+  def insert_defaultJS
     <<JS
     data = #{@data.to_json};
 
@@ -399,7 +410,12 @@ class HtmlFormRenderer
         }
         correctAnswerPoints = question['points'] / totalCorrects;
         penalty = correctAnswerPoints * numberIncorrects;
-        $("#" + id).append("<strong class=mark> " + ((correctAnswerPoints * numberCorrects) - penalty).toFixed(2) + "/" + question['points'] + " points</strong></br></br>");        
+        mark = (correctAnswerPoints * numberCorrects) - penalty;
+        
+        if (mark < 0)
+          mark = 0;
+          
+        $("#" + id).append("<strong class=mark> " + mark.toFixed(2) + "/" + question['points'] + " points</strong></br></br>");        
       }
     }
     
