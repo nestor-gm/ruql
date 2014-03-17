@@ -190,9 +190,19 @@ class HtmlFormRenderer
       answer = q.answers[0]
       answers = (answer.answer_text.kind_of?(Array) ? answer.answer_text : [answer.answer_text])
       id_answer = 1
-      answers.each do |ans|
+      
+      answers.each do |a|
+        if (a.class == Regexp)
+          ans = a.source
+          type = 'Regexp'
+          [0, -1].each {|index| ans.insert(index, '/')}
+        else
+          ans = a.downcase!
+          type = 'String'
+        end
+        
         @data[:"question-#{idx}"][:answers]["qfi#{idx + 1}-#{id_answer}".to_sym] = {:answer_text => ans, :correct => answer.correct, 
-                                                                                    :explanation => answer.explanation}
+                                                                                    :explanation => answer.explanation, :type => type}
         id_answer += 1
       end
       
@@ -386,14 +396,26 @@ class HtmlFormRenderer
 
       if (typeCorrection == 0) {          // Order doesn't matter
         for (u in userAnswers) {
-          if (userAnswers[u] != undefined) {
+          if (userAnswers[u] != undefined) {    // No empty field
             matched = false;
             for (y in correctAnswers) {
-              if ((checkAnswers[u] == undefined) && (userAnswers[u].match(RegExp(correctAnswers[y])))) {
-                correction[u] = true;
-                checkedAnswers[u] = userAnswers[u];
-                matched = true;
-                break;
+              if (checkAnswers[u] == undefined) {
+                if (typeof(correctAnswers[y]) == "string") {    // Answer is a String
+                  if (userAnswers[u] == correctAnswers[y]) {
+                    correction[u] = true;
+                    checkedAnswers[u] = userAnswers[u];
+                    matched = true;
+                    break;
+                  }
+                }
+                else {  // Answer is a Regexp
+                  if (userAnswers[u].match(correctAnswers[y])) {
+                    correction[u] = true;
+                    checkedAnswers[u] = userAnswers[u];
+                    matched = true;
+                    break;
+                  }
+                }
               }
             }
             if (!matched)
@@ -406,10 +428,18 @@ class HtmlFormRenderer
       else {                            // Order matters
         for (u in userAnswers) {
           if (userAnswers[u] != undefined) {
-            if (userAnswers[u].match(RegExp(correctAnswers[u])))
-              correction[u] = true;
-            else
-              correction[u] = false;
+            if (typeof(correctAnswers[u] == "string")) {
+              if (userAnswers[u] == correctAnswers[u])
+                correction[u] = true;
+              else
+                correction[u] = false;
+            }
+            else {
+              if (userAnswers[u].match(correctAnswers[u]))
+                correction[u] = true;
+              else
+                correction[u] = false;
+            }
           }
           else
             correction[u] = "n/a";
@@ -427,9 +457,15 @@ class HtmlFormRenderer
         if (answers.attr('class') == "fillin") {
           correctAnswers = {};
           explanation = "";
+          stringAnswer = false;
           
           for (ans in data[x.toString()]['answers']) {
-            correctAnswers[ans.toString()] = data[x.toString()]['answers'][ans]['answer_text'].split('/').join('')
+            if (data[x.toString()]['answers'][ans]['type'] == "Regexp")
+              correctAnswers[ans.toString()] = RegExp(data[x.toString()]['answers'][ans]['answer_text'].split('/').join(''));
+            else { // String
+              correctAnswers[ans.toString()] = data[x.toString()]['answers'][ans]['answer_text'];
+              stringAnswer = true;
+            }
             explanation = data[x.toString()]['answers'][ans]['explanation'];
           }
           
@@ -438,7 +474,10 @@ class HtmlFormRenderer
             if (answers[i].value == '')
               userAnswers[answers[i].id.toString()] = undefined;
             else
-              userAnswers[answers[i].id.toString()] = answers[i].value.toLowerCase();
+              if (stringAnswer)
+                userAnswers[answers[i].id.toString()] = answers[i].value.toLowerCase();
+              else
+                userAnswers[answers[i].id.toString()] = answers[i].value;
           }
           
           if (data[x.toString()]['order'] == false)

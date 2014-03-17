@@ -2,12 +2,12 @@ quiz 'Example quiz' do
  
   fill_in :points => 2 do
     text 'The capital of California is ---'
-    answer '/^\s*[sS]acramento\s*$/'
+    answer /^\s*[sS]acramento\s*$/
   end
 
   fill_in do
     text 'The --- brown fox jumped over the lazy ---'
-    answer ['/fox/', '/dog/'], :explanation => 'This sentence contains all of the letters of the English Alphabet'
+    answer [/fox/, /dog/], :explanation => 'This sentence contains all of the letters of the English Alphabet'
   end
   
   fill_in do
