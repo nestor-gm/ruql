@@ -70,12 +70,8 @@ class HtmlFormRenderer
           end
         end
       end
-      @h.button(:type => 'button', :id => 'submit') do |b|
-        b << "Submit"
-      end
-      @h.button(:type => 'button', :id => 'reset') do |b|
-        b << "Reset"
-      end
+      insert_button('Submit')
+      insert_button('Reset')
     end
   end
 
@@ -259,6 +255,12 @@ class HtmlFormRenderer
 
   def render_random_seed
     @h.comment! "Seed: #{@quiz.seed}"
+  end
+  
+  def insert_button(name)
+    @h.button(:type => 'button', :id => name.downcase) do |b|
+      b << name
+    end
   end
   
   def insert_html(h)
