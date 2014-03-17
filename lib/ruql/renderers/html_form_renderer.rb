@@ -390,9 +390,9 @@ CSS
     function calculateMark(question, id, result, typeQuestion, numberCorrects, numberIncorrects) {
       if (typeQuestion == 2) {
         if (result)
-          $("#" + id).append("<strong class=mark> " + question['points'] + "/" + question['points'] + " points</strong></br></br>");
+          $("#" + id).append("<strong class=mark> " + question['points'].toFixed(2) + "/" + question['points'].toFixed(2) + " points</strong></br></br>");
         else
-          $("#" + id).append("<strong class=mark> 0/" + question['points'] + " points</strong></br></br>");
+          $("#" + id).append("<strong class=mark> 0.00/" + question['points'].toFixed(2) + " points</strong></br></br>");
       }
       else if (typeQuestion == 1) {
         size = 0;
@@ -400,7 +400,7 @@ CSS
           size += 1;
         }
         
-        $("#" + id).append("<strong class=mark> " + ((question['points'] / size) * numberCorrects).toFixed(2) + "/" + question['points'] + " points</strong></br></br>");
+        $("#" + id).append("<strong class=mark> " + ((question['points'] / size) * numberCorrects).toFixed(2) + "/" + question['points'].toFixed(2) + " points</strong></br></br>");
       }
       else {
         totalCorrects = 0;
@@ -415,7 +415,7 @@ CSS
         if (mark < 0)
           mark = 0;
           
-        $("#" + id).append("<strong class=mark> " + mark.toFixed(2) + "/" + question['points'] + " points</strong></br></br>");        
+        $("#" + id).append("<strong class=mark> " + mark.toFixed(2) + "/" + question['points'].toFixed(2) + " points</strong></br></br>");        
       }
     }
     
