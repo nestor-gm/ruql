@@ -36,25 +36,6 @@ describe HtmlFormRenderer do
       should match /<script type="text\/javascript" src="foo.js"/
     end
   end
-    
-  describe 'rendering solutions' do
-    before :each do
-      @a = [
-        Answer.new('aa',true,'This is right'),
-        Answer.new('bb',false,'Nope'),
-        Answer.new('cc',false)]
-      @q = MultipleChoice.new('question', :answers => @a)
-      @quiz = Quiz.new('foo', :questions => [@q])
-      @output = HtmlFormRenderer.new(@quiz,{'solutions' => true}).render_quiz.output
-    end
-    it 'should highlight correct answer' do
-      @output.should have_xml_element "//li[@class='correct']/p", :value => 'aa'
-    end
-    it 'should show explanations for incorrect answers' do
-      @output.should have_xml_element "//li[@class='incorrect']/p", :value => 'bb'
-      @output.should have_xml_element "//li[@class='incorrect']/p[@class='explanation']", :value => 'Nope'
-    end
-  end
 
   describe 'local variable' do
     require 'tempfile'
@@ -107,9 +88,6 @@ describe HtmlFormRenderer do
       runs = Array.new(10) { @h.render_multiple_choice(@q,1).output }
       runs[0].should match /.*aa.*bb.*cc/m
       runs.all? { |run| runs[0] == run }.should be_true
-    end
-    it 'should not indicate solution' do
-      @h.render_multiple_choice(@q,1).output.should_not include '<li class="correct">'
     end
   end
 end

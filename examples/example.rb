@@ -15,6 +15,12 @@ quiz 'Example quiz' do
     answer %w(larry moe curly), :order => true 
   end
   
+  fill_in do
+    text 'The visionary founder of Apple is ---'
+    answer /^ste(ve|phen)\s+jobs$/
+    distractor /^steve\s+wozniak/, :explanation => 'Almost, but not quite.'
+  end
+  
   fill_in :points => 2 do
     text %q{
       When $a \ne 0$, there are two solutions to \(ax^2 + bx + c = 0\)
@@ -23,7 +29,7 @@ quiz 'Example quiz' do
       <br/>
       The capital of <i>California</i> is ---
     }
-    answer '/^\s*[sS]acramento\s*$/'
+    answer /^\s*[sS]acramento\s*$/
   end
   
   choice_answer :randomize => true do
@@ -43,16 +49,6 @@ quiz 'Example quiz' do
     distractor "Social Democrats"
   end
   
-  select_multiple do
-    text "Which are American political parties?"
-    answer "Democrats"
-    answer "Republicans"
-    answer "Greens", :explanation => "Yes, they're a party!"
-    distractor "Tories", :explanation => "They're British"
-    distractor "Social Democrats"
-  end
-  
-  truefalse 'The week has 7 days.', true
   truefalse 'The earth is flat.', false, :explanation => 'No, just looks that way'
   
   choice_answer :raw => true do
