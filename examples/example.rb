@@ -16,6 +16,11 @@ quiz 'Example quiz' do
   end
   
   fill_in do
+    text '2 + 2 = ---'
+    answer 4
+  end
+  
+  fill_in do
     text 'The visionary founder of Apple is ---'
     answer /^ste(ve|phen)\s+jobs$/
     distractor /^steve\s+wozniak/, :explanation => 'Almost, but not quite.'

@@ -135,9 +135,12 @@ class HtmlFormRenderer
           ans = a.source
           type = 'Regexp'
           [0, -1].each {|index| ans.insert(index, '/')}
-        else
+        elsif (a.class == String)
           ans = a.downcase
           type = 'String'
+        else
+          ans = a
+          type = 'Fixnum'
         end
         
         @data[:"question-#{idx}"][:answers]["qfi#{idx + 1}-#{id_answer}".to_sym] = {:answer_text => ans, :correct => answer.correct, 
@@ -380,7 +383,7 @@ class HtmlFormRenderer
               matched = false;
               for (y in correctAnswers) {
                 if (checkAnswers[u] == undefined) {
-                  if (typeof(correctAnswers[y]) == "string") {    // Answer is a String
+                  if ((typeof(correctAnswers[y]) == "string") || (typeof(correctAnswers[y] == "number"))) {    // Answer is a String or a Number
                     if (userAnswers[u] == correctAnswers[y]) {
                       correction[u] = true;
                       checkedAnswers[u] = userAnswers[u];
