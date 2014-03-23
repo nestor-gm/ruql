@@ -253,20 +253,36 @@ class HtmlFormRenderer
   def insert_html(h)
     if (@html.class == Array)
       @html.each do |file|
-        h << File.read(file)
+        if !(file =~ /^.+\//)
+          h << File.read(file)
+        else
+          h << File.read(File.join(`pwd`.chomp, file))
+        end
       end
     else
-      h << File.read(@html)
+      if !(@html =~ /^.+\//)
+        h << File.read(@html)
+      else
+        h << File.read(File.join(`pwd`.chomp, @html))
+      end
     end
   end
   
   def insert_css
     if (@css.class == Array)
       @css.each do |file|
-        @h.link(:rel => 'stylesheet', :type =>'text/css', :href => file) 
+        if !(file =~ /^.+\//)
+          @h.link(:rel => 'stylesheet', :type =>'text/css', :href => file) 
+        else
+          @h.link(:rel => 'stylesheet', :type =>'text/css', :href => File.join(`pwd`.chomp, file))
+        end
       end
     else
-      @h.link(:rel => 'stylesheet', :type =>'text/css', :href => @css)
+      if !(@css =~ /^.+\//)
+        @h.link(:rel => 'stylesheet', :type =>'text/css', :href => @css)
+      else
+        @h.link(:rel => 'stylesheet', :type =>'text/css', :href => File.join(`pwd`.chomp, @css))
+      end
     end
   end
   
@@ -282,11 +298,21 @@ class HtmlFormRenderer
   def insert_js
     if (@js.class == Array)
       @js.each do |file|
-        @h.script(:type => 'text/javascript', :src => file) do
+        if !(file =~ /^.+\//)   # Non relative path
+          @h.script(:type => 'text/javascript', :src => file) do
+          end
+        else
+          @h.script(:type => 'text/javascript', :src => File.join(`pwd`.chomp, file)) do
+          end
         end
       end
     else
-      @h.script(:type => 'text/javascript', :src => @js) do
+      if !(@js =~ /^.+\//)
+        @h.script(:type => 'text/javascript', :src => @js) do
+        end
+      else
+        @h.script(:type => 'text/javascript', :src => File.join(`pwd`.chomp, @js)) do
+        end
       end
     end
   end
