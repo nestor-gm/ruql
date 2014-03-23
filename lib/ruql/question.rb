@@ -21,7 +21,7 @@ class Question
   end
 
   def answer(text, opts={})
-    @answers << Answer.new(text, correct=true, opts[:explanation])
+    @answers << Answer.new(text, correct=true, opts[:explanation] || @default_explanation)
   end
 
   def distractor(text, opts={})

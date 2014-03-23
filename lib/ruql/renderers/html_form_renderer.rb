@@ -127,9 +127,18 @@ class HtmlFormRenderer
     render_question_text(q, idx) do
       # Store answers for question-idx
       answer = q.answers[0]
-      answers = (answer.answer_text.kind_of?(Array) ? answer.answer_text : [answer.answer_text])
-      id_answer = 1
+      distractor = q.answers[1..-1]
+      distractors = []
       
+      answers = (answer.answer_text.kind_of?(Array) ? answer.answer_text : [answer.answer_text])
+      
+      if (!distractor.empty?)
+        distractor.each do |d|
+          distractors << d
+        end
+      end
+      
+      id_answer = 1
       answers.each do |a|
         if (a.class == Regexp)
           ans = a.source
@@ -147,6 +156,29 @@ class HtmlFormRenderer
                                                                                     :explanation => answer.explanation, :type => type}
         id_answer += 1
       end
+      
+      id_distractor = 2
+      if (!distractor.empty?)
+        distractors.each_index do |i|
+          disText = distractors[i].answer_text
+          if (disText.class == Regexp)
+            dis = disText.source
+            type = 'Regexp'
+            [0, -1].each {|index| dis.insert(index, '/')}
+          elsif (disText.class == String)
+            dis = disText.downcase
+            type = 'String'
+          else
+            dis = disText
+            type = 'Fixnum'
+          end
+          
+          @data[:"question-#{idx}"][:answers]["qfi#{idx + 1}-#{id_distractor}".to_sym] = {:answer_text => dis, :correct => distractors[i].correct, 
+                                                                                          :explanation => distractors[i].explanation, :type => type}
+          id_distractor += 1
+        end
+      end
+      
     end
   end
 
@@ -332,11 +364,17 @@ class HtmlFormRenderer
             if (id[r] == true)
               input.attr('class', 'fillin correct');
             else { 
-              if (id[r] == false)
+              if ((id[r] == false) || (id[r] != "n/a"))
                 input.attr('class', 'fillin incorrect');
             }
-            if (explanation != null)
-              $("div[id ~= " + r + "r" + "]").html("Explanation: " + explanation);
+            if ((id[r] != true) && (id[r] != false) && (id[r] != "n/a")) {
+              if (explanation[id[r].toString()] != null)
+                $("div[id ~= " + r + "r" + "]").html(" " + explanation[id[r].toString()]);
+            }
+            else {
+              if (explanation[r] != null)
+                $("div[id ~= " + r + "r" + "]").html(" " + explanation[r]);
+            }
           }
         }
       }
@@ -350,9 +388,9 @@ class HtmlFormRenderer
         }
         else if (typeQuestion == 1) {
           size = 0;
-          for (y in question['answers']) {
-            size += 1;
-          }
+          for (y in question['answers'])
+            if (question['answers'][y]['correct'] == true)
+              size += 1;
           
           $("#" + id).append("<strong class=mark> " + ((question['points'] / size) * numberCorrects).toFixed(2) + "/" + question['points'].toFixed(2) + " points</strong></br></br>");
         }
@@ -362,6 +400,7 @@ class HtmlFormRenderer
             if (question['answers'][y]['correct'] == true)
               totalCorrects += 1;
           }
+          
           correctAnswerPoints = question['points'] / totalCorrects;
           penalty = correctAnswerPoints * numberIncorrects;
           mark = (correctAnswerPoints * numberCorrects) - penalty;
@@ -373,21 +412,21 @@ class HtmlFormRenderer
         }
       }
       
-      function checkFillin(correctAnswers, userAnswers, typeCorrection) {
+      function checkFillin(correctAnswers, userAnswers, distractorAnswers, typeCorrection) {
         correction = {};
         checkedAnswers = {};
-
+        
         if (typeCorrection == 0) {          // Order doesn't matter
           for (u in userAnswers) {
             if (userAnswers[u] != undefined) {    // No empty field
-              matched = false;
+              matchedCorrect = false;
               for (y in correctAnswers) {
                 if (checkAnswers[u] == undefined) {
-                  if ((typeof(correctAnswers[y]) == "string") || (typeof(correctAnswers[y] == "number"))) {    // Answer is a String or a Number
+                  if ((typeof(correctAnswers[y]) == "string") || (typeof(correctAnswers[y]) == "number")) {    // Answer is a String or a Number
                     if (userAnswers[u] == correctAnswers[y]) {
                       correction[u] = true;
                       checkedAnswers[u] = userAnswers[u];
-                      matched = true;
+                      matchedCorrect = true;
                       break;
                     }
                   }
@@ -395,13 +434,13 @@ class HtmlFormRenderer
                     if (userAnswers[u].match(correctAnswers[y])) {
                       correction[u] = true;
                       checkedAnswers[u] = userAnswers[u];
-                      matched = true;
+                      matchedCorrect = true;
                       break;
                     }
                   }
                 }
               }
-              if (!matched)
+              if (!matchedCorrect)
                 correction[u] = false;
             }
             else
@@ -411,7 +450,7 @@ class HtmlFormRenderer
         else {                            // Order matters
           for (u in userAnswers) {
             if (userAnswers[u] != undefined) {
-              if (typeof(correctAnswers[u] == "string")) {
+              if ((typeof(correctAnswers[u]) == "string") || (typeof(correctAnswers[u]) == "number")) {
                 if (userAnswers[u] == correctAnswers[u])
                   correction[u] = true;
                 else
@@ -428,6 +467,23 @@ class HtmlFormRenderer
               correction[u] = "n/a";
           }
         }
+        
+        if (Object.keys(userAnswers).length == 1) {
+          for (u in userAnswers) {
+            if (correction[u] == false) {
+              for (y in distractorAnswers) {
+              if ((typeof(distractorAnswers[y]) == "string") || (typeof(distractorAnswers[y]) == "number")) {
+                  if (userAnswers[u] == distractorAnswers[y])
+                    correction[u] = "distractor";
+                }
+                else {
+                  if (userAnswers[u].match(distractorAnswers[y]))
+                    correction[u] = y.toString();
+                }
+              }
+            }
+          }
+        }
         return correction;
       }
       
@@ -440,17 +496,28 @@ class HtmlFormRenderer
             
             if (answers.attr('class') == "fillin") {
               correctAnswers = {};
-              explanation = "";
+              distractorAnswers = {};
+              explanation = {};
               stringAnswer = false;
               
               for (ans in data[x.toString()]['answers']) {
-                if (data[x.toString()]['answers'][ans]['type'] == "Regexp")
-                  correctAnswers[ans.toString()] = RegExp(data[x.toString()]['answers'][ans]['answer_text'].split('/').join(''));
-                else { // String
-                  correctAnswers[ans.toString()] = data[x.toString()]['answers'][ans]['answer_text'];
-                  stringAnswer = true;
+                if (data[x.toString()]['answers'][ans]['correct'] == true) {
+                  if (data[x.toString()]['answers'][ans]['type'] == "Regexp")
+                    correctAnswers[ans.toString()] = RegExp(data[x.toString()]['answers'][ans]['answer_text'].split('/').join(''));
+                  else { // String or Number
+                    correctAnswers[ans.toString()] = data[x.toString()]['answers'][ans]['answer_text'];
+                    stringAnswer = true;
+                  }
                 }
-                explanation = data[x.toString()]['answers'][ans]['explanation'];
+                else {
+                  if (data[x.toString()]['answers'][ans]['type'] == "Regexp")
+                    distractorAnswers[ans.toString()] = RegExp(data[x.toString()]['answers'][ans]['answer_text'].split('/').join(''));
+                  else {// String or Number
+                    distractorAnswers[ans.toString()] = data[x.toString()]['answers'][ans]['answer_text'];
+                    stringAnswer = true;
+                  }
+                }
+                explanation[ans] = data[x.toString()]['answers'][ans]['explanation'];
               }
               
               userAnswers = {};
@@ -465,9 +532,9 @@ class HtmlFormRenderer
               }
               
               if (data[x.toString()]['order'] == false)
-                results = checkFillin(correctAnswers, userAnswers, 0);
+              results = checkFillin(correctAnswers, userAnswers, distractorAnswers, 0);
               else
-                results = checkFillin(correctAnswers, userAnswers, 1);
+              results = checkFillin(correctAnswers, userAnswers, distractorAnswers, 1);
                 
               allEmpty = true;
               nCorrects = 0;
