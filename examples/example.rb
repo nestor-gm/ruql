@@ -1,10 +1,12 @@
 quiz 'Example quiz' do
- 
-  fill_in :points => 2 do
-    text 'The capital of California is ---'
-    answer /^\s*[sS]acramento\s*$/
-  end
 
+  fill_in :points => 2 do
+    text 'The visionary founder of Apple is ---'
+    comment 'Question too easy'
+    answer /^ste(ve|phen)\s+jobs$/
+    distractor /^steve\s+wozniak/, :explanation => 'Almost, but not quite.'
+  end
+  
   fill_in do
     text 'The --- brown fox jumped over the lazy ---'
     answer [/fox/, /dog/], :explanation => 'This sentence contains all of the letters of the English Alphabet'
@@ -18,12 +20,6 @@ quiz 'Example quiz' do
   fill_in do
     text '2 + 2 = ---'
     answer 4
-  end
-  
-  fill_in do
-    text 'The visionary founder of Apple is ---'
-    answer /^ste(ve|phen)\s+jobs$/
-    distractor /^steve\s+wozniak/, :explanation => 'Almost, but not quite.'
   end
   
   fill_in :points => 2 do

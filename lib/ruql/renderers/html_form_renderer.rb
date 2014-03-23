@@ -204,9 +204,11 @@ class HtmlFormRenderer
           
           # Hash with questions and all posibles answers
           if (question.class == FillIn)
-            @data[html_args[:id].to_sym] = {:question_text => questionText, :answers => {}, :points => question.points, :order => question.order}
+            @data[html_args[:id].to_sym] = {:question_text => questionText, :answers => {}, :points => question.points, 
+                                            :order => question.order, :question_comment => question.question_comment}
           else
-            @data[html_args[:id].to_sym] = {:question_text => questionText, :answers => {}, :points => question.points}
+            @data[html_args[:id].to_sym] = {:question_text => questionText, :answers => {}, :points => question.points,
+                                            :question_comment => question.question_comment}
           end
           
           if (question.raw?)
@@ -220,6 +222,10 @@ class HtmlFormRenderer
               end 
             end
           end
+          @h.p :class => 'comment' do |p|
+            p << "<br></br>" if ((question.class != FillIn) && (!question.raw?))
+            p << "Comment: " + question.question_comment + "<br></br>"
+          end if (question.question_comment != "")
       end
       yield # render answers
     end
