@@ -18,19 +18,37 @@ quiz 'Example quiz' do
   end
   
   fill_in do
-    text '2 + 2 = ---'
-    answer 4
+    text %q{
+      Calculate the determinant of this matrix:
+      $$\mathbf{A} = \begin{vmatrix} 
+      1 & 3 \\\\ 
+      2 & 4 
+      \end{vmatrix}$$
+      <br/>
+      ---
+    }
+    answer -1
   end
   
-  fill_in :points => 2 do
+  fill_in do
     text %q{
-      When $a \ne 0$, there are two solutions to \(ax^2 + bx + c = 0\)
-      and they are
-      $$x = {-b \pm \sqrt{b^2-4ac} \over 2a}.$$
-      <br/>
-      The capital of <i>California</i> is ---
+      Solve: 
+      $$\binom{n}{k} = \frac{n!}{k!(n-k)!}$$
+      when n = 5 and k = 2:
+      ---
     }
-    answer /^\s*[sS]acramento\s*$/
+    explanation "Not exactly"
+    answer 10
+    distractor 9
+  end
+  
+  fill_in do
+    text %q{
+      When x = 2, the solution of $\sqrt{3x+3}+(1+x)^2$ is:
+      ---
+    }
+    answer 12
+    distractor 11, :explanation => "Try again!"
   end
   
   choice_answer :randomize => true do

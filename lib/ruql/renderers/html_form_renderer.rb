@@ -189,17 +189,22 @@ class HtmlFormRenderer
         .join(' ')
     }
     @h.li html_args  do
-      @h.div :class => 'text' do
+      @h.div :class => 'text' do |d|
         questionText = question.question_text.clone
         qtext = "[#{question.points} point#{'s' if question.points>1}] " <<
           ('Select ALL that apply: ' if question.multiple).to_s <<
           if question.class == FillIn
             question.question_text.chop! if question.question_text[-1] == '.'
             nBoxes = question.question_text.split('---').length
+            nBoxes -= 1 if (question.question_text.split('---')[-1] =~ /^[\s|\n]+$/)
             nBoxes.times { |i| question.question_text.sub!(/\---/, "<input type=text id=qfi#{index + 1}-#{i + 1} class=fillin></input>") }
             question.question_text << "<div id=qfi#{index + 1}-#{nBoxes}r></div></br></br>"
           else 
-            question.question_text
+            if (question.raw?)
+              question.question_text
+            else
+              question.question_text << "<br></br>"
+            end
           end
           
           # Hash with questions and all posibles answers
@@ -212,14 +217,10 @@ class HtmlFormRenderer
           end
           
           if (question.raw?)
-            @h.p do |p|
-              p << qtext
-            end
+              d << qtext
           else
             qtext.each_line do |p|
-              @h.p do |par|
-                par << p # preserves HTML markup
-              end 
+              d << p # preserves HTML markup
             end
           end
           @h.p :class => 'comment' do |p|
@@ -399,9 +400,10 @@ class HtmlFormRenderer
               if ((id[r] == false) || (id[r] != "n/a"))
                 input.attr('class', 'fillin incorrect');
             }
+            
             if ((id[r] != true) && (id[r] != false) && (id[r] != "n/a")) {
               if (explanation[id[r].toString()] != null)
-                $("div[id ~= " + r + "r" + "]").html(" " + explanation[id[r].toString()]);
+                $("div[id ~= " + r.toString() + "r" + "]").html(" " + explanation[id[r].toString()]);
             }
             else {
               if (explanation[r] != null)
@@ -504,9 +506,9 @@ class HtmlFormRenderer
           for (u in userAnswers) {
             if (correction[u] == false) {
               for (y in distractorAnswers) {
-              if ((typeof(distractorAnswers[y]) == "string") || (typeof(distractorAnswers[y]) == "number")) {
+                if ((typeof(distractorAnswers[y]) == "string") || (typeof(distractorAnswers[y]) == "number")) {
                   if (userAnswers[u] == distractorAnswers[y])
-                    correction[u] = "distractor";
+                    correction[u] = y.toString();
                 }
                 else {
                   if (userAnswers[u].match(distractorAnswers[y]))
@@ -564,9 +566,9 @@ class HtmlFormRenderer
               }
               
               if (data[x.toString()]['order'] == false)
-              results = checkFillin(correctAnswers, userAnswers, distractorAnswers, 0);
+                results = checkFillin(correctAnswers, userAnswers, distractorAnswers, 0);
               else
-              results = checkFillin(correctAnswers, userAnswers, distractorAnswers, 1);
+                results = checkFillin(correctAnswers, userAnswers, distractorAnswers, 1);
                 
               allEmpty = true;
               nCorrects = 0;
