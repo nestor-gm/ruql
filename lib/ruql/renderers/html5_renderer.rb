@@ -1,6 +1,7 @@
 class Html5Renderer
   require 'builder'
   require 'erb'
+  ENV['environment'] ||= 'production'
   
   attr_reader :output
 
@@ -9,7 +10,11 @@ class Html5Renderer
     @show_solutions = options.delete('s') || options.delete('solutions')
     @template = options.delete('t') ||
       options.delete('template') ||
-      File.join(Gem.loaded_specs['ruql'].full_gem_path, 'templates/html5.html.erb')
+      if (ENV['test'] == 'production')
+        File.join(Gem.loaded_specs['ruql'].full_gem_path, 'templates/html5.html.erb')
+      else
+        'templates/html5.html.erb'
+      end
     @output = ''
     @quiz = quiz
     @h = Builder::XmlMarkup.new(:target => @output, :indent => 2)
@@ -18,6 +23,7 @@ class Html5Renderer
   def render_quiz
     if @template
       render_with_template do
+        @h.link(:rel => 'stylesheet', :type =>'text/css', :href=>@css) if ENV['environment'] == 'test'
         render_questions
         @output
       end
@@ -38,6 +44,7 @@ class Html5Renderer
   def render_with_template
     # local variables that should be in scope in the template 
     quiz = @quiz
+    title = "Quiz" unless @title
     # the ERB template includes 'yield' where questions should go:
     output = ERB.new(IO.read(File.expand_path @template)).result(binding)
     @output = output

@@ -1,4 +1,5 @@
 require 'spec_helper'
+ENV['environment'] = 'test'
 
 describe Html5Renderer do
   describe 'when created' do
