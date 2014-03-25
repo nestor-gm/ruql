@@ -257,36 +257,20 @@ class HtmlFormRenderer
   def insert_html(h)
     if (@html.class == Array)
       @html.each do |file|
-        if !(file =~ /^.+\//)
-          h << File.read(file)
-        else
-          h << File.read(File.join(`pwd`.chomp, file))
-        end
+        h << File.read(File.expand_path(file))
       end
     else
-      if !(@html =~ /^.+\//)
-        h << File.read(@html)
-      else
-        h << File.read(File.join(`pwd`.chomp, @html))
-      end
+      h << File.read(File.expand_path(@html))
     end
   end
   
   def insert_css
     if (@css.class == Array)
       @css.each do |file|
-        if !(file =~ /^.+\//)
-          @h.link(:rel => 'stylesheet', :type =>'text/css', :href => file) 
-        else
-          @h.link(:rel => 'stylesheet', :type =>'text/css', :href => File.join(`pwd`.chomp, file))
-        end
+        @h.link(:rel => 'stylesheet', :type =>'text/css', :href => File.expand_path(file))
       end
     else
-      if !(@css =~ /^.+\//)
-        @h.link(:rel => 'stylesheet', :type =>'text/css', :href => @css)
-      else
-        @h.link(:rel => 'stylesheet', :type =>'text/css', :href => File.join(`pwd`.chomp, @css))
-      end
+      @h.link(:rel => 'stylesheet', :type =>'text/css', :href => File.expand_path(@css))
     end
   end
   
@@ -302,21 +286,11 @@ class HtmlFormRenderer
   def insert_js
     if (@js.class == Array)
       @js.each do |file|
-        if !(file =~ /^.+\//)   # Non relative path
-          @h.script(:type => 'text/javascript', :src => file) do
+          @h.script(:type => 'text/javascript', :src => File.expand_path(file)) do
           end
-        else
-          @h.script(:type => 'text/javascript', :src => File.join(`pwd`.chomp, file)) do
-          end
-        end
       end
     else
-      if !(@js =~ /^.+\//)
-        @h.script(:type => 'text/javascript', :src => @js) do
-        end
-      else
-        @h.script(:type => 'text/javascript', :src => File.join(`pwd`.chomp, @js)) do
-        end
+      @h.script(:type => 'text/javascript', :src => File.expand_path(@js)) do
       end
     end
   end
