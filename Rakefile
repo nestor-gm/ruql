@@ -5,6 +5,11 @@ task :ruql do
   sh "ruby -Ilib bin/ruql examples/example.rb HtmlForm > examples/file.html"
 end
 
+desc "Run Ruql with HtmlForm renderer (with a template)"
+task :template do
+  sh "ruby -Ilib bin/ruql examples/example.rb HtmlForm -t templates/htmlform.html.erb > examples/output.html"
+end
+
 desc "Run Ruql with HtmlForm renderer and HTML embed (with JavaScript validation)"
 task :html do
   sh "ruby -Ilib bin/ruql examples/example.rb HtmlForm -h examples/mathjax.html > examples/file.html"

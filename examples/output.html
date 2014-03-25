@@ -1,342 +1,158 @@
-class HtmlFormRenderer
-  require 'builder'
-  require 'erb'
-  require 'json'
-  
-  attr_reader :output
-
-  def initialize(quiz,options={})
-    @css = options.delete('c') || options.delete('css')
-    @js = options.delete('j') || options.delete('js')
-    @html = options.delete('h') || options.delete('html')
-    @show_solutions = options.delete('s') || options.delete('solutions')
-    @template = options.delete('t') ||
-      options.delete('template')
-    @output = ''
-    @quiz = quiz
-    @h = Builder::XmlMarkup.new(:target => @output, :indent => 2)
-    @data = {}
-  end
-
-  def render_quiz
-    if @template
-      render_with_template do
-        render_questions
-        @validation_js = insert_defaultJS
-        @output
-      end
-    else
-      @h.html do
-        @h.head do |h|
-          @h.title @quiz.title
-          insert_resources(h)
-        end
-        @h.body do
-          render_questions
-          @h.script(:type => 'text/javascript') do |j|
-            j << insert_defaultJS
-          end
-        end
-      end
-    end
-    self
-  end
-
-  def render_with_template
-    # local variables that should be in scope in the template 
-    quiz = @quiz
-    title = "Quiz" unless @title
-    # the ERB template includes 'yield' where questions should go:
-    output = ERB.new(IO.read(File.expand_path @template)).result(binding)
-    @output = output
-  end
-    
-  def render_questions
-    render_random_seed
-    @h.form(:id => 'form') do
-      @h.ol :class => 'questions' do
-        @quiz.questions.each_with_index do |q,i|
-          case q
-          when SelectMultiple then render_select_multiple(q,i)
-          when MultipleChoice, TrueFalse then render_multiple_choice(q,i)
-          when FillIn then render_fill_in(q, i)
-          else
-            raise "Unknown question type: #{q}"
-          end
-        end
-      end
-      insert_button('Submit')
-      insert_button('Reset')
-    end
-  end
-
-
-  def render_multiple_choice(q,index)
-    render_question_text(q, index) do
-      answers =
-        if q.class == TrueFalse then q.answers.sort.reverse # True always first
-        elsif q.randomize then q.answers.sort_by { rand }
-        else q.answers
-        end
-      @h.ol :class => 'answers' do
-        id_answer = 1
-        answers.each do |answer|
-          # Store answers for question-index
-          @data[:"question-#{index}"][:answers]["qmc#{index + 1}-#{id_answer}".to_sym] = {:answer_text => answer.answer_text, :correct => answer.correct, 
-                                                                                          :explanation => answer.explanation} 
-                  
-          @h.input(:type => 'radio', :id => "qmc#{index + 1}-#{id_answer}", :name => "qmc#{index + 1}", :class => 'select') { |p| 
-            p << answer.answer_text
-            p << "<br class=qmc#{index + 1}-#{id_answer}br>"
-          }
-          @h.div(:id => "qmc#{index + 1}-#{id_answer}r") do
-          end
-          id_answer += 1
-        end
-        @h.br
-      end
-    end
-    self
-  end
-
-  def render_select_multiple(q,index)
-    render_question_text(q, index) do
-      answers =
-      if q.randomize then q.answers.sort_by { rand }
-      else q.answers
-      end
-      @h.ol :class => 'answers' do
-        id_answer = 1
-        answers.each do |answer|
-          # Store answers for question-index
-          @data[:"question-#{index}"][:answers]["qsm#{index + 1}-#{id_answer}".to_sym] = {:answer_text => answer.answer_text, :correct => answer.correct, 
-                                                                                          :explanation => answer.explanation}
-        
-          @h.input(:type => 'checkbox', :id => "qsm#{index + 1}-#{id_answer}", :class => 'check') { |p| 
-            p << answer.answer_text
-            p << "<br class=qsm#{index + 1}-#{id_answer}br>"
-          }
-          @h.div(:id => "qsm#{index + 1}-#{id_answer}r") do
-          end
-          id_answer += 1
-        end
-        @h.br
-      end
-    end
-    self
-  end
-  
-  def render_fill_in(q, idx)
-    render_question_text(q, idx) do
-      # Store answers for question-idx
-      answer = q.answers[0]
-      distractor = q.answers[1..-1]
-      distractors = []
-      
-      answers = (answer.answer_text.kind_of?(Array) ? answer.answer_text : [answer.answer_text])
-      
-      if (!distractor.empty?)
-        distractor.each do |d|
-          distractors << d
-        end
-      end
-      
-      id_answer = 1
-      answers.each do |a|
-        if (a.class == Regexp)
-          ans = a.source
-          type = 'Regexp'
-          [0, -1].each {|index| ans.insert(index, '/')}
-        elsif (a.class == String)
-          ans = a.downcase
-          type = 'String'
-        else
-          ans = a
-          type = 'Fixnum'
-        end
-        
-        @data[:"question-#{idx}"][:answers]["qfi#{idx + 1}-#{id_answer}".to_sym] = {:answer_text => ans, :correct => answer.correct, 
-                                                                                    :explanation => answer.explanation, :type => type}
-        id_answer += 1
-      end
-      
-      id_distractor = 2
-      if (!distractor.empty?)
-        distractors.each_index do |i|
-          disText = distractors[i].answer_text
-          if (disText.class == Regexp)
-            dis = disText.source
-            type = 'Regexp'
-            [0, -1].each {|index| dis.insert(index, '/')}
-          elsif (disText.class == String)
-            dis = disText.downcase
-            type = 'String'
-          else
-            dis = disText
-            type = 'Fixnum'
-          end
-          
-          @data[:"question-#{idx}"][:answers]["qfi#{idx + 1}-#{id_distractor}".to_sym] = {:answer_text => dis, :correct => distractors[i].correct, 
-                                                                                          :explanation => distractors[i].explanation, :type => type}
-          id_distractor += 1
-        end
-      end
-      
-    end
-  end
-
-  def render_question_text(question,index)
-    html_args = {
-      :id => "question-#{index}",
-      :class => ['question', question.class.to_s.downcase, (question.multiple ? 'multiple' : '')]
-        .join(' ')
-    }
-    @h.li html_args  do
-      @h.div :class => 'text' do |d|
-        questionText = question.question_text.clone
-        qtext = "[#{question.points} point#{'s' if question.points>1}] " <<
-          ('Select ALL that apply: ' if question.multiple).to_s <<
-          if question.class == FillIn
-            question.question_text.chop! if question.question_text[-1] == '.'
-            nBoxes = question.question_text.split('---').length
-            nBoxes -= 1 if (question.question_text.split('---')[-1] =~ /^[\s|\n]+$/)
-            nBoxes.times { |i| question.question_text.sub!(/\---/, "<input type=text id=qfi#{index + 1}-#{i + 1} class=fillin></input>") }
-            question.question_text << "<div id=qfi#{index + 1}-#{nBoxes}r></div></br></br>"
-          else 
-            if (question.raw?)
-              question.question_text
-            else
-              question.question_text << "<br></br>"
-            end
-          end
-          
-          # Hash with questions and all posibles answers
-          if (question.class == FillIn)
-            @data[html_args[:id].to_sym] = {:question_text => questionText, :answers => {}, :points => question.points, 
-                                            :order => question.order, :question_comment => question.question_comment}
-          else
-            @data[html_args[:id].to_sym] = {:question_text => questionText, :answers => {}, :points => question.points,
-                                            :question_comment => question.question_comment}
-          end
-          
-          if (question.raw?)
-              d << qtext
-          else
-            qtext.each_line do |p|
-              d << p # preserves HTML markup
-            end
-          end
-          @h.p :class => 'comment' do |p|
-            p << "<br></br>" if ((question.class != FillIn) && (!question.raw?))
-            p << "Comment: " + question.question_comment + "<br></br>"
-          end if (question.question_comment != "")
-      end
-      yield # render answers
-    end
-    self
-  end
-
-  def render_random_seed
-    @h.comment! "Seed: #{@quiz.seed}"
-  end
-  
-  def insert_button(name)
-    @h.button(:type => 'button', :id => name.downcase) do |b|
-      b << name
-    end
-  end
-  
-  def insert_resources(h)
-    insert_defaultCSS
-    insert_html(h) if @html
-    insert_css if @css
-    insert_jQuery(h)
-    insert_js if @js
-  end
-  
-  def insert_html(h)
-    if (@html.class == Array)
-      @html.each do |file|
-        if !(file =~ /^.+\//)
-          h << File.read(file)
-        else
-          h << File.read(File.join(`pwd`.chomp, file))
-        end
-      end
-    else
-      if !(@html =~ /^.+\//)
-        h << File.read(@html)
-      else
-        h << File.read(File.join(`pwd`.chomp, @html))
-      end
-    end
-  end
-  
-  def insert_css
-    if (@css.class == Array)
-      @css.each do |file|
-        if !(file =~ /^.+\//)
-          @h.link(:rel => 'stylesheet', :type =>'text/css', :href => file) 
-        else
-          @h.link(:rel => 'stylesheet', :type =>'text/css', :href => File.join(`pwd`.chomp, file))
-        end
-      end
-    else
-      if !(@css =~ /^.+\//)
-        @h.link(:rel => 'stylesheet', :type =>'text/css', :href => @css)
-      else
-        @h.link(:rel => 'stylesheet', :type =>'text/css', :href => File.join(`pwd`.chomp, @css))
-      end
-    end
-  end
-  
-  def insert_jQuery(h)
-    @h.script(:type => 'text/javascript', :src => "http://code.jquery.com/jquery-2.1.0.min.js") do
-    end
-    h << "<!--[if lt IE 8]>"
-    @h.script(:type => 'text/javascript', :src => "http://code.jquery.com/jquery-1.11.0.min.js") do
-    end
-    h << "<![endif]-->"
-  end
-  
-  def insert_js
-    if (@js.class == Array)
-      @js.each do |file|
-        if !(file =~ /^.+\//)   # Non relative path
-          @h.script(:type => 'text/javascript', :src => file) do
-          end
-        else
-          @h.script(:type => 'text/javascript', :src => File.join(`pwd`.chomp, file)) do
-          end
-        end
-      end
-    else
-      if !(@js =~ /^.+\//)
-        @h.script(:type => 'text/javascript', :src => @js) do
-        end
-      else
-        @h.script(:type => 'text/javascript', :src => File.join(`pwd`.chomp, @js)) do
-        end
-      end
-    end
-  end
-  
-  def insert_defaultCSS
-    @h.style do |s|
-      s << <<-CSS
+<html>
+  <head>
+    <title>Example quiz</title>
+    <style type="text/css" media="all">
       div, p {display:inline;}
       strong.correct {color:rgb(0,255,0);}
       strong.incorrect {color:rgb(255,0,0);}
       strong.mark {color:rgb(255,128,0);}
       input.correct {color:rgb(0,255,0); font-weight: bold;}
       input.incorrect {color:rgb(255,0,0); font-weight: bold;}
-      CSS
-    end
-  end
- 
-  def insert_defaultJS
-    <<-JS
-      data = #{@data.to_json};
+    </style>
+    <script type="text/javascript" src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
+    <!--[if lt IE 8]>
+      <script type="text/javascript" src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+    <![endif]-->
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+    </script>
+  </head>
+  <body>
+    <h1>Example quiz</h1>
+    <!-- Seed: 319535825724478486879214174635008618305 -->
+<form id="form">
+  <ol class="questions">
+    <li id="question-0" class="question fillin ">
+      <div class="text">
+[2 points] The visionary founder of Apple is <input type=text id=qfi1-1 class=fillin></input><div id=qfi1-1r></div></br></br>        <p class="comment">
+Comment: Question too easy<br></br>        </p>
+      </div>
+    </li>
+    <li id="question-1" class="question fillin ">
+      <div class="text">
+[1 point] The <input type=text id=qfi2-1 class=fillin></input> brown fox jumped over the lazy <input type=text id=qfi2-2 class=fillin></input><div id=qfi2-2r></div></br></br>      </div>
+    </li>
+    <li id="question-2" class="question fillin ">
+      <div class="text">
+[1 point] The three stooges are <input type=text id=qfi3-1 class=fillin></input>, <input type=text id=qfi3-2 class=fillin></input>, and <input type=text id=qfi3-3 class=fillin></input><div id=qfi3-3r></div></br></br>      </div>
+    </li>
+    <li id="question-3" class="question fillin ">
+      <div class="text">
+[1 point] 
+      Calculate the determinant of this matrix:
+      $$\mathbf{A} = \begin{vmatrix} 
+      1 & 3 \\ 
+      2 & 4 
+      \end{vmatrix}$$
+      <br/>
+      <input type=text id=qfi4-1 class=fillin></input>
+    <div id=qfi4-1r></div></br></br>      </div>
+    </li>
+    <li id="question-4" class="question fillin ">
+      <div class="text">
+[1 point] 
+      Solve: 
+      $$\binom{n}{k} = \frac{n!}{k!(n-k)!}$$
+      when n = 5 and k = 2:
+      <input type=text id=qfi5-1 class=fillin></input>
+    <div id=qfi5-1r></div></br></br>      </div>
+    </li>
+    <li id="question-5" class="question fillin ">
+      <div class="text">
+[1 point] 
+      When x = 2, the solution of $\sqrt{3x+3}+(1+x)^2$ is:
+      <input type=text id=qfi6-1 class=fillin></input>
+    <div id=qfi6-1r></div></br></br>      </div>
+    </li>
+    <li id="question-6" class="question multiplechoice ">
+      <div class="text">
+[1 point] What is the largest US state?<br></br>      </div>
+      <ol class="answers">
+        <input type="radio" id="qmc7-1" name="qmc7" class="select">
+Texas<br class=qmc7-1br>        </input>
+        <div id="qmc7-1r">
+        </div>
+        <input type="radio" id="qmc7-2" name="qmc7" class="select">
+Hawaii<br class=qmc7-2br>        </input>
+        <div id="qmc7-2r">
+        </div>
+        <input type="radio" id="qmc7-3" name="qmc7" class="select">
+Alaska<br class=qmc7-3br>        </input>
+        <div id="qmc7-3r">
+        </div>
+        <br/>
+      </ol>
+    </li>
+    <li id="question-7" class="question selectmultiple multiple">
+      <div class="text">
+[1 point] Select ALL that apply: Which are American political parties?<br></br>      </div>
+      <ol class="answers">
+        <input type="checkbox" id="qsm8-1" class="check">
+Democrats<br class=qsm8-1br>        </input>
+        <div id="qsm8-1r">
+        </div>
+        <input type="checkbox" id="qsm8-2" class="check">
+Republicans<br class=qsm8-2br>        </input>
+        <div id="qsm8-2r">
+        </div>
+        <input type="checkbox" id="qsm8-3" class="check">
+Greens<br class=qsm8-3br>        </input>
+        <div id="qsm8-3r">
+        </div>
+        <input type="checkbox" id="qsm8-4" class="check">
+Tories<br class=qsm8-4br>        </input>
+        <div id="qsm8-4r">
+        </div>
+        <input type="checkbox" id="qsm8-5" class="check">
+Social Democrats<br class=qsm8-5br>        </input>
+        <div id="qsm8-5r">
+        </div>
+        <br/>
+      </ol>
+    </li>
+    <li id="question-8" class="question truefalse ">
+      <div class="text">
+[1 point] True or False: The earth is flat.<br></br>      </div>
+      <ol class="answers">
+        <input type="radio" id="qmc9-1" name="qmc9" class="select">
+True<br class=qmc9-1br>        </input>
+        <div id="qmc9-1r">
+        </div>
+        <input type="radio" id="qmc9-2" name="qmc9" class="select">
+False<br class=qmc9-2br>        </input>
+        <div id="qmc9-2r">
+        </div>
+        <br/>
+      </ol>
+    </li>
+    <li id="question-9" class="question multiplechoice ">
+      <div class="text">
+[1 point] What does the following code do:
+    <pre>
+    puts "Hello world!"
+    </pre>
+          </div>
+      <ol class="answers">
+        <input type="radio" id="qmc10-1" name="qmc10" class="select">
+Throws an exception<br class=qmc10-1br>        </input>
+        <div id="qmc10-1r">
+        </div>
+        <input type="radio" id="qmc10-2" name="qmc10" class="select">
+Prints a friendly message<br class=qmc10-2br>        </input>
+        <div id="qmc10-2r">
+        </div>
+        <br/>
+      </ol>
+    </li>
+  </ol>
+  <button type="button" id="submit">
+Submit  </button>
+  <button type="button" id="reset">
+Reset  </button>
+</form>
+
+    <script>      data = {"question-0":{"question_text":"The visionary founder of Apple is ---","answers":{"qfi1-1":{"answer_text":"/^ste(ve|phen)\\s+jobs$/","correct":true,"explanation":null,"type":"Regexp"},"qfi1-2":{"answer_text":"/^steve\\s+wozniak/","correct":false,"explanation":"Almost, but not quite.","type":"Regexp"}},"points":2,"order":false,"question_comment":"Question too easy"},"question-1":{"question_text":"The --- brown fox jumped over the lazy ---","answers":{"qfi2-1":{"answer_text":"/fox/","correct":true,"explanation":"This sentence contains all of the letters of the English Alphabet","type":"Regexp"},"qfi2-2":{"answer_text":"/dog/","correct":true,"explanation":"This sentence contains all of the letters of the English Alphabet","type":"Regexp"}},"points":1,"order":false,"question_comment":""},"question-2":{"question_text":"The three stooges are ---, ---, and ---.","answers":{"qfi3-1":{"answer_text":"larry","correct":true,"explanation":null,"type":"String"},"qfi3-2":{"answer_text":"moe","correct":true,"explanation":null,"type":"String"},"qfi3-3":{"answer_text":"curly","correct":true,"explanation":null,"type":"String"}},"points":1,"order":true,"question_comment":""},"question-3":{"question_text":"\n      Calculate the determinant of this matrix:\n      $$\\mathbf{A} = \\begin{vmatrix} \n      1 & 3 \\\\ \n      2 & 4 \n      \\end{vmatrix}$$\n      <br/>\n      ---\n    ","answers":{"qfi4-1":{"answer_text":-1,"correct":true,"explanation":null,"type":"Fixnum"}},"points":1,"order":false,"question_comment":""},"question-4":{"question_text":"\n      Solve: \n      $$\\binom{n}{k} = \\frac{n!}{k!(n-k)!}$$\n      when n = 5 and k = 2:\n      ---\n    ","answers":{"qfi5-1":{"answer_text":10,"correct":true,"explanation":null,"type":"Fixnum"},"qfi5-2":{"answer_text":9,"correct":false,"explanation":"Not exactly","type":"Fixnum"}},"points":1,"order":false,"question_comment":""},"question-5":{"question_text":"\n      When x = 2, the solution of $\\sqrt{3x+3}+(1+x)^2$ is:\n      ---\n    ","answers":{"qfi6-1":{"answer_text":12,"correct":true,"explanation":null,"type":"Fixnum"},"qfi6-2":{"answer_text":11,"correct":false,"explanation":"Try again!","type":"Fixnum"}},"points":1,"order":false,"question_comment":""},"question-6":{"question_text":"What is the largest US state?","answers":{"qmc7-1":{"answer_text":"Texas","correct":false,"explanation":"That's pretty big, but think colder."},"qmc7-2":{"answer_text":"Hawaii","correct":false,"explanation":"Not big enough."},"qmc7-3":{"answer_text":"Alaska","correct":true,"explanation":null}},"points":1,"question_comment":""},"question-7":{"question_text":"Which are American political parties?","answers":{"qsm8-1":{"answer_text":"Democrats","correct":true,"explanation":null},"qsm8-2":{"answer_text":"Republicans","correct":true,"explanation":null},"qsm8-3":{"answer_text":"Greens","correct":true,"explanation":"Yes, they're a party!"},"qsm8-4":{"answer_text":"Tories","correct":false,"explanation":"They're British"},"qsm8-5":{"answer_text":"Social Democrats","correct":false,"explanation":""}},"points":1,"question_comment":""},"question-8":{"question_text":"True or False: The earth is flat.","answers":{"qmc9-1":{"answer_text":"True","correct":false,"explanation":"No, just looks that way"},"qmc9-2":{"answer_text":"False","correct":true,"explanation":null}},"points":1,"question_comment":""},"question-9":{"question_text":"What does the following code do:\n    <pre>\n    puts \"Hello world!\"\n    </pre>\n    ","answers":{"qmc10-1":{"answer_text":"Throws an exception","correct":false,"explanation":"Don't be an idiot."},"qmc10-2":{"answer_text":"Prints a friendly message","correct":true,"explanation":null}},"points":1,"question_comment":""}};
 
       function findCorrectAnswer(idQuestion, questionType) {
         correctIds = [];
@@ -637,6 +453,6 @@ class HtmlFormRenderer
       $("#reset").click(function() {
         window.location.reload();
       });
-      JS
-  end
-end
+</script>
+  </body>
+</html>
