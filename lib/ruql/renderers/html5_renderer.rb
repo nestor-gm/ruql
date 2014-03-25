@@ -23,7 +23,7 @@ class Html5Renderer
   def render_quiz
     if @template
       render_with_template do
-        @h.link(:rel => 'stylesheet', :type =>'text/css', :href=>@css) if ENV['environment'] == 'test'
+        @h.link(:rel => 'stylesheet', :type =>'text/css', :href=> @css) if @css
         render_questions
         @output
       end
