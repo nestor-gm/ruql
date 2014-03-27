@@ -11,11 +11,11 @@ describe HtmlFormRenderer do
     end
     it 'should include CSS link with -c option' do
       rendering_with('c' => 'foo.html').
-        should match /<link rel="stylesheet" type="text\/css" href="foo.html"/
+        should match /<link rel="stylesheet" type="text\/css" href="#{File.expand_path('foo.html')}"/
     end
     it 'should include CSS link with --css option' do
       rendering_with('css' => 'foo.html').
-        should match /<link rel="stylesheet" type="text\/css" href="foo.html"/
+      should match /<link rel="stylesheet" type="text\/css" href="#{File.expand_path('foo.html')}"/
     end
     it 'should use ERB template if directed' do
       rendering_with('template' => File.join(File.dirname(__FILE__),'fixtures','template.html.erb')).
@@ -29,11 +29,11 @@ describe HtmlFormRenderer do
     end
     it 'should include JS link with -j option' do
       rendering_with('j' => 'foo.js').
-      should match /<script type="text\/javascript" src="foo.js"/
+      should match /<script type="text\/javascript" src="#{File.expand_path('foo.js')}"/
     end
     it 'should include JS link with --js option' do
       rendering_with('js' => 'foo.js').
-      should match /<script type="text\/javascript" src="foo.js"/
+      should match /<script type="text\/javascript" src="#{File.expand_path('foo.js')}"/
     end
   end
 
@@ -47,7 +47,7 @@ describe HtmlFormRenderer do
     end
     before :each do
       @atts = {:title => 'My Quiz', :points => 20, :num_questions => 5} 
-      @quiz = mock('quiz', @atts.merge(:questions => []))
+      @quiz = double('quiz', @atts.merge(:questions => []))
     end
     %w(title total_points num_questions).each do |var|
       it "should set '#{var}'" do
