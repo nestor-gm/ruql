@@ -40,6 +40,11 @@ task :mcss do
   sh "ruby -Ilib bin/ruql examples/example.rb HtmlForm -c estilo.css -c estilo.css > examples/file.html"
 end
 
+desc "Run the HtmlForm tests"
+task :test do
+  sh "rspec spec/html_form_renderer_spec.rb"
+end
+
 desc "Install Ruql using RVM"
 task :rvm do
   sh "gem build ruql.gemspec"
