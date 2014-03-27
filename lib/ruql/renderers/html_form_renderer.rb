@@ -96,6 +96,7 @@ class HtmlFormRenderer
         @h.br
       end
     end
+    question_comment(q)
     self
   end
 
@@ -123,6 +124,7 @@ class HtmlFormRenderer
         @h.br
       end
     end
+    question_comment(q)
     self
   end
   
@@ -181,8 +183,8 @@ class HtmlFormRenderer
           id_distractor += 1
         end
       end
-      
     end
+    question_comment(q)
   end
 
   def render_question_text(question,index)
@@ -226,10 +228,6 @@ class HtmlFormRenderer
               d << p # preserves HTML markup
             end
           end
-          @h.p :class => 'comment' do |p|
-            p << "<br></br>" if ((question.class != FillIn) && (!question.raw?))
-            p << "Comment: " + question.question_comment + "<br></br>"
-          end if (question.question_comment != "")
       end
       yield # render answers
     end
@@ -238,6 +236,12 @@ class HtmlFormRenderer
 
   def render_random_seed
     @h.comment! "Seed: #{@quiz.seed}"
+  end
+  
+  def question_comment(q)
+    @h.p :class => 'comment' do |p|
+      p << q.question_comment + "<br></br>"
+    end if (q.question_comment != "")
   end
   
   def insert_button(name)
