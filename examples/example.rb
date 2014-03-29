@@ -3,8 +3,8 @@ quiz 'Example quiz' do
   fill_in :points => 2 do
     text 'The visionary founder of Apple is ---'
     comment 'Question too easy'
-    answer /^ste(ve|phen)\s+jobs$/
-    distractor /^steve\s+wozniak/, :explanation => 'Almost, but not quite.'
+    answer /^ste(ve|phen)\s+jobs$/im
+    distractor /^steve\s+wozniak/i, :explanation => 'Almost, but not quite.'
   end
   
   fill_in do

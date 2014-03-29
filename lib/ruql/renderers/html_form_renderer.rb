@@ -70,7 +70,6 @@ class HtmlFormRenderer
     end
   end
 
-
   def render_multiple_choice(q,index)
     render_question_text(q, index) do
       answers =
@@ -128,6 +127,35 @@ class HtmlFormRenderer
     self
   end
   
+  def type_answer_fill_in(answer, item, idx, id_answer)
+    if (item.class == Regexp)
+      ans = item.source
+      type = 'Regexp'
+      [0, -1].each {|index| ans.insert(index, '/')}
+      opts = item.options
+      case opts
+      when 0
+      when 1, 3
+        ans << 'i'
+      when 4, 6
+        ans << 'm'
+      when 5, 7
+        ans << 'mi'
+      end
+      if ((opts != 0) && (opts != 1) && (opts != 4) && (opts != 5))
+        $stderr.puts "\n*** WARNING *** These RegExps only support i and m options. Other options will be ignored.\n\n"
+      end
+    elsif (item.class == String)
+      ans = item.downcase
+      type = 'String'
+    else
+      ans = item
+      type = 'Fixnum'
+    end
+    @data[:"question-#{idx}"][:answers]["qfi#{idx + 1}-#{id_answer}".to_sym] = {:answer_text => ans, :correct => answer.correct, 
+                                                                                :explanation => answer.explanation, :type => type}
+  end
+  
   def render_fill_in(q, idx)
     render_question_text(q, idx) do
       # Store answers for question-idx
@@ -145,41 +173,14 @@ class HtmlFormRenderer
       
       id_answer = 1
       answers.each do |a|
-        if (a.class == Regexp)
-          ans = a.source
-          type = 'Regexp'
-          [0, -1].each {|index| ans.insert(index, '/')}
-        elsif (a.class == String)
-          ans = a.downcase
-          type = 'String'
-        else
-          ans = a
-          type = 'Fixnum'
-        end
-        
-        @data[:"question-#{idx}"][:answers]["qfi#{idx + 1}-#{id_answer}".to_sym] = {:answer_text => ans, :correct => answer.correct, 
-                                                                                    :explanation => answer.explanation, :type => type}
+        type_answer_fill_in(answer, a, idx, id_answer)
         id_answer += 1
       end
       
       id_distractor = 2
       if (!distractor.empty?)
         distractors.each_index do |i|
-          disText = distractors[i].answer_text
-          if (disText.class == Regexp)
-            dis = disText.source
-            type = 'Regexp'
-            [0, -1].each {|index| dis.insert(index, '/')}
-          elsif (disText.class == String)
-            dis = disText.downcase
-            type = 'String'
-          else
-            dis = disText
-            type = 'Fixnum'
-          end
-          
-          @data[:"question-#{idx}"][:answers]["qfi#{idx + 1}-#{id_distractor}".to_sym] = {:answer_text => dis, :correct => distractors[i].correct, 
-                                                                                          :explanation => distractors[i].explanation, :type => type}
+          type_answer_fill_in(distractors[i], distractors[i].answer_text, idx, id_distractor)
           id_distractor += 1
         end
       end
@@ -516,16 +517,24 @@ class HtmlFormRenderer
               
               for (ans in data[x.toString()]['answers']) {
                 if (data[x.toString()]['answers'][ans]['correct'] == true) {
-                  if (data[x.toString()]['answers'][ans]['type'] == "Regexp")
-                    correctAnswers[ans.toString()] = RegExp(data[x.toString()]['answers'][ans]['answer_text'].split('/').join(''));
+                  if (data[x.toString()]['answers'][ans]['type'] == "Regexp") {
+                    string = data[x.toString()]['answers'][ans]['answer_text'].split('/');
+                    regexp = string[1];
+                    options = string[2];
+                    correctAnswers[ans.toString()] = RegExp(regexp, options);
+                  }
                   else { // String or Number
                     correctAnswers[ans.toString()] = data[x.toString()]['answers'][ans]['answer_text'];
                     stringAnswer = true;
                   }
                 }
                 else {
-                  if (data[x.toString()]['answers'][ans]['type'] == "Regexp")
-                    distractorAnswers[ans.toString()] = RegExp(data[x.toString()]['answers'][ans]['answer_text'].split('/').join(''));
+                  if (data[x.toString()]['answers'][ans]['type'] == "Regexp") {
+                    string = data[x.toString()]['answers'][ans]['answer_text'].split('/');
+                    regexp = string[1];
+                    options = string[2];
+                    distractorAnswers[ans.toString()] = RegExp(regexp, options);
+                  }
                   else {// String or Number
                     distractorAnswers[ans.toString()] = data[x.toString()]['answers'][ans]['answer_text'];
                     stringAnswer = true;
