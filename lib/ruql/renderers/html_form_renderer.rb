@@ -65,8 +65,10 @@ class HtmlFormRenderer
           end
         end
       end
-      insert_button('Submit')
-      insert_button('Reset')
+      @h.div :class => 'btn-footer' do
+        insert_button('Submit', 'btn btn-primary')
+        insert_button('Reset', 'btn btn-warning')
+      end
     end
   end
 
@@ -88,7 +90,7 @@ class HtmlFormRenderer
             p << answer.answer_text
             p << "<br class=qmc#{index + 1}-#{id_answer}br>"
           }
-          @h.div(:id => "qmc#{index + 1}-#{id_answer}r") do
+          @h.div(:id => "qmc#{index + 1}-#{id_answer}r", :class => 'quiz') do
           end
           id_answer += 1
         end
@@ -116,7 +118,7 @@ class HtmlFormRenderer
             p << answer.answer_text
             p << "<br class=qsm#{index + 1}-#{id_answer}br>"
           }
-          @h.div(:id => "qsm#{index + 1}-#{id_answer}r") do
+          @h.div(:id => "qsm#{index + 1}-#{id_answer}r", :class => 'quiz') do
           end
           id_answer += 1
         end
@@ -158,6 +160,7 @@ class HtmlFormRenderer
   
   def render_fill_in(q, idx)
     render_question_text(q, idx) do
+      question_comment(q)
       # Store answers for question-idx
       answer = q.answers[0]
       distractor = q.answers[1..-1]
@@ -185,7 +188,6 @@ class HtmlFormRenderer
         end
       end
     end
-    question_comment(q)
   end
 
   def render_question_text(question,index)
@@ -195,7 +197,7 @@ class HtmlFormRenderer
         .join(' ')
     }
     @h.li html_args  do
-      @h.div :class => 'text' do |d|
+      @h.div :class => 'quiz text' do |d|
         questionText = question.question_text.clone
         qtext = "[#{question.points} point#{'s' if question.points>1}] " <<
           ('Select ALL that apply: ' if question.multiple).to_s <<
@@ -204,7 +206,7 @@ class HtmlFormRenderer
             nBoxes = question.question_text.split('---').length
             nBoxes -= 1 if (question.question_text.split('---')[-1] =~ /^[\s|\n]+$/)
             nBoxes.times { |i| question.question_text.sub!(/\---/, "<input type=text id=qfi#{index + 1}-#{i + 1} class=fillin></input>") }
-            question.question_text << "<div id=qfi#{index + 1}-#{nBoxes}r></div></br></br>"
+            question.question_text << "<div id=qfi#{index + 1}-#{nBoxes}r class=quiz></div></br></br>"
           else 
             if (question.raw?)
               question.question_text
@@ -245,8 +247,8 @@ class HtmlFormRenderer
     end if (q.question_comment != "")
   end
   
-  def insert_button(name)
-    @h.button(:type => 'button', :id => name.downcase) do |b|
+  def insert_button(name, type)
+    @h.button(:type => 'button', :id => name.downcase, :class => type) do |b|
       b << name
     end
   end
@@ -303,12 +305,14 @@ class HtmlFormRenderer
   def insert_defaultCSS
     @h.style do |s|
       s << <<-CSS
-      div, p {display:inline;}
-      strong.correct {color:rgb(0,255,0);}
+      div.quiz, p.comment, div.explanation {display:inline;}
+      strong.correct {color:#14B63F;}
       strong.incorrect {color:rgb(255,0,0);}
       strong.mark {color:rgb(255,128,0);}
-      input.correct {color:rgb(0,255,0); font-weight: bold;}
+      input.correct {color:#14B63F; font-weight: bold;}
       input.incorrect {color:rgb(255,0,0); font-weight: bold;}
+      div.btn-footer {text-align: center;}
+      p.comment, div.explanation {font-style: italic;}
       CSS
     end
   end
@@ -384,11 +388,11 @@ class HtmlFormRenderer
             
             if ((id[r] != true) && (id[r] != false) && (id[r] != "n/a")) {
               if (explanation[id[r].toString()] != null)
-                $("div[id ~= " + r.toString() + "r" + "]").html(" " + explanation[id[r].toString()]);
+                $("div[id ~= " + r.toString() + "r" + "]").html(" <div class=explanation>" + explanation[id[r].toString()] + "</div>");
             }
             else {
               if (explanation[r] != null)
-                $("div[id ~= " + r + "r" + "]").html(" " + explanation[r]);
+                $("div[id ~= " + r + "r" + "]").html(" <div class=explanation>" + explanation[r] + "</div>");
             }
           }
         }
