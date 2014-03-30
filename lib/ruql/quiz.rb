@@ -97,6 +97,30 @@ class Quiz
     @questions << q
   end
 
+  def head(arg)
+    if (arg.class == String)
+      @head = arg
+    elsif (arg.class == Symbol)
+      @head = File.read(File.expand_path(arg.to_s))
+    end
+  end
+  
+  def get_header
+    @head
+  end
+  
+  def foot(arg)
+    if (arg.class == String)
+      @foot = arg
+    elsif (arg.class == Symbol)
+      @foot = File.read(File.expand_path(arg.to_s))
+    end
+  end
+  
+  def get_footer
+    @foot
+  end
+  
   def self.quiz(*args,&block)
     quiz = Quiz.new(*args)
     quiz.instance_eval(&block)

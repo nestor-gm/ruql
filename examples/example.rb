@@ -1,5 +1,7 @@
 quiz 'Example quiz' do
 
+  #head :'examples/header.html'
+  
   fill_in :points => 2 do
     text 'The visionary founder of Apple is ---'
     comment 'Question too easy'
@@ -79,5 +81,7 @@ quiz 'Example quiz' do
     distractor 'Throws an exception', :explanation => "Don't be an idiot."
     answer 'Prints a friendly message'
   end
+  
+  #foot :'examples/footer.html'
   
 end

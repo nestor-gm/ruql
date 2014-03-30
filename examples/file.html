@@ -2,13 +2,14 @@
   <head>
     <title>Example quiz</title>
     <style>
-      div.quiz, p.comment {display:inline;}
+      div.quiz, p.comment, div.explanation {display:inline;}
       strong.correct {color:#14B63F;}
       strong.incorrect {color:rgb(255,0,0);}
       strong.mark {color:rgb(255,128,0);}
       input.correct {color:#14B63F; font-weight: bold;}
       input.incorrect {color:rgb(255,0,0); font-weight: bold;}
       div.btn-footer {text-align: center;}
+      p.comment, div.explanation {font-style: italic;}
     </style>
 <script type="text/x-mathjax-config">
   MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
@@ -20,7 +21,7 @@
     </script>
 <![endif]-->  </head>
   <body>
-    <!-- Seed: 51639862256420772441177319661142145018 -->
+    <!-- Seed: 113026387726244799317591106346531715000 -->
     <form id="form">
       <ol class="questions">
         <li id="question-0" class="question fillin ">
@@ -70,15 +71,15 @@ Question too easy<br></br>          </p>
 [1 point] What is the largest US state?<br></br>          </div>
           <ol class="answers">
             <input type="radio" id="qmc7-1" name="qmc7" class="select">
-Hawaii<br class=qmc7-1br>            </input>
+Texas<br class=qmc7-1br>            </input>
             <div id="qmc7-1r" class="quiz">
             </div>
             <input type="radio" id="qmc7-2" name="qmc7" class="select">
-Texas<br class=qmc7-2br>            </input>
+Alaska<br class=qmc7-2br>            </input>
             <div id="qmc7-2r" class="quiz">
             </div>
             <input type="radio" id="qmc7-3" name="qmc7" class="select">
-Alaska<br class=qmc7-3br>            </input>
+Hawaii<br class=qmc7-3br>            </input>
             <div id="qmc7-3r" class="quiz">
             </div>
             <br/>
@@ -147,14 +148,14 @@ Prints a friendly message<br class=qmc10-2br>            </input>
         </li>
       </ol>
       <div class="btn-footer">
-        <button type="button" id="submit">
+        <button type="button" id="submit" class="btn btn-primary">
 Submit        </button>
-        <button type="button" id="reset">
+        <button type="button" id="reset" class="btn btn-warning">
 Reset        </button>
       </div>
     </form>
     <script type="text/javascript">
-      data = {"question-0":{"question_text":"The visionary founder of Apple is ---","answers":{"qfi1-1":{"answer_text":"/^ste(ve|phen)\\s+jobs$/mi","correct":true,"explanation":null,"type":"Regexp"},"qfi1-2":{"answer_text":"/^steve\\s+wozniak/i","correct":false,"explanation":"Almost, but not quite.","type":"Regexp"}},"points":2,"order":false,"question_comment":"Question too easy"},"question-1":{"question_text":"The --- brown fox jumped over the lazy ---","answers":{"qfi2-1":{"answer_text":"/fox/","correct":true,"explanation":"This sentence contains all of the letters of the English Alphabet","type":"Regexp"},"qfi2-2":{"answer_text":"/dog/","correct":true,"explanation":"This sentence contains all of the letters of the English Alphabet","type":"Regexp"}},"points":1,"order":false,"question_comment":""},"question-2":{"question_text":"The three stooges are ---, ---, and ---.","answers":{"qfi3-1":{"answer_text":"larry","correct":true,"explanation":null,"type":"String"},"qfi3-2":{"answer_text":"moe","correct":true,"explanation":null,"type":"String"},"qfi3-3":{"answer_text":"curly","correct":true,"explanation":null,"type":"String"}},"points":1,"order":true,"question_comment":""},"question-3":{"question_text":"\n      Calculate the determinant of this matrix:\n      $$\\mathbf{A} = \\begin{vmatrix} \n      1 & 3 \\\\ \n      2 & 4 \n      \\end{vmatrix}$$\n      <br/>\n      ---\n    ","answers":{"qfi4-1":{"answer_text":-1,"correct":true,"explanation":null,"type":"Fixnum"}},"points":1,"order":false,"question_comment":""},"question-4":{"question_text":"\n      Solve: \n      $$\\binom{n}{k} = \\frac{n!}{k!(n-k)!}$$\n      when n = 5 and k = 2:\n      ---\n    ","answers":{"qfi5-1":{"answer_text":10,"correct":true,"explanation":null,"type":"Fixnum"},"qfi5-2":{"answer_text":9,"correct":false,"explanation":"Not exactly","type":"Fixnum"}},"points":1,"order":false,"question_comment":""},"question-5":{"question_text":"\n      When x = 2, the solution of $\\sqrt{3x+3}+(1+x)^2$ is:\n      ---\n    ","answers":{"qfi6-1":{"answer_text":12,"correct":true,"explanation":null,"type":"Fixnum"},"qfi6-2":{"answer_text":11,"correct":false,"explanation":"Try again!","type":"Fixnum"}},"points":1,"order":false,"question_comment":""},"question-6":{"question_text":"What is the largest US state?","answers":{"qmc7-1":{"answer_text":"Hawaii","correct":false,"explanation":"Not big enough."},"qmc7-2":{"answer_text":"Texas","correct":false,"explanation":"That's pretty big, but think colder."},"qmc7-3":{"answer_text":"Alaska","correct":true,"explanation":null}},"points":1,"question_comment":""},"question-7":{"question_text":"Which are American political parties?","answers":{"qsm8-1":{"answer_text":"Democrats","correct":true,"explanation":null},"qsm8-2":{"answer_text":"Republicans","correct":true,"explanation":null},"qsm8-3":{"answer_text":"Greens","correct":true,"explanation":"Yes, they're a party!"},"qsm8-4":{"answer_text":"Tories","correct":false,"explanation":"They're British"},"qsm8-5":{"answer_text":"Social Democrats","correct":false,"explanation":""}},"points":1,"question_comment":""},"question-8":{"question_text":"True or False: The earth is flat.","answers":{"qmc9-1":{"answer_text":"True","correct":false,"explanation":"No, just looks that way"},"qmc9-2":{"answer_text":"False","correct":true,"explanation":null}},"points":1,"question_comment":""},"question-9":{"question_text":"What does the following code do:\n    <pre>\n    puts \"Hello world!\"\n    </pre>\n    ","answers":{"qmc10-1":{"answer_text":"Throws an exception","correct":false,"explanation":"Don't be an idiot."},"qmc10-2":{"answer_text":"Prints a friendly message","correct":true,"explanation":null}},"points":1,"question_comment":""}};
+      data = {"question-0":{"question_text":"The visionary founder of Apple is ---","answers":{"qfi1-1":{"answer_text":"/^ste(ve|phen)\\s+jobs$/mi","correct":true,"explanation":null,"type":"Regexp"},"qfi1-2":{"answer_text":"/^steve\\s+wozniak/i","correct":false,"explanation":"Almost, but not quite.","type":"Regexp"}},"points":2,"order":false,"question_comment":"Question too easy"},"question-1":{"question_text":"The --- brown fox jumped over the lazy ---","answers":{"qfi2-1":{"answer_text":"/fox/","correct":true,"explanation":"This sentence contains all of the letters of the English Alphabet","type":"Regexp"},"qfi2-2":{"answer_text":"/dog/","correct":true,"explanation":"This sentence contains all of the letters of the English Alphabet","type":"Regexp"}},"points":1,"order":false,"question_comment":""},"question-2":{"question_text":"The three stooges are ---, ---, and ---.","answers":{"qfi3-1":{"answer_text":"larry","correct":true,"explanation":null,"type":"String"},"qfi3-2":{"answer_text":"moe","correct":true,"explanation":null,"type":"String"},"qfi3-3":{"answer_text":"curly","correct":true,"explanation":null,"type":"String"}},"points":1,"order":true,"question_comment":""},"question-3":{"question_text":"\n      Calculate the determinant of this matrix:\n      $$\\mathbf{A} = \\begin{vmatrix} \n      1 & 3 \\\\ \n      2 & 4 \n      \\end{vmatrix}$$\n      <br/>\n      ---\n    ","answers":{"qfi4-1":{"answer_text":-1,"correct":true,"explanation":null,"type":"Fixnum"}},"points":1,"order":false,"question_comment":""},"question-4":{"question_text":"\n      Solve: \n      $$\\binom{n}{k} = \\frac{n!}{k!(n-k)!}$$\n      when n = 5 and k = 2:\n      ---\n    ","answers":{"qfi5-1":{"answer_text":10,"correct":true,"explanation":null,"type":"Fixnum"},"qfi5-2":{"answer_text":9,"correct":false,"explanation":"Not exactly","type":"Fixnum"}},"points":1,"order":false,"question_comment":""},"question-5":{"question_text":"\n      When x = 2, the solution of $\\sqrt{3x+3}+(1+x)^2$ is:\n      ---\n    ","answers":{"qfi6-1":{"answer_text":12,"correct":true,"explanation":null,"type":"Fixnum"},"qfi6-2":{"answer_text":11,"correct":false,"explanation":"Try again!","type":"Fixnum"}},"points":1,"order":false,"question_comment":""},"question-6":{"question_text":"What is the largest US state?","answers":{"qmc7-1":{"answer_text":"Texas","correct":false,"explanation":"That's pretty big, but think colder."},"qmc7-2":{"answer_text":"Alaska","correct":true,"explanation":null},"qmc7-3":{"answer_text":"Hawaii","correct":false,"explanation":"Not big enough."}},"points":1,"question_comment":""},"question-7":{"question_text":"Which are American political parties?","answers":{"qsm8-1":{"answer_text":"Democrats","correct":true,"explanation":null},"qsm8-2":{"answer_text":"Republicans","correct":true,"explanation":null},"qsm8-3":{"answer_text":"Greens","correct":true,"explanation":"Yes, they're a party!"},"qsm8-4":{"answer_text":"Tories","correct":false,"explanation":"They're British"},"qsm8-5":{"answer_text":"Social Democrats","correct":false,"explanation":""}},"points":1,"question_comment":""},"question-8":{"question_text":"True or False: The earth is flat.","answers":{"qmc9-1":{"answer_text":"True","correct":false,"explanation":"No, just looks that way"},"qmc9-2":{"answer_text":"False","correct":true,"explanation":null}},"points":1,"question_comment":""},"question-9":{"question_text":"What does the following code do:\n    <pre>\n    puts \"Hello world!\"\n    </pre>\n    ","answers":{"qmc10-1":{"answer_text":"Throws an exception","correct":false,"explanation":"Don't be an idiot."},"qmc10-2":{"answer_text":"Prints a friendly message","correct":true,"explanation":null}},"points":1,"question_comment":""}};
 
       function findCorrectAnswer(idQuestion, questionType) {
         correctIds = [];
@@ -223,11 +224,11 @@ Reset        </button>
             
             if ((id[r] != true) && (id[r] != false) && (id[r] != "n/a")) {
               if (explanation[id[r].toString()] != null)
-                $("div[id ~= " + r.toString() + "r" + "]").html(" " + explanation[id[r].toString()]);
+                $("div[id ~= " + r.toString() + "r" + "]").html(" <div class=explanation>" + explanation[id[r].toString()] + "</div>");
             }
             else {
               if (explanation[r] != null)
-                $("div[id ~= " + r + "r" + "]").html(" " + explanation[r]);
+                $("div[id ~= " + r + "r" + "]").html(" <div class=explanation>" + explanation[r] + "</div>");
             }
           }
         }
