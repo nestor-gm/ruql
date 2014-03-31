@@ -22,7 +22,6 @@ class HtmlFormRenderer
     if @template
       render_with_template do
         render_questions
-        @validation_js = insert_defaultJS
         @output
       end
     else
@@ -46,6 +45,9 @@ class HtmlFormRenderer
     # local variables that should be in scope in the template 
     quiz = @quiz
     title = "Quiz" unless @title
+    @css_custom = insert_css(true) if @css
+    @validation_js = insert_defaultJS
+    @js_custom = insert_js(true) if @js
     # the ERB template includes 'yield' where questions should go:
     output = ERB.new(IO.read(File.expand_path @template)).result(binding)
     @output = output
@@ -256,9 +258,9 @@ class HtmlFormRenderer
   def insert_resources(h)
     insert_defaultCSS
     insert_html(h) if @html
-    insert_css if @css
+    insert_css(false) if @css
     insert_jQuery(h)
-    insert_js if @js
+    insert_js(false) if @js
   end
   
   def insert_html(h)
@@ -271,14 +273,26 @@ class HtmlFormRenderer
     end
   end
   
-  def insert_css
+  def insert_css(template)
+    code = ""
     if (@css.class == Array)
-      @css.each do |file|
-        @h.link(:rel => 'stylesheet', :type =>'text/css', :href => File.expand_path(file))
+      if (template)
+        @css.each do |file|
+          code << "<link rel=stylesheet type=text/css href=#{File.expand_path(file)} />\n"
+        end
+      else
+        @css.each do |file|
+          @h.link(:rel => 'stylesheet', :type =>'text/css', :href => File.expand_path(file))
+        end
       end
     else
-      @h.link(:rel => 'stylesheet', :type =>'text/css', :href => File.expand_path(@css))
+      if (template)
+        code << "<link rel=stylesheet type=text/css href=#{File.expand_path(@css)} />"
+      else
+        @h.link(:rel => 'stylesheet', :type =>'text/css', :href => File.expand_path(@css))
+      end
     end
+    code if template
   end
   
   def insert_jQuery(h)
@@ -290,16 +304,28 @@ class HtmlFormRenderer
     h << "<![endif]-->"
   end
   
-  def insert_js
+  def insert_js(template)
+    code = ""
     if (@js.class == Array)
-      @js.each do |file|
-          @h.script(:type => 'text/javascript', :src => File.expand_path(file)) do
-          end
+      if (template)
+        @js.each do |file|
+          code << "<script type=text/javascript src=#{File.expand_path(file)}></script>\n"
+        end
+      else
+        @js.each do |file|
+            @h.script(:type => 'text/javascript', :src => File.expand_path(file)) do
+            end
+        end
       end
     else
-      @h.script(:type => 'text/javascript', :src => File.expand_path(@js)) do
+      if (template)
+        code << "<script type=text/javascript src=#{File.expand_path(@js)}></script>\n"
+      else
+        @h.script(:type => 'text/javascript', :src => File.expand_path(@js)) do
+        end
       end
     end
+    code if template
   end
   
   def insert_defaultCSS
