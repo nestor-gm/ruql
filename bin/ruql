@@ -67,7 +67,10 @@ The AutoQCM renderer supports these options:
 The JSON renderer currently supports no options
 
 eos
-  exit
+end
+
+def version
+  puts "RuQL #{::Ruql::VERSION}"
 end
 
 def main
@@ -88,6 +91,13 @@ def main
   Quiz.quizzes.each { |quiz| puts quiz.render_with(renderer, opts)  }
 end
 
-usage if ARGV.length < 2
+if ARGV.length < 2
+  if ARGV[0] == '--version'
+    version
+  else
+    usage
+  end
+  exit
+end
 main
 
