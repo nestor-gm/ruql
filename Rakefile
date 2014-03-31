@@ -1,4 +1,4 @@
-task :default => :html
+task :default => :ruql
 
 desc "Run Ruql with HtmlForm renderer (with JavaScript validation)"
 task :ruql do

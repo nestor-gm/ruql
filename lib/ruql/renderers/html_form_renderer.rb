@@ -30,16 +30,11 @@ class HtmlFormRenderer
       @h.html do
         @h.head do |h|
           @h.title @quiz.title
-          insert_resources(h)
+          insert_resources_head(h)
         end
-        @h.body do
+        @h.body do |b|
           render_questions
-          @h.script(:type => 'text/javascript') do |j|
-            j << insert_i18n
-          end
-          @h.script(:type => 'text/javascript') do |j|
-            j << insert_defaultJS
-          end
+          insert_resources_body(b)
         end
       end
     end
@@ -52,6 +47,11 @@ class HtmlFormRenderer
     title = "Quiz" unless @title
     @css_custom = insert_css(true) if @css
     @js_custom = insert_js(true) if @js
+    @jQuery = insert_jQuery('', true)
+    @mathjax = insert_mathjax
+    @xregexp = insert_xregexp(true)
+    @codehelper = get_ip_js(true)
+    
     # the ERB template includes 'yield' where questions should go:
     output = ERB.new(IO.read(File.expand_path @template)).result(binding)
     @output = output
@@ -259,13 +259,25 @@ class HtmlFormRenderer
     end
   end
   
-  def insert_resources(h)
+  def insert_resources_head(h)
     insert_defaultCSS
     insert_html(h) if @html
     insert_css(false) if @css
-    insert_jQuery(h)
-    get_ip_js
+    insert_mathjax
+  end
+  
+  def insert_resources_body(b)
+    insert_jQuery(b, false)
+    get_ip_js(false)
+    insert_xregexp(false)
     insert_js(false) if @js
+    
+    @h.script(:type => 'text/javascript') do |j|
+      j << insert_i18n
+    end
+    @h.script(:type => 'text/javascript') do |j|
+      j << insert_defaultJS
+    end
   end
   
   def insert_html(h)
@@ -300,13 +312,41 @@ class HtmlFormRenderer
     code if template
   end
   
-  def insert_jQuery(h)
-    @h.script(:type => 'text/javascript', :src => "http://code.jquery.com/jquery-2.1.0.min.js") do
+  def insert_jQuery(h, template)
+    if (template)
+      code = %q{
+        <script type=text/javascript src=http://code.jquery.com/jquery-2.1.0.min.js></script>
+        <!--[if lt IE 8]>
+          <script type=text/javascript src=http://code.jquery.com/jquery-1.11.0.min.js></script>
+        <![endif]-->
+      }
+      code
+    else
+      @h.script(:type => 'text/javascript', :src => "http://code.jquery.com/jquery-2.1.0.min.js") do
+      end
+      h << "<!--[if lt IE 8]>"
+      @h.script(:type => 'text/javascript', :src => "http://code.jquery.com/jquery-1.11.0.min.js") do
+      end
+      h << "<![endif]-->"
     end
-    h << "<!--[if lt IE 8]>"
-    @h.script(:type => 'text/javascript', :src => "http://code.jquery.com/jquery-1.11.0.min.js") do
+  end
+  
+  def insert_xregexp(template)
+    if (template)
+      code = "<script type=text/javascript src=http://cdnjs.cloudflare.com/ajax/libs/xregexp/2.0.0/xregexp-min.js></script>"
+      code
+    else
+      @h.script(:type => 'text/javascript', :src => "http://cdnjs.cloudflare.com/ajax/libs/xregexp/2.0.0/xregexp-min.js") do
+      end
     end
-    h << "<![endif]-->"
+  end
+  
+  def insert_mathjax
+    @h.script(:type => 'text/javascript', :src => "http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML") do
+    end
+    @h.script(:type => 'text/javascript') do |j|
+      j << "MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});\n"
+    end
   end
   
   def insert_js(template)
@@ -333,8 +373,13 @@ class HtmlFormRenderer
     code if template
   end
   
-  def get_ip_js
-    @h.script(:type => 'text/javascript', :src => "http://www.codehelper.io/api/ips/?js") do
+  def get_ip_js(template)
+    if (template)
+      code = "<script type=text/javascript src=http://www.codehelper.io/api/ips/?js></script>"
+      code
+    else
+      @h.script(:type => 'text/javascript', :src => "http://www.codehelper.io/api/ips/?js") do
+      end
     end
   end
   

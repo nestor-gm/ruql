@@ -34,11 +34,11 @@
       }
       .nav>li>a.links:hover {color: #FFCCFF;}
     </style>
+    <!-- Any CSS included by the user -->
     <%= @css_custom %>
-    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">
-      MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
-    </script>
+    <!-- Mathjax -->
+    <%= @mathjax %>
+    <!--         -->
   </head>
   <body>
     <div class="container">
@@ -84,15 +84,20 @@
         </div>
       <% end %>
     </div>
-    <script type="text/javascript" src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
-    <!--[if lt IE 8]>
-      <script type="text/javascript" src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
-    <![endif]-->
-    <script type="text/javascript" src="http://www.codehelper.io/api/ips/?js"></script>
+    <!-- JavaScripts -->
+    <!-- jQuery -->
+    <%= @jQuery %>
+    <!-- Codehelper -->
+    <%= @codehelper %>
+    <!-- Internationalization -->
     <script><%= @i18n %></script>
+    <!-- XRegexp -->
+    <%= @xregexp %>
+    <!-- Form validation -->
     <script><%= @validation_js %></script>
+    <!-- Any JavaScript included by the user -->
     <%= @js_custom %>
-    <!-- Latest compiled and minified JavaScript -->
+    <!-- Latest compiled and minified JavaScript for Bootstrap -->
     <script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
     <!-- -->
   </body>
