@@ -22,6 +22,8 @@ class HtmlFormRenderer
     if @template
       render_with_template do
         render_questions
+        @validation_js = insert_defaultJS
+        @i18n = insert_i18n
         @output
       end
     else
@@ -32,6 +34,9 @@ class HtmlFormRenderer
         end
         @h.body do
           render_questions
+          @h.script(:type => 'text/javascript') do |j|
+            j << insert_i18n
+          end
           @h.script(:type => 'text/javascript') do |j|
             j << insert_defaultJS
           end
@@ -46,7 +51,6 @@ class HtmlFormRenderer
     quiz = @quiz
     title = "Quiz" unless @title
     @css_custom = insert_css(true) if @css
-    @validation_js = insert_defaultJS
     @js_custom = insert_js(true) if @js
     # the ERB template includes 'yield' where questions should go:
     output = ERB.new(IO.read(File.expand_path @template)).result(binding)
@@ -260,6 +264,7 @@ class HtmlFormRenderer
     insert_html(h) if @html
     insert_css(false) if @css
     insert_jQuery(h)
+    get_ip_js
     insert_js(false) if @js
   end
   
@@ -328,6 +333,25 @@ class HtmlFormRenderer
     code if template
   end
   
+  def get_ip_js
+    @h.script(:type => 'text/javascript', :src => "http://www.codehelper.io/api/ips/?js") do
+    end
+  end
+  
+  def insert_i18n
+    <<-i18n
+      i18n = {};
+      i18n['ES'] = {}
+      i18n['ES']['correct'] = "Correcto";
+      i18n['ES']['incorrect'] = "Incorrecto";
+      i18n['ES']['points'] = "puntos";
+      i18n['EN'] = {}
+      i18n['EN']['correct'] = "Correct";
+      i18n['EN']['incorrect'] = "Incorrect";
+      i18n['EN']['points'] = "points";
+    i18n
+  end
+  
   def insert_defaultCSS
     @h.style do |s|
       s << <<-CSS
@@ -391,15 +415,15 @@ class HtmlFormRenderer
           $("br[class=" + id + "br" + "]").detach();
           if (type == 1) {
             if ((explanation == "") || (explanation == null))
-              $("div[id ~= " + id + "r" + "]").html("<strong class=correct> Correct</strong></br>");
+              $("div[id ~= " + id + "r" + "]").html("<strong class=correct> " + i18n[language]['correct'] + "</strong></br>");
             else
-              $("div[id ~= " + id + "r" + "]").html("<strong class=correct> Correct - " + explanation + "</strong></br>");
+              $("div[id ~= " + id + "r" + "]").html("<strong class=correct> " + i18n[language]['correct'] + " - " + explanation + "</strong></br>");
           }
           else {
             if ((explanation == "") || (explanation == null))
-              $("div[id ~= " + id + "r" + "]").html("<strong class=incorrect> Incorrect</strong></br>");
+              $("div[id ~= " + id + "r" + "]").html("<strong class=incorrect> " + i18n[language]['incorrect'] + "</strong></br>");
             else
-              $("div[id ~= " + id + "r" + "]").html("<strong class=incorrect> Incorrect - " + explanation + "</strong></br>");
+              $("div[id ~= " + id + "r" + "]").html("<strong class=incorrect> " + i18n[language]['incorrect'] + " - " + explanation + "</strong></br>");
           }
         }
         else {          // FillIn
@@ -427,17 +451,18 @@ class HtmlFormRenderer
       function calculateMark(question, id, result, typeQuestion, numberCorrects, numberIncorrects) {
         if (typeQuestion == 2) {
           if (result)
-            $("#" + id).append("<strong class=mark> " + question['points'].toFixed(2) + "/" + question['points'].toFixed(2) + " points</strong></br></br>");
+            $("#" + id).append("<strong class=mark> " + question['points'].toFixed(2) + "/" + question['points'].toFixed(2) + " " + i18n[language]['points'] + "</strong></br></br>");
           else
-            $("#" + id).append("<strong class=mark> 0.00/" + question['points'].toFixed(2) + " points</strong></br></br>");
+            $("#" + id).append("<strong class=mark> 0.00/" + question['points'].toFixed(2) + " " + i18n[language]['points'] + "</strong></br></br>");
         }
         else if (typeQuestion == 1) {
           size = 0;
           for (y in question['answers'])
             if (question['answers'][y]['correct'] == true)
               size += 1;
-          
-          $("#" + id).append("<strong class=mark> " + ((question['points'] / size) * numberCorrects).toFixed(2) + "/" + question['points'].toFixed(2) + " points</strong></br></br>");
+              
+          pointsUser = ((question['points'] / size) * numberCorrects).toFixed(2);
+          $("#" + id).append("<strong class=mark> " + pointsUser + "/" + question['points'].toFixed(2) + " " + i18n[language]['points'] + "</strong></br></br>");
         }
         else {
           totalCorrects = 0;
@@ -453,7 +478,7 @@ class HtmlFormRenderer
           if (mark < 0)
             mark = 0;
             
-          $("#" + id).append("<strong class=mark> " + mark.toFixed(2) + "/" + question['points'].toFixed(2) + " points</strong></br></br>");        
+          $("#" + id).append("<strong class=mark> " + mark.toFixed(2) + "/" + question['points'].toFixed(2) + " " + i18n[language]['points'] + "</strong></br></br>");        
         }
       }
       
@@ -639,6 +664,11 @@ class HtmlFormRenderer
         }
       }
 
+      if (typeof(codehelper_ip) == "undefined")
+        language = "EN";
+      else
+        language = codehelper_ip.Country;
+      
       $("#submit").click(function() {
         checkAnswers();
         filledAllQuiz = true;
