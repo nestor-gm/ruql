@@ -48,7 +48,7 @@ class HtmlFormRenderer
     @css_custom = insert_css(true) if @css
     @js_custom = insert_js(true) if @js
     @jQuery = insert_jQuery('', true)
-    @mathjax = insert_mathjax
+    @mathjax = insert_mathjax(true)
     @xregexp = insert_xregexp(true)
     @codehelper = get_ip_js(true)
     
@@ -263,7 +263,7 @@ class HtmlFormRenderer
     insert_defaultCSS
     insert_html(h) if @html
     insert_css(false) if @css
-    insert_mathjax
+    insert_mathjax(false)
   end
   
   def insert_resources_body(b)
@@ -341,11 +341,20 @@ class HtmlFormRenderer
     end
   end
   
-  def insert_mathjax
-    @h.script(:type => 'text/javascript', :src => "http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML") do
-    end
-    @h.script(:type => 'text/javascript') do |j|
-      j << "MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});\n"
+  def insert_mathjax(template)
+    if (template)
+      code = %q{
+        <script type=text/javascript src=http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML></script>
+        <script type=text/javascript>
+          MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});\n
+        </script>
+      }
+    else
+      @h.script(:type => 'text/javascript', :src => "http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML") do
+      end
+      @h.script(:type => 'text/javascript') do |j|
+        j << "MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});\n"
+      end
     end
   end
   
