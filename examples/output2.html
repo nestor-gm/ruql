@@ -3,7 +3,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Example quiz</title>
+    <title>REPASO. 2ª PARTE. <br />
+ANÁLISIS SINTÁCTICO</title>
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
     <!-- -->
@@ -45,7 +46,7 @@
     
         <script type=text/javascript src=http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML></script>
         <script type=text/javascript>
-          MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\(','\)']]}});
+          MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
         </script>
       
     <!--         -->
@@ -55,7 +56,8 @@
       
         <div class="navbar navbar-default custom-header">
           <div class="navbar-header">
-            <h3>Example quiz</h3>
+            <h3>REPASO. 2ª PARTE. <br />
+ANÁLISIS SINTÁCTICO</h3>
           </div>
           <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav navbar-right">
@@ -71,130 +73,145 @@
           </div>
         </div>
       
-      <!-- Seed: 141437344556050202382874183852721220831 -->
+      <!-- Seed: 72716881337419139118259522357525290258 -->
 <form id="form">
   <ol class="questions">
     <li id="question-0" class="question fillin ">
       <div class="quiz text">
-[2 points] The visionary founder of Apple is <input type=text id=qfi1-1 class='fillin size-5'></input><div id=qfi1-1r class=quiz></div></br></br>      </div>
-      <p class="comment">
-Question too easy<br></br>      </p>
+[1 point] 
+Dado un conjunto $A$, se define $A^*$ el cierre de Kleene de $A$ como:
+\( A^* = \cup_{n=1}^{\infty} A^n \)
+Se admite que $A^0 = { \epsilon }$, donde $\epsilon$ denota la
+<input type=text id=qfi1-1 class='fillin size-10'></input> <input type=text id=qfi1-2 class='fillin size-10'></input>, esto es
+la palabra que tiene longitud cero, formada por cero símbolos del conjunto base $A$<div id=qfi1-2r class=quiz></div></br></br>      </div>
     </li>
     <li id="question-1" class="question fillin ">
       <div class="quiz text">
-[1 point] The <input type=text id=qfi2-1 class='fillin size-10'></input> brown fox jumped over the lazy <input type=text id=qfi2-2 class='fillin size-5'></input><div id=qfi2-1r class=quiz></div></br></br>      </div>
+[1 point] 
+Una producción de la forma $A \rightarrow A \alpha$.
+se dice que es <input type=text id=qfi2-1 class='fillin size-10'></input> por la <input type=text id=qfi2-2 class='fillin size-10'></input>
+<div id=qfi2-2r class=quiz></div></br></br>      </div>
     </li>
     <li id="question-2" class="question fillin ">
       <div class="quiz text">
-[1 point] The three stooges are <input type=text id=qfi3-1 class='fillin size-5'></input>, <input type=text id=qfi3-2 class='fillin size-5'></input>, and <input type=text id=qfi3-3 class='fillin size-5'></input><div id=qfi3-2r class=quiz></div></br></br>      </div>
+[1 point] 
+Recuerde el <b>analizador sintáctico descendente predictivo recursivo</b> 
+para la <a id="grammar">gramática</a>:<br/>
+<ul>
+  <li> $\Sigma = { ; =, ID, P, ADDOP, MULOP, COMPARISON, (, ), NUM }$, 
+  <li> $V = { statements, statement, condition, expression, term, factor }$
+  <li> Productions:
+  <ol>
+    <li>
+    statements  $ \rightarrow$ statement ';' statements  $\vert$ statement
+    <li>
+    statement  $ \rightarrow$ ID '=' expression  $\vert$ P expression
+ $ \vert$ IF condition THEN statement·
+    <li> condition $ \rightarrow$ expression COMPARISON expression
+    <li>
+    expression  $ \rightarrow$ term ADDOP expression  $\vert$ term
+    <li>
+    term  $ \rightarrow$ factor MULOP term  $\vert$ factor
+    <li>
+    factor  $ \rightarrow$ '(' expression ')' $\vert$ ID $ \vert$ NUM
+  </ol>
+  <li> Start symbol: $statements$
+</ul>
+Rellene las partes que faltan de código CoffeeScript del 
+método que se encarga de reconocer el lenguaje generado
+por <tt>expression</tt>:
+<pre>
+  expression = ->
+    result = term()
+    while <input type=text id=qfi3-1 class='fillin size-10'></input> and <input type=text id=qfi3-2 class='fillin size-10'></input> is "ADDOP"
+      type = lookahead.value
+      match "ADDOP"
+      right = <input type=text id=qfi3-3 class='fillin size-5'></input>
+      result =
+        type: <input type=text id=qfi3-4 class='fillin size-5'></input>
+        left: result
+        right: right
+    result
+</pre>
+<div id=qfi3-4r class=quiz></div></br></br>      </div>
     </li>
     <li id="question-3" class="question fillin ">
       <div class="quiz text">
 [1 point] 
-      Calculate the determinant of this matrix:
-      $$\mathbf{A} = \begin{vmatrix} 
-      1 & 3 \\ 
-      2 & 4 
-      \end{vmatrix}$$
-      <br/>
-      <input type=text id=qfi4-1 class='fillin size-5'></input>
-    <div id=qfi4-1r class=quiz></div></br></br>      </div>
+Rellene las partes que faltan de código CoffeeScript del 
+método que se encarga de reconocer el lenguaje generado
+por <tt>statement</tt> para la <a href="#grammar">gramática
+definida anteriormente</a>:
+<pre>
+    statement = function() {
+      var left, result, right;
+      result = null;
+      if (<input type=text id=qfi4-1 class='fillin size-10'></input> && <input type=text id=qfi4-2 class='fillin size-10'></input> === "ID") {
+        left = {
+          type: "<input type=text id=qfi4-3 class='fillin size-5'></input>",
+          value: <input type=text id=qfi4-4 class='fillin size-10'></input>.value
+        };
+        match("ID");
+        match("=");
+        right = <input type=text id=qfi4-5 class='fillin size-10'></input>();
+        result = {
+          type: "=",
+          left: left,
+          right: right
+        };
+      } else if (<input type=text id=qfi4-6 class='fillin size-10'></input> && <input type=text id=qfi4-7 class='fillin size-10'></input>.<input type=text id=qfi4-8 class='fillin size-10'></input> === "P") {
+        match("P");
+        right = expression();
+        result = {
+          type: "P",
+          value: <input type=text id=qfi4-9 class='fillin size-10'></input>
+        };
+      } else if (<input type=text id=qfi4-10 class='fillin size-10'></input> && <input type=text id=qfi4-11 class='fillin size-10'></input>.<input type=text id=qfi4-12 class='fillin size-10'></input> === "IF") {
+        match("<input type=text id=qfi4-13 class='fillin size-5'></input>");
+        left = <input type=text id=qfi4-14 class='fillin size-10'></input>;
+        match("THEN");
+        right = <input type=text id=qfi4-15 class='fillin size-10'></input>;
+        result = {
+          type: "IF",
+          left: <input type=text id=qfi4-16 class='fillin size-5'></input>,
+          right: <input type=text id=qfi4-17 class='fillin size-5'></input>
+        };
+      } else {
+        throw "Syntax Error. Expected identifier but found " + 
+         (lookahead ? lookahead.value : "end of input") + 
+         (" near '" + (input.substr(lookahead.from)) + "'");
+      }
+      return result;
+    };
+</pre>
+<div id=qfi4-17r class=quiz></div></br></br>      </div>
     </li>
     <li id="question-4" class="question fillin ">
       <div class="quiz text">
-[1 point] 
-      Solve: 
-      $$\binom{n}{k} = \frac{n!}{k!(n-k)!}$$
-      when n = 5 and k = 2:
-      <input type=text id=qfi5-1 class='fillin size-5'></input>
-    <div id=qfi5-1r class=quiz></div></br></br>      </div>
+[1 point] Rellene las partes que faltan del código CoffeeScript
+que reconoce el sublenguaje generado por <i>condition</i>:
+  <pre>
+  condition = ->
+    left = <input type=text id=qfi5-1 class='fillin size-10'></input>()
+    type = <input type=text id=qfi5-2 class='fillin size-10'></input>.<input type=text id=qfi5-3 class='fillin size-5'></input>
+    match "COMPARISON"
+    right = <input type=text id=qfi5-4 class='fillin size-10'></input>()
+    result =
+      type: type
+      left: left
+      right: right
+    result
+  </pre>
+<div id=qfi5-4r class=quiz></div></br></br>      </div>
     </li>
     <li id="question-5" class="question fillin ">
       <div class="quiz text">
 [1 point] 
-      When x = 2, the solution of $\sqrt{3x+3}+(1+x)^2$ is:
-      <input type=text id=qfi6-1 class='fillin size-5'></input>
-    <div id=qfi6-1r class=quiz></div></br></br>      </div>
-    </li>
-    <li id="question-6" class="question multiplechoice ">
-      <div class="quiz text">
-[1 point] What is the largest US state?<br></br>      </div>
-      <ol class="answers">
-        <input type="radio" id="qmc7-1" name="qmc7" class="select">
-Texas<br class=qmc7-1br>        </input>
-        <div id="qmc7-1r" class="quiz">
-        </div>
-        <input type="radio" id="qmc7-2" name="qmc7" class="select">
-Hawaii<br class=qmc7-2br>        </input>
-        <div id="qmc7-2r" class="quiz">
-        </div>
-        <input type="radio" id="qmc7-3" name="qmc7" class="select">
-Alaska<br class=qmc7-3br>        </input>
-        <div id="qmc7-3r" class="quiz">
-        </div>
-        <br/>
-      </ol>
-    </li>
-    <li id="question-7" class="question selectmultiple multiple">
-      <div class="quiz text">
-[1 point] Select ALL that apply: Which are American political parties?<br></br>      </div>
-      <ol class="answers">
-        <input type="checkbox" id="qsm8-1" class="check">
-Democrats<br class=qsm8-1br>        </input>
-        <div id="qsm8-1r" class="quiz">
-        </div>
-        <input type="checkbox" id="qsm8-2" class="check">
-Republicans<br class=qsm8-2br>        </input>
-        <div id="qsm8-2r" class="quiz">
-        </div>
-        <input type="checkbox" id="qsm8-3" class="check">
-Greens<br class=qsm8-3br>        </input>
-        <div id="qsm8-3r" class="quiz">
-        </div>
-        <input type="checkbox" id="qsm8-4" class="check">
-Tories<br class=qsm8-4br>        </input>
-        <div id="qsm8-4r" class="quiz">
-        </div>
-        <input type="checkbox" id="qsm8-5" class="check">
-Social Democrats<br class=qsm8-5br>        </input>
-        <div id="qsm8-5r" class="quiz">
-        </div>
-        <br/>
-      </ol>
-    </li>
-    <li id="question-8" class="question truefalse ">
-      <div class="quiz text">
-[1 point] True or False: The earth is flat.<br></br>      </div>
-      <ol class="answers">
-        <input type="radio" id="qmc9-1" name="qmc9" class="select">
-True<br class=qmc9-1br>        </input>
-        <div id="qmc9-1r" class="quiz">
-        </div>
-        <input type="radio" id="qmc9-2" name="qmc9" class="select">
-False<br class=qmc9-2br>        </input>
-        <div id="qmc9-2r" class="quiz">
-        </div>
-        <br/>
-      </ol>
-    </li>
-    <li id="question-9" class="question multiplechoice ">
-      <div class="quiz text">
-[1 point] What does the following code do:
-    <pre>
-    puts "Hello world!"
-    </pre>
-          </div>
-      <ol class="answers">
-        <input type="radio" id="qmc10-1" name="qmc10" class="select">
-Throws an exception<br class=qmc10-1br>        </input>
-        <div id="qmc10-1r" class="quiz">
-        </div>
-        <input type="radio" id="qmc10-2" name="qmc10" class="select">
-Prints a friendly message<br class=qmc10-2br>        </input>
-        <div id="qmc10-2r" class="quiz">
-        </div>
-        <br/>
-      </ol>
+Complete este fragmento de <tt>slim</tt> que establece el favicon de 
+la página HTML:
+<pre>
+    link rel="<input type=text id=qfi6-1 class='fillin size-10'></input>" type="image/jpg" href="images/favicon.jpg"
+</pre><div id=qfi6-1r class=quiz></div></br></br>      </div>
     </li>
   </ol>
   <div class="btn-footer">
@@ -244,7 +261,7 @@ Reset    </button>
     <!-- XRegexp -->
     <script type=text/javascript src=http://cdnjs.cloudflare.com/ajax/libs/xregexp/2.0.0/xregexp-min.js></script>
     <!-- Form validation -->
-    <script>      data = {"question-0":{"question_text":"The visionary founder of Apple is ---","answers":{"qfi1-1":{"answer_text":"/^ste(ve|phen)\\s+jobs$/mi","correct":true,"explanation":null,"type":"Regexp"},"qfi1-2":{"answer_text":"/^steve\\s+wozniak/i","correct":false,"explanation":"Almost, but not quite.","type":"Regexp"}},"points":2,"order":false,"question_comment":"Question too easy"},"question-1":{"question_text":"The ---------- brown fox jumped over the lazy ---","answers":{"qfi2-1":{"answer_text":"/fox/","correct":true,"explanation":"This sentence contains all of the letters of the English Alphabet","type":"Regexp"},"qfi2-2":{"answer_text":"/dog/","correct":true,"explanation":"This sentence contains all of the letters of the English Alphabet","type":"Regexp"}},"points":1,"order":false,"question_comment":""},"question-2":{"question_text":"The three stooges are ---, ---, and ---.","answers":{"qfi3-1":{"answer_text":"larry","correct":true,"explanation":null,"type":"String"},"qfi3-2":{"answer_text":"moe","correct":true,"explanation":null,"type":"String"},"qfi3-3":{"answer_text":"curly","correct":true,"explanation":null,"type":"String"}},"points":1,"order":true,"question_comment":""},"question-3":{"question_text":"\n      Calculate the determinant of this matrix:\n      $$\\mathbf{A} = \\begin{vmatrix} \n      1 & 3 \\\\ \n      2 & 4 \n      \\end{vmatrix}$$\n      <br/>\n      ---\n    ","answers":{"qfi4-1":{"answer_text":-1,"correct":true,"explanation":null,"type":"Fixnum"}},"points":1,"order":false,"question_comment":""},"question-4":{"question_text":"\n      Solve: \n      $$\\binom{n}{k} = \\frac{n!}{k!(n-k)!}$$\n      when n = 5 and k = 2:\n      ---\n    ","answers":{"qfi5-1":{"answer_text":10,"correct":true,"explanation":null,"type":"Fixnum"},"qfi5-2":{"answer_text":9,"correct":false,"explanation":"Not exactly","type":"Fixnum"}},"points":1,"order":false,"question_comment":""},"question-5":{"question_text":"\n      When x = 2, the solution of $\\sqrt{3x+3}+(1+x)^2$ is:\n      ---\n    ","answers":{"qfi6-1":{"answer_text":12,"correct":true,"explanation":null,"type":"Fixnum"},"qfi6-2":{"answer_text":11,"correct":false,"explanation":"Try again!","type":"Fixnum"}},"points":1,"order":false,"question_comment":""},"question-6":{"question_text":"What is the largest US state?","answers":{"qmc7-1":{"answer_text":"Texas","correct":false,"explanation":"That's pretty big, but think colder."},"qmc7-2":{"answer_text":"Hawaii","correct":false,"explanation":"Not big enough."},"qmc7-3":{"answer_text":"Alaska","correct":true,"explanation":null}},"points":1,"question_comment":""},"question-7":{"question_text":"Which are American political parties?","answers":{"qsm8-1":{"answer_text":"Democrats","correct":true,"explanation":null},"qsm8-2":{"answer_text":"Republicans","correct":true,"explanation":null},"qsm8-3":{"answer_text":"Greens","correct":true,"explanation":"Yes, they're a party!"},"qsm8-4":{"answer_text":"Tories","correct":false,"explanation":"They're British"},"qsm8-5":{"answer_text":"Social Democrats","correct":false,"explanation":""}},"points":1,"question_comment":""},"question-8":{"question_text":"True or False: The earth is flat.","answers":{"qmc9-1":{"answer_text":"True","correct":false,"explanation":"No, just looks that way"},"qmc9-2":{"answer_text":"False","correct":true,"explanation":null}},"points":1,"question_comment":""},"question-9":{"question_text":"What does the following code do:\n    <pre>\n    puts \"Hello world!\"\n    </pre>\n    ","answers":{"qmc10-1":{"answer_text":"Throws an exception","correct":false,"explanation":"Don't be an idiot."},"qmc10-2":{"answer_text":"Prints a friendly message","correct":true,"explanation":null}},"points":1,"question_comment":""}};
+    <script>      data = {"question-0":{"question_text":"\nDado un conjunto $A$, se define $A^*$ el cierre de Kleene de $A$ como:\n\\( A^* = \\cup_{n=1}^{\\infty} A^n \\)\nSe admite que $A^0 = { \\epsilon }$, donde $\\epsilon$ denota la\n------ ------, esto es\nla palabra que tiene longitud cero, formada por cero símbolos del conjunto base $A$.","answers":{"qfi1-1":{"answer_text":"/palabra/i","correct":true,"explanation":null,"type":"Regexp"},"qfi1-2":{"answer_text":"/vac[ií]a/i","correct":true,"explanation":null,"type":"Regexp"}},"points":1,"order":false,"question_comment":""},"question-1":{"question_text":"\nUna producción de la forma $A \\rightarrow A \\alpha$.\nse dice que es ------- por la --------\n","answers":{"qfi2-1":{"answer_text":"/recursiva/i","correct":true,"explanation":null,"type":"Regexp"},"qfi2-2":{"answer_text":"/izquierda/i","correct":true,"explanation":null,"type":"Regexp"}},"points":1,"order":false,"question_comment":""},"question-2":{"question_text":"\nRecuerde el <b>analizador sintáctico descendente predictivo recursivo</b> \npara la <a id=\"grammar\">gramática</a>:<br/>\n<ul>\n  <li> $\\Sigma = { ; =, ID, P, ADDOP, MULOP, COMPARISON, (, ), NUM }$, \n  <li> $V = { statements, statement, condition, expression, term, factor }$\n  <li> Productions:\n  <ol>\n    <li>\n    statements  $ \\rightarrow$ statement ';' statements  $\\vert$ statement\n    <li>\n    statement  $ \\rightarrow$ ID '=' expression  $\\vert$ P expression\n $ \\vert$ IF condition THEN statement·\n    <li> condition $ \\rightarrow$ expression COMPARISON expression\n    <li>\n    expression  $ \\rightarrow$ term ADDOP expression  $\\vert$ term\n    <li>\n    term  $ \\rightarrow$ factor MULOP term  $\\vert$ factor\n    <li>\n    factor  $ \\rightarrow$ '(' expression ')' $\\vert$ ID $ \\vert$ NUM\n  </ol>\n  <li> Start symbol: $statements$\n</ul>\nRellene las partes que faltan de código CoffeeScript del \nmétodo que se encarga de reconocer el lenguaje generado\npor <tt>expression</tt>:\n<pre>\n  expression = ->\n    result = term()\n    while ------ and --------- is \"ADDOP\"\n      type = lookahead.value\n      match \"ADDOP\"\n      right = ----\n      result =\n        type: ----\n        left: result\n        right: right\n    result\n</pre>\n","answers":{"qfi3-1":{"answer_text":"lookahead","correct":true,"explanation":null,"type":"String"},"qfi3-2":{"answer_text":"lookahead.type","correct":true,"explanation":null,"type":"String"},"qfi3-3":{"answer_text":"term()","correct":true,"explanation":null,"type":"String"},"qfi3-4":{"answer_text":"type","correct":true,"explanation":null,"type":"String"}},"points":1,"order":false,"question_comment":""},"question-3":{"question_text":"\nRellene las partes que faltan de código CoffeeScript del \nmétodo que se encarga de reconocer el lenguaje generado\npor <tt>statement</tt> para la <a href=\"#grammar\">gramática\ndefinida anteriormente</a>:\n<pre>\n    statement = function() {\n      var left, result, right;\n      result = null;\n      if (------ && ------ === \"ID\") {\n        left = {\n          type: \"---\",\n          value: ------.value\n        };\n        match(\"ID\");\n        match(\"=\");\n        right = ------();\n        result = {\n          type: \"=\",\n          left: left,\n          right: right\n        };\n      } else if (------ && ------.------ === \"P\") {\n        match(\"P\");\n        right = expression();\n        result = {\n          type: \"P\",\n          value: ------\n        };\n      } else if (------ && ------.------ === \"IF\") {\n        match(\"---\");\n        left = ------;\n        match(\"THEN\");\n        right = ------;\n        result = {\n          type: \"IF\",\n          left: ----,\n          right: ----\n        };\n      } else {\n        throw \"Syntax Error. Expected identifier but found \" + \n         (lookahead ? lookahead.value : \"end of input\") + \n         (\" near '\" + (input.substr(lookahead.from)) + \"'\");\n      }\n      return result;\n    };\n</pre>\n","answers":{"qfi4-1":{"answer_text":"lookahead","correct":true,"explanation":null,"type":"String"},"qfi4-2":{"answer_text":"lookahead.type","correct":true,"explanation":null,"type":"String"},"qfi4-3":{"answer_text":"id","correct":true,"explanation":null,"type":"String"},"qfi4-4":{"answer_text":"lookahead","correct":true,"explanation":null,"type":"String"},"qfi4-5":{"answer_text":"expression","correct":true,"explanation":null,"type":"String"},"qfi4-6":{"answer_text":"lookahead","correct":true,"explanation":null,"type":"String"},"qfi4-7":{"answer_text":"lookahead","correct":true,"explanation":null,"type":"String"},"qfi4-8":{"answer_text":"type","correct":true,"explanation":null,"type":"String"},"qfi4-9":{"answer_text":"right","correct":true,"explanation":null,"type":"String"},"qfi4-10":{"answer_text":"lookahead","correct":true,"explanation":null,"type":"String"},"qfi4-11":{"answer_text":"lookahead","correct":true,"explanation":null,"type":"String"},"qfi4-12":{"answer_text":"type","correct":true,"explanation":null,"type":"String"},"qfi4-13":{"answer_text":"if","correct":true,"explanation":null,"type":"String"},"qfi4-14":{"answer_text":"/expression|condition/","correct":true,"explanation":null,"type":"Regexp"},"qfi4-15":{"answer_text":"/statement/","correct":true,"explanation":null,"type":"Regexp"},"qfi4-16":{"answer_text":"/left/","correct":true,"explanation":null,"type":"Regexp"},"qfi4-17":{"answer_text":"/right/","correct":true,"explanation":null,"type":"Regexp"}},"points":1,"order":false,"question_comment":""},"question-4":{"question_text":"Rellene las partes que faltan del código CoffeeScript\nque reconoce el sublenguaje generado por <i>condition</i>:\n  <pre>\n  condition = ->\n    left = ------()\n    type = ------.-----\n    match \"COMPARISON\"\n    right = ------()\n    result =\n      type: type\n      left: left\n      right: right\n    result\n  </pre>\n","answers":{"qfi5-1":{"answer_text":"expression","correct":true,"explanation":null,"type":"String"},"qfi5-2":{"answer_text":"lookahead","correct":true,"explanation":null,"type":"String"},"qfi5-3":{"answer_text":"value","correct":true,"explanation":null,"type":"String"},"qfi5-4":{"answer_text":"expression","correct":true,"explanation":null,"type":"String"}},"points":1,"order":false,"question_comment":""},"question-5":{"question_text":"\nComplete este fragmento de <tt>slim</tt> que establece el favicon de \nla página HTML:\n<pre>\n    link rel=\"------\" type=\"image/jpg\" href=\"images/favicon.jpg\"\n</pre>","answers":{"qfi6-1":{"answer_text":"/(shortcut\\s+)?icon/i","correct":true,"explanation":null,"type":"Regexp"}},"points":1,"order":false,"question_comment":""}};
 
       function findCorrectAnswer(idQuestion, questionType) {
         correctIds = [];
@@ -304,11 +321,13 @@ Reset    </button>
         else {          // FillIn
           for (r in id) {
             input = $("#" + r.toString());
-            if (id[r] == true)
-              input.attr('class', 'fillin correct');
+            if (id[r] == true) {
+              input.attr('class', input.attr('class') + ' correct');
+            }
             else { 
-              if ((id[r] == false) || (id[r] != "n/a"))
-                input.attr('class', 'fillin incorrect');
+              if ((id[r] == false) || (id[r] != "n/a")) {
+                input.attr('class', input.attr('class') + ' incorrect');
+              }
             }
             
             if ((id[r] != true) && (id[r] != false) && (id[r] != "n/a")) {
@@ -439,7 +458,7 @@ Reset    </button>
             correct = false;
             answers = $("#" + x.toString() + " input");
             
-            if (answers.attr('class') == "fillin") {
+            if (answers.attr('class').match("fillin")) {
               correctAnswers = {};
               distractorAnswers = {};
               explanation = {};

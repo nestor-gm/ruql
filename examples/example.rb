@@ -10,7 +10,7 @@ quiz 'Example quiz' do
   end
   
   fill_in do
-    text 'The --- brown fox jumped over the lazy ---'
+    text 'The ---------- brown fox jumped over the lazy ---'
     answer [/fox/, /dog/], :explanation => 'This sentence contains all of the letters of the English Alphabet'
   end
   

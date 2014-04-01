@@ -142,13 +142,13 @@ class HtmlFormRenderer
       [0, -1].each {|index| ans.insert(index, '/')}
       opts = item.options
       case opts
-      when 0, 16
-      when 1, 3, 17
-        ans << 'i'
-      when 4, 6, 20
-        ans << 'm'
-      when 5, 7, 21
-        ans << 'mi'
+        when 0, 16
+        when 1, 3, 17
+          ans << 'i'
+        when 4, 6, 20
+          ans << 'm'
+        when 5, 7, 21
+          ans << 'mi'
       end
       if ((opts != 0) && (opts != 1) && (opts != 4) && (opts != 5) && (opts != 16) && (opts != 17) && (opts != 20) && (opts != 21))
         $stderr.puts "\n*** WARNING *** These RegExps only support i and m options. Other options will be ignored.\n\n"
@@ -196,6 +196,20 @@ class HtmlFormRenderer
     end
   end
 
+  def round_size(nHyphen)
+    case nHyphen
+      when 0..5
+        5
+      when 5..10
+        10
+      when 10..15
+        15
+      when 15..20
+        20
+      when 20..30
+        30
+    end
+  end
   def render_question_text(question,index)
     html_args = {
       :id => "question-#{index}",
@@ -209,10 +223,16 @@ class HtmlFormRenderer
           ('Select ALL that apply: ' if question.multiple).to_s <<
           if question.class == FillIn
             question.question_text.chop! if question.question_text[-1] == '.'
-            nBoxes = question.question_text.split(/---+/).length
-            nBoxes -= 1 if (question.question_text.split(/---+/)[-1] =~ /^[\s|\n]+$/)
-            nBoxes.times { |i| question.question_text.sub!(/\---+/, "<input type=text id=qfi#{index + 1}-#{i + 1} class=fillin></input>") }
-            question.question_text << "<div id=qfi#{index + 1}-#{nBoxes}r class=quiz></div></br></br>"
+            
+            hyphen = []
+            tmp = question.question_text.split('.').join(' ').split()
+            tmp.each { |w| hyphen << w if (w =~ /---+/)}
+
+            hyphen.length.times { |i|
+                           nHyphen = hyphen[i].count('-')
+                           question.question_text.sub!(/\---+/, "<input type=text id=qfi#{index + 1}-#{i + 1} class='fillin size-#{round_size(nHyphen)}'></input>") 
+                         }
+            question.question_text << "<div id=qfi#{index + 1}-#{hyphen.length}r class=quiz></div></br></br>"
           else 
             if (question.raw?)
               question.question_text
@@ -346,14 +366,14 @@ class HtmlFormRenderer
       code = %q{
         <script type=text/javascript src=http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML></script>
         <script type=text/javascript>
-          MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});\n
+          MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\\(','\\\)']]}});
         </script>
       }
     else
       @h.script(:type => 'text/javascript', :src => "http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML") do
       end
       @h.script(:type => 'text/javascript') do |j|
-        j << "MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});\n"
+        j << "MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\\\(','\\\\)']]}});"
       end
     end
   end
@@ -483,11 +503,13 @@ class HtmlFormRenderer
         else {          // FillIn
           for (r in id) {
             input = $("#" + r.toString());
-            if (id[r] == true)
-              input.attr('class', 'fillin correct');
+            if (id[r] == true) {
+              input.attr('class', input.attr('class') + ' correct');
+            }
             else { 
-              if ((id[r] == false) || (id[r] != "n/a"))
-                input.attr('class', 'fillin incorrect');
+              if ((id[r] == false) || (id[r] != "n/a")) {
+                input.attr('class', input.attr('class') + ' incorrect');
+              }
             }
             
             if ((id[r] != true) && (id[r] != false) && (id[r] != "n/a")) {
@@ -618,7 +640,7 @@ class HtmlFormRenderer
             correct = false;
             answers = $("#" + x.toString() + " input");
             
-            if (answers.attr('class') == "fillin") {
+            if (answers.attr('class').match("fillin")) {
               correctAnswers = {};
               distractorAnswers = {};
               explanation = {};
