@@ -2,20 +2,25 @@ quiz 'Example quiz' do
 
   #head :'examples/header.html'
   
+  fill_in do
+    text '#<a href="www.google.es"#>#</a#> is a ----'
+    answer /^link$/
+  end
+  
   fill_in :points => 2 do
-    text 'The visionary founder of Apple is ---'
+    text 'The visionary founder of Apple is --------'
     comment 'Question too easy'
     answer /^ste(ve|phen)\s+jobs$/im
     distractor /^steve\s+wozniak/i, :explanation => 'Almost, but not quite.'
   end
   
   fill_in do
-    text 'The ---------- brown fox jumped over the lazy ---'
+    text 'The ---- brown fox jumped over the lazy ----'
     answer [/fox/, /dog/], :explanation => 'This sentence contains all of the letters of the English Alphabet'
   end
   
   fill_in do
-    text 'The three stooges are ---, ---, and ---.'
+    text 'The three stooges are -----, ----, and -----.'
     answer %w(larry moe curly), :order => true 
   end
   

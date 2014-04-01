@@ -210,6 +210,12 @@ class HtmlFormRenderer
         30
     end
   end
+  
+  def raw_html(text)
+    text.gsub!('#<', '&lt;')
+    text.gsub!('#>', '&gt;')
+  end
+  
   def render_question_text(question,index)
     html_args = {
       :id => "question-#{index}",
@@ -223,15 +229,17 @@ class HtmlFormRenderer
           ('Select ALL that apply: ' if question.multiple).to_s <<
           if question.class == FillIn
             question.question_text.chop! if question.question_text[-1] == '.'
+            raw_html(question.question_text)
             
             hyphen = []
             tmp = question.question_text.split('.').join(' ').split()
             tmp.each { |w| hyphen << w if (w =~ /---+/)}
 
             hyphen.length.times { |i|
-                           nHyphen = hyphen[i].count('-')
-                           question.question_text.sub!(/\---+/, "<input type=text id=qfi#{index + 1}-#{i + 1} class='fillin size-#{round_size(nHyphen)}'></input>") 
-                         }
+                                 nHyphen = hyphen[i].count('-')
+                                 question.question_text.sub!(/\---+/, "<input type=text id=qfi#{index + 1}-#{i + 1} class='fillin size-#{round_size(nHyphen)}'></input>") 
+                                }
+            
             question.question_text << "<div id=qfi#{index + 1}-#{hyphen.length}r class=quiz></div></br></br>"
           else 
             if (question.raw?)
