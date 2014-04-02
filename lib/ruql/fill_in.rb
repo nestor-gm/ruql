@@ -7,13 +7,14 @@ class FillIn < Question
     super
     self.question_text = text
     self.case_sensitive = !!opts[:case_sensitive]
+    self.order = true
   end
 
   def multiple ; false ; end
 
   def answer(text, opts={})
     super
-    self.order = !!opts[:order]
+    self.order = opts[:order] if opts[:order] == false
   end
   
 end
