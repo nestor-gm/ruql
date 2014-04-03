@@ -51,7 +51,7 @@ class HtmlFormRenderer
     @xregexp = insert_xregexp(true)
     @codehelper = get_ip_js(true)
     @i18n = insert_i18n
-    
+   
     render_questions
     @validation_js = insert_defaultJS
     @sass = insert_sass
