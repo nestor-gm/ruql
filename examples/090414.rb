@@ -172,12 +172,12 @@ la página HTML:} +
       <tt>master</tt> sino que está en la rama <tt>tutu</tt> deberemos 
       modificar el comando anterior:
       <pre>
-      git push ------ -----------
+      git push ------ ----:------
       </pre>
     } 
     answer ["create", "chuchu", "heroku", "chuchu", "chuchu", "herokuapp"]+
            ['push', 'heroku']+
-           ['heroku', 'tutu:master']
+           ['heroku', 'tutu', 'master']
   end
 
   #foot "esto va al final"
