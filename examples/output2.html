@@ -27,7 +27,7 @@ ANÁLISIS SINTÁCTICO</title>
         width: inherit;
       }
       div.container {background-color:#EAEAEA;}
-      p.comment, div.explanation {font-style: italic;}
+      div.explanation {font-style: italic;}
       .nav>li>a.links {
         display: inline; 
         padding: 0; 
@@ -45,9 +45,19 @@ input.size-6 { width: 6em; }
 
 input.size-7 { width: 7em; }
 
-input.size-8 { width: 8em; }
-
 input.size-9 { width: 9em; }
+
+input.size-10 { width: 10em; }
+
+input.size-11 { width: 11em; }
+
+input.size-12 { width: 12em; }
+
+input.size-13 { width: 13em; }
+
+input.size-14 { width: 14em; }
+
+input.size-15 { width: 15em; }
 
     </style>
     <!-- Any CSS included by the user -->
@@ -83,7 +93,7 @@ ANÁLISIS SINTÁCTICO</h3>
           </div>
         </div>
       
-      <!-- Seed: 291477770307775562624222830848904017555 -->
+      <!-- Seed: 311180854373651964133442085285245398854 -->
 <form id="form">
   <ol class="questions">
     <li id="question-0" class="question fillin ">
@@ -92,14 +102,14 @@ ANÁLISIS SINTÁCTICO</h3>
 Dado un conjunto $A$, se define $A^*$ el cierre de Kleene de $A$ como:
 \( A^* = \cup_{n=1}^{\infty} A^n \)
 Se admite que $A^0 = { \epsilon }$, donde $\epsilon$ denota la
-<input type=text id=qfi1-1 class='fillin size-6'></input> <input type=text id=qfi1-2 class='fillin size-6'></input>, esto es
+<input type=text id=qfi1-1 class='fillin size-15'></input> <input type=text id=qfi1-2 class='fillin size-3'></input> esto es
 la palabra que tiene longitud cero, formada por cero símbolos del conjunto base $A$<div id=qfi1-2r class=quiz></div></br></br>      </div>
     </li>
     <li id="question-1" class="question fillin ">
       <div class="quiz text">
 [1 point] 
 Una producción de la forma $A \rightarrow A \alpha$.
-se dice que es <input type=text id=qfi2-1 class='fillin size-7'></input> por la <input type=text id=qfi2-2 class='fillin size-8'></input>
+se dice que es <input type=text id=qfi2-1 class='fillin size-9'></input> por la <input type=text id=qfi2-2 class='fillin size-9'></input>
 <div id=qfi2-2r class=quiz></div></br></br>      </div>
     </li>
     <li id="question-2" class="question fillin ">
@@ -133,17 +143,17 @@ por <tt>expression</tt>:
 <pre>
   expression = ->
     result = term()
-    while <input type=text id=qfi3-1 class='fillin size-6'></input> and <input type=text id=qfi3-2 class='fillin size-9'></input> is "ADDOP"
-      type = lookahead.value
+    while <input type=text id=qfi3-1 class='fillin size-9'></input> and <input type=text id=qfi3-2 class='fillin size-14'></input> is "ADDOP"
+      type = <input type=text id=qfi3-3 class='fillin size-9'></input>.<input type=text id=qfi3-4 class='fillin size-5'></input>
       match "ADDOP"
-      right = <input type=text id=qfi3-3 class='fillin size-4'></input>
+      right = <input type=text id=qfi3-5 class='fillin size-6'></input>
       result =
-        type: <input type=text id=qfi3-4 class='fillin size-4'></input>
+        type: <input type=text id=qfi3-6 class='fillin size-4'></input>
         left: result
         right: right
     result
 </pre>
-<div id=qfi3-4r class=quiz></div></br></br>      </div>
+<div id=qfi3-6r class=quiz></div></br></br>      </div>
     </li>
     <li id="question-3" class="question fillin ">
       <div class="quiz text">
@@ -153,48 +163,43 @@ método que se encarga de reconocer el lenguaje generado
 por <tt>statement</tt> para la <a href="#grammar">gramática
 definida anteriormente</a>:
 <pre>
-    statement = function() {
-      var left, result, right;
-      result = null;
-      if (<input type=text id=qfi4-1 class='fillin size-6'></input> && <input type=text id=qfi4-2 class='fillin size-6'></input> === "ID") {
-        left = {
-          type: "<input type=text id=qfi4-3 class='fillin size-3'></input>",
-          value: <input type=text id=qfi4-4 class='fillin size-6'></input>.value
-        };
-        match("ID");
-        match("=");
-        right = <input type=text id=qfi4-5 class='fillin size-6'></input>();
-        result = {
-          type: "=",
-          left: left,
-          right: right
-        };
-      } else if (<input type=text id=qfi4-6 class='fillin size-6'></input> && <input type=text id=qfi4-7 class='fillin size-6'></input>.<input type=text id=qfi4-8 class='fillin size-6'></input> === "P") {
-        match("P");
-        right = expression();
-        result = {
-          type: "P",
-          value: <input type=text id=qfi4-9 class='fillin size-6'></input>
-        };
-      } else if (<input type=text id=qfi4-10 class='fillin size-6'></input> && <input type=text id=qfi4-11 class='fillin size-6'></input>.<input type=text id=qfi4-12 class='fillin size-6'></input> === "IF") {
-        match("<input type=text id=qfi4-13 class='fillin size-3'></input>");
-        left = <input type=text id=qfi4-14 class='fillin size-6'></input>;
-        match("THEN");
-        right = <input type=text id=qfi4-15 class='fillin size-6'></input>;
-        result = {
-          type: "IF",
-          left: <input type=text id=qfi4-16 class='fillin size-4'></input>,
-          right: <input type=text id=qfi4-17 class='fillin size-4'></input>
-        };
-      } else {
-        throw "Syntax Error. Expected identifier but found " + 
-         (lookahead ? lookahead.value : "end of input") + 
-         (" near '" + (input.substr(lookahead.from)) + "'");
-      }
-      return result;
-    };
+  statement = ->
+    result = null
+    if <input type=text id=qfi4-1 class='fillin size-9'></input> and <input type=text id=qfi4-2 class='fillin size-9'></input>.<input type=text id=qfi4-3 class='fillin size-4'></input> is "ID"
+      left =
+        type: "ID"
+        value: <input type=text id=qfi4-4 class='fillin size-9'></input>.<input type=text id=qfi4-5 class='fillin size-5'></input>
+
+      match "ID"
+      match "="
+      right = <input type=text id=qfi4-6 class='fillin size-10'></input>()
+      result =
+        type: "="
+        left: left
+        right: right
+    else if lookahead and lookahead.type is "P"
+      match "P"
+      right = <input type=text id=qfi4-7 class='fillin size-12'></input>
+      result =
+        type: "P"
+        value: right
+    else if lookahead and lookahead.type is "IF"
+      match "IF"
+      left = <input type=text id=qfi4-8 class='fillin size-11'></input>
+      match "THEN"
+      right = <input type=text id=qfi4-9 class='fillin size-11'></input>
+      result =
+        type: "IF"
+        left: left
+        right: right
+    else # Error!
+      throw "Syntax Error. Expected identifier but found " + 
+        (if lookahead then lookahead.value else "end of input") + 
+        " near '#{input.substr(lookahead.from)}'"
+    result
+
 </pre>
-<div id=qfi4-17r class=quiz></div></br></br>      </div>
+<div id=qfi4-9r class=quiz></div></br></br>      </div>
     </li>
     <li id="question-4" class="question fillin ">
       <div class="quiz text">
@@ -202,10 +207,10 @@ definida anteriormente</a>:
 que reconoce el sublenguaje generado por <i>condition</i>:
   <pre>
   condition = ->
-    left = <input type=text id=qfi5-1 class='fillin size-6'></input>()
-    type = <input type=text id=qfi5-2 class='fillin size-6'></input>.<input type=text id=qfi5-3 class='fillin size-5'></input>
+    left = <input type=text id=qfi5-1 class='fillin size-11'></input>
+    type = <input type=text id=qfi5-2 class='fillin size-9'></input>.<input type=text id=qfi5-3 class='fillin size-5'></input>
     match "COMPARISON"
-    right = <input type=text id=qfi5-4 class='fillin size-6'></input>()
+    right = <input type=text id=qfi5-4 class='fillin size-10'></input>()
     result =
       type: type
       left: left
@@ -220,8 +225,38 @@ que reconoce el sublenguaje generado por <i>condition</i>:
 Complete este fragmento de <tt>slim</tt> que establece el favicon de 
 la página HTML:
 <pre>
-    link rel="<input type=text id=qfi6-1 class='fillin size-6'></input>" type="image/jpg" href="images/favicon.jpg"
+    link rel="<input type=text id=qfi6-1 class='fillin size-13'></input>" type="image/jpg" href="images/favicon.jpg"
 </pre><div id=qfi6-1r class=quiz></div></br></br>      </div>
+    </li>
+    <li id="question-6" class="question fillin ">
+      <div class="quiz text">
+[6 points] 
+      Para que un repositorio con una aplicación escrita en Ruby-Sinatra
+      pueda desplegarse en Heroku con nombre <tt>chuchu</tt> el primer comando   que debemos escribir es:
+      <pre>
+      heroku <input type=text id=qfi7-1 class='fillin size-6'></input> <input type=text id=qfi7-2 class='fillin size-6'></input>
+      </pre>
+      Este comando crea un remoto git cuyo nombre es <input type=text id=qfi7-3 class='fillin size-6'></input>
+      y cuya URL es 
+      <pre>
+        git@heroku.com:<input type=text id=qfi7-4 class='fillin size-7'></input>.git
+      </pre>
+      La URL de publicación/despliegue será:
+      http://<input type=text id=qfi7-5 class='fillin size-9'></input>.<input type=text id=qfi7-6 class='fillin size-9'></input>.com/
+      <br/>
+      Una vez que todo esta listo, para publicar nuestra versión
+      en la rama <tt>master</tt> en heroku debemos ejecutar el comando:
+      <pre>
+      git <input type=text id=qfi7-7 class='fillin size-4'></input> <input type=text id=qfi7-8 class='fillin size-6'></input> master
+      <br/>
+      </pre>
+      Si la versión que queremos publicar en heroku no está en la rama
+      <tt>master</tt> sino que está en la rama <tt>tutu</tt> deberemos 
+      modificar el comando anterior:
+      <pre>
+      git push <input type=text id=qfi7-9 class='fillin size-6'></input> <input type=text id=qfi7-10 class='fillin size-11'></input>
+      </pre>
+    <div id=qfi7-10r class=quiz></div></br></br>      </div>
     </li>
   </ol>
   <div class="btn-footer">
