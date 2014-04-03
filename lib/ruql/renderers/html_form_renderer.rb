@@ -442,7 +442,7 @@ class HtmlFormRenderer
       input.correct {color:#14B63F; font-weight: bold;}
       input.incorrect {color:rgb(255,0,0); font-weight: bold;}
       div.btn-footer {text-align: center;}
-      p.comment, div.explanation {font-style: italic;}
+      div.explanation {font-style: italic;}
       CSS
     end
   end
