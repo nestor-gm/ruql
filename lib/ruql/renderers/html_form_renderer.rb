@@ -2,6 +2,7 @@ class HtmlFormRenderer
   require 'builder'
   require 'erb'
   require 'json'
+  require 'sass'
   
   attr_reader :output
 
@@ -16,14 +17,12 @@ class HtmlFormRenderer
     @quiz = quiz
     @h = Builder::XmlMarkup.new(:target => @output, :indent => 2)
     @data = {}
+    @size_inputs = []
   end
 
   def render_quiz
     if @template
       render_with_template do
-        render_questions
-        @validation_js = insert_defaultJS
-        @i18n = insert_i18n
         @output
       end
     else
@@ -51,6 +50,11 @@ class HtmlFormRenderer
     @mathjax = insert_mathjax(true)
     @xregexp = insert_xregexp(true)
     @codehelper = get_ip_js(true)
+    @validation_js = insert_defaultJS
+    @i18n = insert_i18n
+    
+    render_questions
+    @sass = insert_sass
     
     # the ERB template includes 'yield' where questions should go:
     output = ERB.new(IO.read(File.expand_path @template)).result(binding)
@@ -195,21 +199,6 @@ class HtmlFormRenderer
       end
     end
   end
-
-  def round_size(nHyphen)
-    case nHyphen
-      when 0..5
-        5
-      when 5..10
-        10
-      when 10..15
-        15
-      when 15..20
-        20
-      when 20..30
-        30
-    end
-  end
   
   def raw_html(text)
     text.gsub!('#<', '&lt;')
@@ -237,7 +226,8 @@ class HtmlFormRenderer
 
             hyphen.length.times { |i|
                                  nHyphen = hyphen[i].count('-')
-                                 question.question_text.sub!(/\---+/, "<input type=text id=qfi#{index + 1}-#{i + 1} class='fillin size-#{round_size(nHyphen)}'></input>") 
+                                 @size_inputs << nHyphen
+                                 question.question_text.sub!(/\---+/, "<input type=text id=qfi#{index + 1}-#{i + 1} class='fillin size-#{nHyphen}'></input>")
                                 }
             
             question.question_text << "<div id=qfi#{index + 1}-#{hyphen.length}r class=quiz></div></br></br>"
@@ -338,6 +328,14 @@ class HtmlFormRenderer
       end
     end
     code if template
+  end
+  
+  def insert_sass
+    sass = ""
+    @size_inputs.uniq!.sort!.each { |sz| sass << "input.size-#{sz.to_s} { width: #{sz}em}"}
+    engine = Sass::Engine.new(sass, :syntax => :scss)
+    engine.options[:style] = :compact
+    engine.render
   end
   
   def insert_jQuery(h, template)
