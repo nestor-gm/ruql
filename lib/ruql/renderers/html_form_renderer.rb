@@ -224,7 +224,6 @@ class HtmlFormRenderer
             tmp = question.question_text.split(/[^-]/)
             tmp.each { |w| hyphen << w if (w =~ /---+/)}
 
-            $stderr.puts hyphen
             hyphen.length.times { |i|
                                  nHyphen = hyphen[i].count('-')
                                  @size_inputs << nHyphen
