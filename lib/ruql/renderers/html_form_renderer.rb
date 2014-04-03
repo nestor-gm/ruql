@@ -332,7 +332,7 @@ class HtmlFormRenderer
   
   def insert_sass
     sass = ""
-    @size_inputs.uniq.sort!.each { |sz| sass << "input.size-#{sz.to_s} { width: #{sz}em}"}
+    @size_inputs.uniq.sort.each { |sz| sass << "input.size-#{sz.to_s} { width: #{sz}em}"}
     engine = Sass::Engine.new(sass, :syntax => :scss)
     engine.options[:style] = :compact
     engine.render
