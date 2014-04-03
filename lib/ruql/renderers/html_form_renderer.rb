@@ -54,7 +54,7 @@ class HtmlFormRenderer
    
     render_questions
     @validation_js = insert_defaultJS
-    @sass = insert_sass
+    @sass = insert_sass if !@size_inputs.empty?
     
     # the ERB template includes 'yield' where questions should go:
     output = ERB.new(IO.read(File.expand_path @template)).result(binding)
@@ -332,7 +332,7 @@ class HtmlFormRenderer
   
   def insert_sass
     sass = ""
-    @size_inputs.uniq!.sort!.each { |sz| sass << "input.size-#{sz.to_s} { width: #{sz}em}"}
+    @size_inputs.uniq.sort!.each { |sz| sass << "input.size-#{sz.to_s} { width: #{sz}em}"}
     engine = Sass::Engine.new(sass, :syntax => :scss)
     engine.options[:style] = :compact
     engine.render
