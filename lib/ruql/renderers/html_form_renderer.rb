@@ -50,10 +50,10 @@ class HtmlFormRenderer
     @mathjax = insert_mathjax(true)
     @xregexp = insert_xregexp(true)
     @codehelper = get_ip_js(true)
-    @validation_js = insert_defaultJS
     @i18n = insert_i18n
     
     render_questions
+    @validation_js = insert_defaultJS
     @sass = insert_sass
     
     # the ERB template includes 'yield' where questions should go:
