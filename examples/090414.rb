@@ -180,6 +180,14 @@ la página HTML:} +
            ['heroku', 'tutu', 'master']
   end
 
+  fill_in do 
+    text %q{Con que subcomando del cliente <tt>heroku</tt> abro el navegador
+    en la URL del proyecto?<br/>
+    <pre>
+    heroku ----
+    </pre>}
+    answer 'open'
+  end
   #foot "esto va al final"
   
 end
