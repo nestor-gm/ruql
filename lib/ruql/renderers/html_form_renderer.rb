@@ -221,9 +221,10 @@ class HtmlFormRenderer
             raw_html(question.question_text)
             
             hyphen = []
-            tmp = question.question_text.split('.').join(' ').split()
+            tmp = question.question_text.split(/[^-]/)
             tmp.each { |w| hyphen << w if (w =~ /---+/)}
 
+            $stderr.puts hyphen
             hyphen.length.times { |i|
                                  nHyphen = hyphen[i].count('-')
                                  @size_inputs << nHyphen
