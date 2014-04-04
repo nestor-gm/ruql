@@ -83,7 +83,7 @@ ANÁLISIS SINTÁCTICO</h3>
           </div>
         </div>
       
-      <!-- Seed: 194431315993985810867870821061970156371 -->
+      <!-- Seed: 21087164290386444954520159195211247396 -->
 <form id="form">
   <ol class="questions">
     <li id="question-0" class="question fillin ">
@@ -229,6 +229,8 @@ la página HTML:
 Submit    </button>
     <button type="button" id="reset" class="btn btn-warning">
 Reset    </button>
+    <button type="button" id="deletestorage" class="btn btn-danger">
+Delete storage    </button>
   </div>
 </form>
 
@@ -567,7 +569,36 @@ Reset    </button>
           }
         }
       }
-
+      
+      function storeAnswers() {
+        if(typeof(Storage) !== "undefined") {
+          // Store
+          //localStorage.lastname = "Smith";
+          // Retrieve
+          //document.getElementById("storage").innerHTML=localStorage.lastname;
+          inputText = $('input:text').filter(function() { return $(this).val() != ""; });
+          for (i = 0; i < inputText.length; i++) {
+            idAnswer = inputText[i].id;
+            localStorage[idAnswer] = inputText[i].value;
+          }
+          
+          inputRadioCheckBox = $('input:checked');
+          for (i = 0; i < inputRadioCheckBox.length; i++) {
+            idAnswer = inputRadioCheckBox[i].id;
+            nquestion = parseInt(idAnswer.split('-')[0].substr(3)) - 1;
+            localStorage[idAnswer] = data["question-" + nquestion.toString()]['answers'][idAnswer]['answer_text'];
+          }
+        }
+        else {
+          alert("Sorry! No Web Storage supported.");
+        }
+      }
+      
+      function deleteAnswers() {
+        localStorage.clear();
+        alert("Local storage deleted");
+      }
+      
       if (typeof(codehelper_ip) == "undefined")
         language = "EN";
       else
@@ -583,10 +614,28 @@ Reset    </button>
         }
         if (filledAllQuiz)
           $("#submit").detach();
+        
+        storeAnswers();
       });
 
       $("#reset").click(function() {
         window.location.reload();
+      });
+      
+      $("#deletestorage").click(function() {
+        deleteAnswers();
+      });
+      
+      $(document).ready(function() {
+        if (localStorage.length != 0) {
+          for (x in localStorage) {
+            if (x.match(/qfi/))                                         // FillIn question
+              $("#" + x.toString()).val(localStorage[x.toString()]);
+            else {                                                      // SelectMultiple/MultipleChoice question
+              $("#" + x.toString()).attr('checked', 'checked');
+            }
+          }
+        }
       });
 </script>
     <!-- Any JavaScript included by the user -->

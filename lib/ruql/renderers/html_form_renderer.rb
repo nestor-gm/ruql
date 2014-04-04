@@ -78,6 +78,7 @@ class HtmlFormRenderer
       @h.div :class => 'btn-footer' do
         insert_button('Submit', 'btn btn-primary')
         insert_button('Reset', 'btn btn-warning')
+        insert_button('Delete storage', 'btn btn-danger')
       end
     end
   end
@@ -272,7 +273,7 @@ class HtmlFormRenderer
   end
   
   def insert_button(name, type)
-    @h.button(:type => 'button', :id => name.downcase, :class => type) do |b|
+    @h.button(:type => 'button', :id => name.downcase.split().join(), :class => type) do |b|
       b << name
     end
   end
@@ -745,7 +746,36 @@ class HtmlFormRenderer
           }
         }
       }
-
+      
+      function storeAnswers() {
+        if(typeof(Storage) !== "undefined") {
+          // Store
+          //localStorage.lastname = "Smith";
+          // Retrieve
+          //document.getElementById("storage").innerHTML=localStorage.lastname;
+          inputText = $('input:text').filter(function() { return $(this).val() != ""; });
+          for (i = 0; i < inputText.length; i++) {
+            idAnswer = inputText[i].id;
+            localStorage[idAnswer] = inputText[i].value;
+          }
+          
+          inputRadioCheckBox = $('input:checked');
+          for (i = 0; i < inputRadioCheckBox.length; i++) {
+            idAnswer = inputRadioCheckBox[i].id;
+            nquestion = parseInt(idAnswer.split('-')[0].substr(3)) - 1;
+            localStorage[idAnswer] = data["question-" + nquestion.toString()]['answers'][idAnswer]['answer_text'];
+          }
+        }
+        else {
+          alert("Sorry! No Web Storage supported.");
+        }
+      }
+      
+      function deleteAnswers() {
+        localStorage.clear();
+        alert("Local storage deleted");
+      }
+      
       if (typeof(codehelper_ip) == "undefined")
         language = "EN";
       else
@@ -761,10 +791,28 @@ class HtmlFormRenderer
         }
         if (filledAllQuiz)
           $("#submit").detach();
+        
+        storeAnswers();
       });
 
       $("#reset").click(function() {
         window.location.reload();
+      });
+      
+      $("#deletestorage").click(function() {
+        deleteAnswers();
+      });
+      
+      $(document).ready(function() {
+        if (localStorage.length != 0) {
+          for (x in localStorage) {
+            if (x.match(/qfi/))                                         // FillIn question
+              $("#" + x.toString()).val(localStorage[x.toString()]);
+            else {                                                      // SelectMultiple/MultipleChoice question
+              $("#" + x.toString()).attr('checked', 'checked');
+            }
+          }
+        }
       });
       JS
   end
