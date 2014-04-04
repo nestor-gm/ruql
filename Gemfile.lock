@@ -5,6 +5,7 @@ GEM
     builder (3.0.0)
     columnize (0.3.6)
     getopt (1.4.1)
+    json (1.8.1)
     linecache19 (0.5.12)
       ruby_core_source (>= 0.1.4)
     ruby-debug-base19 (0.11.25)
@@ -17,6 +18,7 @@ GEM
       ruby-debug-base19 (>= 0.11.19)
     ruby_core_source (0.1.5)
       archive-tar-minitar (>= 0.5.2)
+    sass (3.2.13)
 
 PLATFORMS
   ruby
@@ -24,4 +26,6 @@ PLATFORMS
 DEPENDENCIES
   builder
   getopt
+  json
   ruby-debug19
+  sass
