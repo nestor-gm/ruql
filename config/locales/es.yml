@@ -1,0 +1,14 @@
+---
+es:
+  quiz:
+    title: Cuestionario
+  questions:
+    correct: Correcto
+    incorrect: Incorrecto
+    points: puntos
+  buttons:
+    submit: Enviar
+    reset: Reset
+    delete: Borrar respuestas
+  alerts:
+    storage: Almacenamiento local borrado

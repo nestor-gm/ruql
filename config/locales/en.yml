@@ -1,0 +1,14 @@
+---
+en:
+  quiz:
+    title: Quiz
+  questions:
+    correct: Correct
+    incorrect: Incorrect
+    points: points
+  buttons:
+    submit: Submit
+    reset: Reset
+    delete: Delete storage
+  alerts:
+    storage: Local storage deleted

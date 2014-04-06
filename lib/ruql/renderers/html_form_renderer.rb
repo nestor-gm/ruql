@@ -3,6 +3,8 @@ class HtmlFormRenderer
   require 'erb'
   require 'json'
   require 'sass'
+  require 'yaml'
+  require 'i18n'
   
   attr_reader :output
 
@@ -18,9 +20,11 @@ class HtmlFormRenderer
     @h = Builder::XmlMarkup.new(:target => @output, :indent => 2)
     @data = {}
     @size_inputs = []
+    @language = I18n.locale #:es
   end
 
   def render_quiz
+    load_yml
     if @template
       render_with_template do
         @output
@@ -43,14 +47,13 @@ class HtmlFormRenderer
   def render_with_template
     # local variables that should be in scope in the template 
     quiz = @quiz
-    title = "Quiz" unless @title
+    title = translate(:title, 'quiz') unless @title
     @css_custom = insert_css(true) if @css
     @js_custom = insert_js(true) if @js
     @jQuery = insert_jQuery('', true)
     @mathjax = insert_mathjax(true)
     @xregexp = insert_xregexp(true)
-    @codehelper = get_ip_js(true)
-    @i18n = insert_i18n
+    @i18n = yml_to_json
    
     render_questions
     @validation_js = insert_defaultJS
@@ -76,9 +79,9 @@ class HtmlFormRenderer
         end
       end
       @h.div :class => 'btn-footer' do
-        insert_button('Submit', 'btn btn-primary')
-        insert_button('Reset', 'btn btn-warning')
-        insert_button('Delete storage', 'btn btn-danger')
+        insert_button('submit', translate(:submit, 'buttons'), 'btn btn-primary')
+        insert_button('reset', translate(:reset, 'buttons'), 'btn btn-warning')
+        insert_button('deleteStorage', translate(:delete, 'buttons'), 'btn btn-danger')
       end
     end
   end
@@ -272,8 +275,8 @@ class HtmlFormRenderer
     end if (q.question_comment != "")
   end
   
-  def insert_button(name, type)
-    @h.button(:type => 'button', :id => name.downcase.split().join(), :class => type) do |b|
+  def insert_button(id, name, type)
+    @h.button(:type => 'button', :id => id, :class => type) do |b|
       b << name
     end
   end
@@ -287,12 +290,11 @@ class HtmlFormRenderer
   
   def insert_resources_body(b)
     insert_jQuery(b, false)
-    get_ip_js(false)
     insert_xregexp(false)
     insert_js(false) if @js
     
     @h.script(:type => 'text/javascript') do |j|
-      j << insert_i18n
+      j << yml_to_json
     end
     @h.script(:type => 'text/javascript') do |j|
       j << insert_defaultJS
@@ -409,28 +411,22 @@ class HtmlFormRenderer
     code if template
   end
   
-  def get_ip_js(template)
-    if (template)
-      code = "<script type=text/javascript src=http://www.codehelper.io/api/ips/?js></script>"
-      code
-    else
-      @h.script(:type => 'text/javascript', :src => "http://www.codehelper.io/api/ips/?js") do
-      end
-    end
+  def load_yml
+    I18n.enforce_available_locales = true
+    I18n.load_path = Dir['config/locales/*.yml']
   end
   
-  def insert_i18n
+  def yml_to_json
+    yml = File.read("config/locales/#{@language.to_s}.yml")
+    data = YAML::load(yml)
+    json = JSON.dump(data)
     <<-i18n
-      i18n = {};
-      i18n['ES'] = {}
-      i18n['ES']['correct'] = "Correcto";
-      i18n['ES']['incorrect'] = "Incorrecto";
-      i18n['ES']['points'] = "puntos";
-      i18n['EN'] = {}
-      i18n['EN']['correct'] = "Correct";
-      i18n['EN']['incorrect'] = "Incorrect";
-      i18n['EN']['points'] = "points";
+      i18n = #{json}
     i18n
+  end
+  
+  def translate(word, scope)
+    I18n.translate word, :scope => scope, :locale => @language
   end
   
   def insert_defaultCSS
@@ -451,7 +447,8 @@ class HtmlFormRenderer
   def insert_defaultJS
     <<-JS
       data = #{@data.to_json};
-
+      language = '#{@language.to_s}';
+      
       function findCorrectAnswer(idQuestion, questionType) {
         correctIds = [];
         for (id in data[idQuestion]['answers']) {
@@ -496,15 +493,15 @@ class HtmlFormRenderer
           $("br[class=" + id + "br" + "]").detach();
           if (type == 1) {
             if ((explanation == "") || (explanation == null))
-              $("div[id ~= " + id + "r" + "]").html("<strong class=correct> " + i18n[language]['correct'] + "</strong></br>");
+              $("div[id ~= " + id + "r" + "]").html("<strong class=correct> " + i18n[language]['questions']['correct'] + "</strong></br>");
             else
-              $("div[id ~= " + id + "r" + "]").html("<strong class=correct> " + i18n[language]['correct'] + " - " + explanation + "</strong></br>");
+              $("div[id ~= " + id + "r" + "]").html("<strong class=correct> " + i18n[language]['questions']['correct'] + " - " + explanation + "</strong></br>");
           }
           else {
             if ((explanation == "") || (explanation == null))
-              $("div[id ~= " + id + "r" + "]").html("<strong class=incorrect> " + i18n[language]['incorrect'] + "</strong></br>");
+              $("div[id ~= " + id + "r" + "]").html("<strong class=incorrect> " + i18n[language]['questions']['incorrect'] + "</strong></br>");
             else
-              $("div[id ~= " + id + "r" + "]").html("<strong class=incorrect> " + i18n[language]['incorrect'] + " - " + explanation + "</strong></br>");
+              $("div[id ~= " + id + "r" + "]").html("<strong class=incorrect> " + i18n[language]['questions']['incorrect'] + " - " + explanation + "</strong></br>");
           }
         }
         else {          // FillIn
@@ -532,11 +529,12 @@ class HtmlFormRenderer
       }
       
       function calculateMark(question, id, result, typeQuestion, numberCorrects, numberIncorrects) {
+        stringPoints = i18n[language]['questions']['points'];
         if (typeQuestion == 2) {
           if (result)
-            $("#" + id).append("<strong class=mark> " + question['points'].toFixed(2) + "/" + question['points'].toFixed(2) + " " + i18n[language]['points'] + "</strong></br></br>");
+            $("#" + id).append("<strong class=mark> " + question['points'].toFixed(2) + "/" + question['points'].toFixed(2) + " " + stringPoints + "</strong></br></br>");
           else
-            $("#" + id).append("<strong class=mark> 0.00/" + question['points'].toFixed(2) + " " + i18n[language]['points'] + "</strong></br></br>");
+            $("#" + id).append("<strong class=mark> 0.00/" + question['points'].toFixed(2) + " " + stringPoints + "</strong></br></br>");
         }
         else if (typeQuestion == 1) {
           size = 0;
@@ -545,7 +543,7 @@ class HtmlFormRenderer
               size += 1;
               
           pointsUser = ((question['points'] / size) * numberCorrects).toFixed(2);
-          $("#" + id).append("<strong class=mark> " + pointsUser + "/" + question['points'].toFixed(2) + " " + i18n[language]['points'] + "</strong></br></br>");
+          $("#" + id).append("<strong class=mark> " + pointsUser + "/" + question['points'].toFixed(2) + " " + stringPoints + "</strong></br></br>");
         }
         else {
           totalCorrects = 0;
@@ -561,7 +559,7 @@ class HtmlFormRenderer
           if (mark < 0)
             mark = 0;
             
-          $("#" + id).append("<strong class=mark> " + mark.toFixed(2) + "/" + question['points'].toFixed(2) + " " + i18n[language]['points'] + "</strong></br></br>");        
+          $("#" + id).append("<strong class=mark> " + mark.toFixed(2) + "/" + question['points'].toFixed(2) + " " + stringPoints + "</strong></br></br>");        
         }
       }
       
@@ -749,10 +747,6 @@ class HtmlFormRenderer
       
       function storeAnswers() {
         if(typeof(Storage) !== "undefined") {
-          // Store
-          //localStorage.lastname = "Smith";
-          // Retrieve
-          //document.getElementById("storage").innerHTML=localStorage.lastname;
           inputText = $('input:text').filter(function() { return $(this).val() != ""; });
           for (i = 0; i < inputText.length; i++) {
             idAnswer = inputText[i].id;
@@ -773,14 +767,9 @@ class HtmlFormRenderer
       
       function deleteAnswers() {
         localStorage.clear();
-        alert("Local storage deleted");
+        alert(i18n[language]['alerts']['storage']);
       }
-      
-      if (typeof(codehelper_ip) == "undefined")
-        language = "EN";
-      else
-        language = codehelper_ip.Country;
-      
+     
       $("#submit").click(function() {
         checkAnswers();
         filledAllQuiz = true;
@@ -799,7 +788,7 @@ class HtmlFormRenderer
         window.location.reload();
       });
       
-      $("#deletestorage").click(function() {
+      $("#deleteStorage").click(function() {
         deleteAnswers();
       });
       
