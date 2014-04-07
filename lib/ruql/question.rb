@@ -1,5 +1,5 @@
 class Question
-  attr_accessor :question_text, :answers, :randomize, :points, :name, :question_tags, :question_comment, :default_explanation
+  attr_accessor :question_text, :answers, :randomize, :points, :name, :question_tags, :question_comment, :default_explanation, :keys
   
   def initialize(*args)
     options = if args[-1].kind_of?(Hash) then args[-1] else {} end
@@ -10,6 +10,7 @@ class Question
     @question_tags = []
     @question_comment = ''
     @default_explanation = ''
+    @keys = []
   end
 
   def raw? ; !!@raw ; end
@@ -22,6 +23,16 @@ class Question
     substring = text.split(' ')
     substring.each { |s| answers << s if (s =~ /----+{\w+}/)}
     answers.each { |a| @answers << Answer.new(a[/\w+/], correct=true, opts[:explanation]) }
+  end
+  
+  def texthash(text, opts={})
+    @question_text = text.split(/{\w+}/).join()
+    substring = text.split(' ')
+    substring.each { |s| @keys << s[/\w+/].to_sym if (s =~ /----+{\w+}/)}
+  end
+  
+  def answerhash(hash, opts={})
+    @keys.each { |k| @answers << Answer.new(hash[k], correct=true, opts[:explanation])}
   end
   
   def explanation(text)

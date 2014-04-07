@@ -209,7 +209,7 @@ class HtmlFormRenderer
         qtext = "[#{question.points} point#{'s' if question.points>1}] " <<
           ('Select ALL that apply: ' if question.multiple).to_s <<
           if question.class == FillIn
-            question.question_text.chop! if question.question_text[-1] == '.'
+            #question.question_text.chop! if question.question_text[-1] == '.'
             
             hyphen = []
             tmp = question.question_text.split(/[^-]/)

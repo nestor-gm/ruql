@@ -34,6 +34,11 @@ quiz 'Example quiz' do
   end
   
   fill_in do
+    texthash "The capital of Tenerife is -----{santa} Cruz de --------{tenerife}"
+    answerhash :santa => /Santa/i, :tenerife => /Tenerife/i
+  end
+  
+  fill_in do
     text %q{
       Calculate the determinant of this matrix:
       $$\mathbf{A} = \begin{vmatrix} 
