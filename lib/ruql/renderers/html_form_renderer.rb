@@ -5,6 +5,7 @@ class HtmlFormRenderer
   require 'sass'
   require 'yaml'
   require 'i18n'
+  require 'opal'
   
   attr_reader :output
 
@@ -21,6 +22,7 @@ class HtmlFormRenderer
     @data = {}
     @size_inputs = []
     @language = I18n.locale #:es
+    #@opal = ""
   end
 
   def render_quiz
@@ -58,6 +60,7 @@ class HtmlFormRenderer
     render_questions
     @validation_js = insert_defaultJS(@quiz.points)
     @sass = insert_sass if !@size_inputs.empty?
+    #@opal2 = @opal
     
     # the ERB template includes 'yield' where questions should go:
     output = ERB.new(IO.read(File.expand_path @template)).result(binding)
@@ -146,21 +149,30 @@ class HtmlFormRenderer
   end
   
   def type_answer_fill_in(answer, item, idx, id_answer)
-    if (item.class == Regexp)
-      ans = item.source
-      type = 'Regexp'
-      [0, -1].each {|index| ans.insert(index, '/')}
-      opts = item.options
-      ans << 'i' if (opts & 1 == 1)
-      ans << 'x' if (opts & 2 == 2)
-      ans << 'm' if (opts & 4 == 4)
-    elsif (item.class == String)
-      ans = item.downcase
-      type = 'String'
-    else
+=begin
+    if (eval(item).respond_to?('call'))
       ans = item
-      type = 'Fixnum'
-    end
+      type = 'Proc'
+      opal = Opal.compile(item)
+      @opal << opal
+    else
+=end
+      if (item.class == Regexp)
+        ans = item.source
+        type = 'Regexp'
+        [0, -1].each {|index| ans.insert(index, '/')}
+        opts = item.options
+        ans << 'i' if (opts & 1 == 1)
+        ans << 'x' if (opts & 2 == 2)
+        ans << 'm' if (opts & 4 == 4)
+      elsif (item.class == String)
+        ans = item.downcase
+        type = 'String'
+      else
+        ans = item
+        type = 'Fixnum'
+      end
+    #end
     @data[:"question-#{idx}"][:answers]["qfi#{idx + 1}-#{id_answer}".to_sym] = {:answer_text => ans, :correct => answer.correct, 
                                                                                 :explanation => answer.explanation, :type => type}
   end
@@ -658,6 +670,9 @@ class HtmlFormRenderer
                     options = string[2];
                     correctAnswers[ans.toString()] = XRegExp(regexp, options);
                   }
+                  else if (data[x.toString()]['answers'][ans]['type'] == "Proc") {
+                  
+                  }
                   else { // String or Number
                     correctAnswers[ans.toString()] = data[x.toString()]['answers'][ans]['answer_text'];
                     stringAnswer = true;
@@ -669,6 +684,9 @@ class HtmlFormRenderer
                     regexp = string[1];
                     options = string[2];
                     distractorAnswers[ans.toString()] = XRegExp(regexp, options);
+                  }
+                  else if (data[x.toString()]['answers'][ans]['type'] == "Proc") {
+                  
                   }
                   else {// String or Number
                     distractorAnswers[ans.toString()] = data[x.toString()]['answers'][ans]['answer_text'];

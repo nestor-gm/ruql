@@ -40,6 +40,13 @@ quiz 'Example quiz' do
   
   fill_in do
     text %q{
+      Diga dos números x = ---- e  y = ---- que multiplicados den 100
+    }
+    answer "result = lambda { |x, y| x * y == 100 }"
+  end
+
+  fill_in do
+    text %q{
       Calculate the determinant of this matrix:
       $$\mathbf{A} = \begin{vmatrix} 
       1 & 3 \\\\ 
