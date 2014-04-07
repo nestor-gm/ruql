@@ -1,9 +1,14 @@
+require 'htmlentities'
+
+coder = HTMLEntities.new
+
 quiz 'Example quiz' do
 
   #head :'examples/header.html'
   
+  tag = '<a href="www.google.es"></a> '
   fill_in do
-    text '#<a href="www.google.es"#>#</a#> is a ----'
+    text coder.encode(tag) + '<b>is</b> a ----'
     answer /^link$/
   end
   

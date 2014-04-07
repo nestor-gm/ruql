@@ -204,11 +204,6 @@ class HtmlFormRenderer
     end
   end
   
-  def raw_html(text)
-    text.gsub!('#<', '&lt;')
-    text.gsub!('#>', '&gt;')
-  end
-  
   def render_question_text(question,index)
     html_args = {
       :id => "question-#{index}",
@@ -222,7 +217,6 @@ class HtmlFormRenderer
           ('Select ALL that apply: ' if question.multiple).to_s <<
           if question.class == FillIn
             question.question_text.chop! if question.question_text[-1] == '.'
-            raw_html(question.question_text)
             
             hyphen = []
             tmp = question.question_text.split(/[^-]/)
