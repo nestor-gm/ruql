@@ -141,10 +141,10 @@ Rellene las partes que faltan del código CoffeeScript
 que reconoce el sublenguaje generado por <i>condition</i>:
   <pre>
   condition = ->
-    left = ------()
-    type = ------.-----
+    left = ----------()
+    type = ---------.-----
     match "COMPARISON"
-    right = ------()
+    right = ---------()
     result =
       type: type
       left: left

@@ -8,14 +8,14 @@ quiz 'Example quiz' do
   
   tag = '<a href="www.google.es"></a> '
   fill_in do
-    text coder.encode(tag) + '<b>is</b> a ----'
+    text '<i>Example of escaped HTML and three hyphens not evaluated:</i><br>' + "#{coder.encode(tag)}" + '<b>is</b> a --- ---- ---'
     answer /^link$/
   end
   
   fill_in :points => 2 do
     text 'The visionary founder of Apple is --------'
     comment 'Question too easy'
-    answer /^ste(ve|phen)\s+jobs$/im
+    answer /^ste(ve|phen)\s+jobs #comment $/imx
     distractor /^steve\s+wozniak/i, :explanation => 'Almost, but not quite.'
   end
   
@@ -37,7 +37,7 @@ quiz 'Example quiz' do
       2 & 4 
       \end{vmatrix}$$
       <br/>
-      ---
+      ----
     }
     answer -1
   end
@@ -47,7 +47,7 @@ quiz 'Example quiz' do
       Solve: 
       $$\binom{n}{k} = \frac{n!}{k!(n-k)!}$$
       when n = 5 and k = 2:
-      ---
+      ----
     }
     explanation "Not exactly"
     answer 10
@@ -57,7 +57,7 @@ quiz 'Example quiz' do
   fill_in do
     text %q{
       When x = 2, the solution of $\sqrt{3x+3}+(1+x)^2$ is:
-      ---
+      ----
     }
     answer 12
     distractor 11, :explanation => "Try again!"

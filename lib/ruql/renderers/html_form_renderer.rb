@@ -149,6 +149,11 @@ class HtmlFormRenderer
       type = 'Regexp'
       [0, -1].each {|index| ans.insert(index, '/')}
       opts = item.options
+      
+      ans << 'i' if (opts & 1 == 1)
+      ans << 'x' if (opts & 2 == 2)
+      ans << 'm' if (opts & 4 == 4)
+=begin
       case opts
         when 0, 16
         when 1, 3, 17
@@ -161,6 +166,7 @@ class HtmlFormRenderer
       if ((opts != 0) && (opts != 1) && (opts != 4) && (opts != 5) && (opts != 16) && (opts != 17) && (opts != 20) && (opts != 21))
         $stderr.puts "\n*** WARNING *** These RegExps only support i and m options. Other options will be ignored.\n\n"
       end
+=end
     elsif (item.class == String)
       ans = item.downcase
       type = 'String'
@@ -220,12 +226,12 @@ class HtmlFormRenderer
             
             hyphen = []
             tmp = question.question_text.split(/[^-]/)
-            tmp.each { |w| hyphen << w if (w =~ /---+/)}
-
+            tmp.each { |w| hyphen << w if (w =~ /----+/)}
+            
             hyphen.length.times { |i|
                                  nHyphen = hyphen[i].count('-')
                                  @size_inputs << nHyphen
-                                 question.question_text.sub!(/\---+/, "<input type=text id=qfi#{index + 1}-#{i + 1} class='fillin size-#{nHyphen}'></input>")
+                                 question.question_text.sub!(/----+/, "<input type=text id=qfi#{index + 1}-#{i + 1} class='fillin size-#{nHyphen}'></input>")
                                 }
             
             question.question_text << "<div id=qfi#{index + 1}-#{hyphen.length}r class=quiz></div></br></br>"
@@ -329,7 +335,7 @@ class HtmlFormRenderer
   
   def insert_sass
     sass = ""
-    @size_inputs.uniq.sort.each { |sz| sass << "input.size-#{sz.to_s} { width: #{sz}em}"}
+    @size_inputs.uniq.sort.each { |sz| sass << "input.size-#{sz.to_s} { width: #{sz-(sz*0.3)}em}"}
     engine = Sass::Engine.new(sass, :syntax => :scss)
     engine.options[:style] = :compact
     engine.render
@@ -576,7 +582,7 @@ class HtmlFormRenderer
                     }
                   }
                   else {  // Answer is a Regexp
-                    if (userAnswers[u].match(correctAnswers[y])) {
+                    if (XRegExp.exec(userAnswers[u], correctAnswers[y])) {
                       correction[u] = true;
                       checkedAnswers[u] = userAnswers[u];
                       matchedCorrect = true;
@@ -602,7 +608,7 @@ class HtmlFormRenderer
                   correction[u] = false;
               }
               else {
-                if (userAnswers[u].match(correctAnswers[u]))
+                if (XRegExp.exec(userAnswers[u], correctAnswers[u]))
                   correction[u] = true;
                 else
                   correction[u] = false;
@@ -622,7 +628,7 @@ class HtmlFormRenderer
                     correction[u] = y.toString();
                 }
                 else {
-                  if (userAnswers[u].match(distractorAnswers[y]))
+                  if (XRegExp.exec(userAnswers[u], distractorAnswers[y]))
                     correction[u] = y.toString();
                 }
               }
@@ -651,7 +657,7 @@ class HtmlFormRenderer
                     string = data[x.toString()]['answers'][ans]['answer_text'].split('/');
                     regexp = string[1];
                     options = string[2];
-                    correctAnswers[ans.toString()] = RegExp(regexp, options);
+                    correctAnswers[ans.toString()] = XRegExp(regexp, options);
                   }
                   else { // String or Number
                     correctAnswers[ans.toString()] = data[x.toString()]['answers'][ans]['answer_text'];
@@ -663,7 +669,7 @@ class HtmlFormRenderer
                     string = data[x.toString()]['answers'][ans]['answer_text'].split('/');
                     regexp = string[1];
                     options = string[2];
-                    distractorAnswers[ans.toString()] = RegExp(regexp, options);
+                    distractorAnswers[ans.toString()] = XRegExp(regexp, options);
                   }
                   else {// String or Number
                     distractorAnswers[ans.toString()] = data[x.toString()]['answers'][ans]['answer_text'];

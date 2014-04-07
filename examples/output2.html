@@ -35,19 +35,19 @@ ANÁLISIS SINTÁCTICO</title>
       }
       .nav>li>a.links:hover {color: #FFCCFF;}
       /* Inputs size */
-      input.size-3 { width: 3em; }
+      input.size-4 { width: 2.8em; }
 
-input.size-4 { width: 4em; }
+input.size-5 { width: 3.5em; }
 
-input.size-5 { width: 5em; }
+input.size-6 { width: 4.2em; }
 
-input.size-6 { width: 6em; }
+input.size-7 { width: 4.9em; }
 
-input.size-7 { width: 7em; }
+input.size-8 { width: 5.6em; }
 
-input.size-8 { width: 8em; }
+input.size-9 { width: 6.300000000000001em; }
 
-input.size-9 { width: 9em; }
+input.size-10 { width: 7.0em; }
 
     </style>
     <!-- Any CSS included by the user -->
@@ -83,7 +83,7 @@ ANÁLISIS SINTÁCTICO</h3>
           </div>
         </div>
       
-      <!-- Seed: 195973688135075840353093896017855366606 -->
+      <!-- Seed: 121070815167489721142650704066344751860 -->
 <form id="form">
   <ol class="questions">
     <li id="question-0" class="question fillin ">
@@ -158,33 +158,33 @@ definida anteriormente</a>:
       result = null;
       if (<input type=text id=qfi4-1 class='fillin size-6'></input> && <input type=text id=qfi4-2 class='fillin size-6'></input> === "ID") {
         left = {
-          type: "<input type=text id=qfi4-3 class='fillin size-3'></input>",
-          value: <input type=text id=qfi4-4 class='fillin size-6'></input>.value
+          type: "---",
+          value: <input type=text id=qfi4-3 class='fillin size-6'></input>.value
         };
         match("ID");
         match("=");
-        right = <input type=text id=qfi4-5 class='fillin size-6'></input>();
+        right = <input type=text id=qfi4-4 class='fillin size-6'></input>();
         result = {
           type: "=",
           left: left,
           right: right
         };
-      } else if (<input type=text id=qfi4-6 class='fillin size-6'></input> && <input type=text id=qfi4-7 class='fillin size-6'></input>.<input type=text id=qfi4-8 class='fillin size-6'></input> === "P") {
+      } else if (<input type=text id=qfi4-5 class='fillin size-6'></input> && <input type=text id=qfi4-6 class='fillin size-6'></input>.<input type=text id=qfi4-7 class='fillin size-6'></input> === "P") {
         match("P");
         right = expression();
         result = {
           type: "P",
-          value: <input type=text id=qfi4-9 class='fillin size-6'></input>
+          value: <input type=text id=qfi4-8 class='fillin size-6'></input>
         };
-      } else if (<input type=text id=qfi4-10 class='fillin size-6'></input> && <input type=text id=qfi4-11 class='fillin size-6'></input>.<input type=text id=qfi4-12 class='fillin size-6'></input> === "IF") {
-        match("<input type=text id=qfi4-13 class='fillin size-3'></input>");
-        left = <input type=text id=qfi4-14 class='fillin size-6'></input>;
+      } else if (<input type=text id=qfi4-9 class='fillin size-6'></input> && <input type=text id=qfi4-10 class='fillin size-6'></input>.<input type=text id=qfi4-11 class='fillin size-6'></input> === "IF") {
+        match("---");
+        left = <input type=text id=qfi4-12 class='fillin size-6'></input>;
         match("THEN");
-        right = <input type=text id=qfi4-15 class='fillin size-6'></input>;
+        right = <input type=text id=qfi4-13 class='fillin size-6'></input>;
         result = {
           type: "IF",
-          left: <input type=text id=qfi4-16 class='fillin size-4'></input>,
-          right: <input type=text id=qfi4-17 class='fillin size-4'></input>
+          left: <input type=text id=qfi4-14 class='fillin size-4'></input>,
+          right: <input type=text id=qfi4-15 class='fillin size-4'></input>
         };
       } else {
         throw "Syntax Error. Expected identifier but found " + 
@@ -194,7 +194,7 @@ definida anteriormente</a>:
       return result;
     };
 </pre>
-<div id=qfi4-17r class=quiz></div></br></br>      </div>
+<div id=qfi4-15r class=quiz></div></br></br>      </div>
     </li>
     <li id="question-4" class="question fillin ">
       <div class="quiz text">
@@ -202,10 +202,10 @@ definida anteriormente</a>:
 que reconoce el sublenguaje generado por <i>condition</i>:
   <pre>
   condition = ->
-    left = <input type=text id=qfi5-1 class='fillin size-6'></input>()
-    type = <input type=text id=qfi5-2 class='fillin size-6'></input>.<input type=text id=qfi5-3 class='fillin size-5'></input>
+    left = <input type=text id=qfi5-1 class='fillin size-10'></input>()
+    type = <input type=text id=qfi5-2 class='fillin size-9'></input>.<input type=text id=qfi5-3 class='fillin size-5'></input>
     match "COMPARISON"
-    right = <input type=text id=qfi5-4 class='fillin size-6'></input>()
+    right = <input type=text id=qfi5-4 class='fillin size-9'></input>()
     result =
       type: type
       left: left
@@ -226,11 +226,11 @@ la página HTML:
   </ol>
   <div class="btn-footer">
     <button type="button" id="submit" class="btn btn-primary">
-Enviar    </button>
+Submit    </button>
     <button type="button" id="reset" class="btn btn-warning">
 Reset    </button>
     <button type="button" id="deleteStorage" class="btn btn-danger">
-Borrar respuestas    </button>
+Delete storage    </button>
   </div>
 </form>
 
@@ -258,13 +258,13 @@ Borrar respuestas    </button>
         <![endif]-->
       
     <!-- Internationalization -->
-    <script>      i18n = {"es":{"quiz":{"title":"Cuestionario"},"questions":{"correct":"Correcto","incorrect":"Incorrecto","points":"puntos"},"buttons":{"submit":"Enviar","reset":"Reset","delete":"Borrar respuestas"}}}
+    <script>      i18n = {"en":{"quiz":{"title":"Quiz"},"questions":{"correct":"Correct","incorrect":"Incorrect","points":"points"},"buttons":{"submit":"Submit","reset":"Reset","delete":"Delete storage"},"alerts":{"storage":"Local storage deleted"}}}
 </script>
     <!-- XRegexp -->
     <script type=text/javascript src=http://cdnjs.cloudflare.com/ajax/libs/xregexp/2.0.0/xregexp-min.js></script>
     <!-- Form validation -->
-    <script>      data = {"question-0":{"question_text":"\nDado un conjunto $A$, se define $A^*$ el cierre de Kleene de $A$ como:\n\\( A^* = \\cup_{n=1}^{\\infty} A^n \\)\nSe admite que $A^0 = { \\epsilon }$, donde $\\epsilon$ denota la\n------ ------, esto es\nla palabra que tiene longitud cero, formada por cero símbolos del conjunto base $A$.","answers":{"qfi1-1":{"answer_text":"/palabra/i","correct":true,"explanation":null,"type":"Regexp"},"qfi1-2":{"answer_text":"/vac[ií]a/i","correct":true,"explanation":null,"type":"Regexp"}},"points":1,"order":true,"question_comment":""},"question-1":{"question_text":"\nUna producción de la forma $A \\rightarrow A \\alpha$.\nse dice que es ------- por la --------\n","answers":{"qfi2-1":{"answer_text":"/recursiva/i","correct":true,"explanation":null,"type":"Regexp"},"qfi2-2":{"answer_text":"/izquierda/i","correct":true,"explanation":null,"type":"Regexp"}},"points":1,"order":true,"question_comment":""},"question-2":{"question_text":"\nRecuerde el <b>analizador sintáctico descendente predictivo recursivo</b> \npara la <a id=\"grammar\">gramática</a>:<br/>\n<ul>\n  <li> $\\Sigma = { ; =, ID, P, ADDOP, MULOP, COMPARISON, (, ), NUM }$, \n  <li> $V = { statements, statement, condition, expression, term, factor }$\n  <li> Productions:\n  <ol>\n    <li>\n    statements  $ \\rightarrow$ statement ';' statements  $\\vert$ statement\n    <li>\n    statement  $ \\rightarrow$ ID '=' expression  $\\vert$ P expression\n $ \\vert$ IF condition THEN statement·\n    <li> condition $ \\rightarrow$ expression COMPARISON expression\n    <li>\n    expression  $ \\rightarrow$ term ADDOP expression  $\\vert$ term\n    <li>\n    term  $ \\rightarrow$ factor MULOP term  $\\vert$ factor\n    <li>\n    factor  $ \\rightarrow$ '(' expression ')' $\\vert$ ID $ \\vert$ NUM\n  </ol>\n  <li> Start symbol: $statements$\n</ul>\nRellene las partes que faltan de código CoffeeScript del \nmétodo que se encarga de reconocer el lenguaje generado\npor <tt>expression</tt>:\n<pre>\n  expression = ->\n    result = term()\n    while ------ and --------- is \"ADDOP\"\n      type = lookahead.value\n      match \"ADDOP\"\n      right = ----\n      result =\n        type: ----\n        left: result\n        right: right\n    result\n</pre>\n","answers":{"qfi3-1":{"answer_text":"lookahead","correct":true,"explanation":null,"type":"String"},"qfi3-2":{"answer_text":"lookahead.type","correct":true,"explanation":null,"type":"String"},"qfi3-3":{"answer_text":"term()","correct":true,"explanation":null,"type":"String"},"qfi3-4":{"answer_text":"type","correct":true,"explanation":null,"type":"String"}},"points":1,"order":true,"question_comment":""},"question-3":{"question_text":"\nRellene las partes que faltan de código CoffeeScript del \nmétodo que se encarga de reconocer el lenguaje generado\npor <tt>statement</tt> para la <a href=\"#grammar\">gramática\ndefinida anteriormente</a>:\n<pre>\n    statement = function() {\n      var left, result, right;\n      result = null;\n      if (------ && ------ === \"ID\") {\n        left = {\n          type: \"---\",\n          value: ------.value\n        };\n        match(\"ID\");\n        match(\"=\");\n        right = ------();\n        result = {\n          type: \"=\",\n          left: left,\n          right: right\n        };\n      } else if (------ && ------.------ === \"P\") {\n        match(\"P\");\n        right = expression();\n        result = {\n          type: \"P\",\n          value: ------\n        };\n      } else if (------ && ------.------ === \"IF\") {\n        match(\"---\");\n        left = ------;\n        match(\"THEN\");\n        right = ------;\n        result = {\n          type: \"IF\",\n          left: ----,\n          right: ----\n        };\n      } else {\n        throw \"Syntax Error. Expected identifier but found \" + \n         (lookahead ? lookahead.value : \"end of input\") + \n         (\" near '\" + (input.substr(lookahead.from)) + \"'\");\n      }\n      return result;\n    };\n</pre>\n","answers":{"qfi4-1":{"answer_text":"lookahead","correct":true,"explanation":null,"type":"String"},"qfi4-2":{"answer_text":"lookahead.type","correct":true,"explanation":null,"type":"String"},"qfi4-3":{"answer_text":"id","correct":true,"explanation":null,"type":"String"},"qfi4-4":{"answer_text":"lookahead","correct":true,"explanation":null,"type":"String"},"qfi4-5":{"answer_text":"expression","correct":true,"explanation":null,"type":"String"},"qfi4-6":{"answer_text":"lookahead","correct":true,"explanation":null,"type":"String"},"qfi4-7":{"answer_text":"lookahead","correct":true,"explanation":null,"type":"String"},"qfi4-8":{"answer_text":"type","correct":true,"explanation":null,"type":"String"},"qfi4-9":{"answer_text":"right","correct":true,"explanation":null,"type":"String"},"qfi4-10":{"answer_text":"lookahead","correct":true,"explanation":null,"type":"String"},"qfi4-11":{"answer_text":"lookahead","correct":true,"explanation":null,"type":"String"},"qfi4-12":{"answer_text":"type","correct":true,"explanation":null,"type":"String"},"qfi4-13":{"answer_text":"if","correct":true,"explanation":null,"type":"String"},"qfi4-14":{"answer_text":"/expression|condition/","correct":true,"explanation":null,"type":"Regexp"},"qfi4-15":{"answer_text":"/statement/","correct":true,"explanation":null,"type":"Regexp"},"qfi4-16":{"answer_text":"/left/","correct":true,"explanation":null,"type":"Regexp"},"qfi4-17":{"answer_text":"/right/","correct":true,"explanation":null,"type":"Regexp"}},"points":1,"order":true,"question_comment":""},"question-4":{"question_text":"Rellene las partes que faltan del código CoffeeScript\nque reconoce el sublenguaje generado por <i>condition</i>:\n  <pre>\n  condition = ->\n    left = ------()\n    type = ------.-----\n    match \"COMPARISON\"\n    right = ------()\n    result =\n      type: type\n      left: left\n      right: right\n    result\n  </pre>\n","answers":{"qfi5-1":{"answer_text":"expression","correct":true,"explanation":null,"type":"String"},"qfi5-2":{"answer_text":"lookahead","correct":true,"explanation":null,"type":"String"},"qfi5-3":{"answer_text":"value","correct":true,"explanation":null,"type":"String"},"qfi5-4":{"answer_text":"expression","correct":true,"explanation":null,"type":"String"}},"points":1,"order":true,"question_comment":""},"question-5":{"question_text":"\nComplete este fragmento de <tt>slim</tt> que establece el favicon de \nla página HTML:\n<pre>\n    link rel=\"------\" type=\"image/jpg\" href=\"images/favicon.jpg\"\n</pre>","answers":{"qfi6-1":{"answer_text":"/(shortcut\\s+)?icon/i","correct":true,"explanation":null,"type":"Regexp"}},"points":1,"order":true,"question_comment":""}};
-      language = 'es';
+    <script>      data = {"question-0":{"question_text":"\nDado un conjunto $A$, se define $A^*$ el cierre de Kleene de $A$ como:\n\\( A^* = \\cup_{n=1}^{\\infty} A^n \\)\nSe admite que $A^0 = { \\epsilon }$, donde $\\epsilon$ denota la\n------ ------, esto es\nla palabra que tiene longitud cero, formada por cero símbolos del conjunto base $A$.","answers":{"qfi1-1":{"answer_text":"/palabra/i","correct":true,"explanation":null,"type":"Regexp"},"qfi1-2":{"answer_text":"/vac[ií]a/i","correct":true,"explanation":null,"type":"Regexp"}},"points":1,"order":true,"question_comment":""},"question-1":{"question_text":"\nUna producción de la forma $A \\rightarrow A \\alpha$.\nse dice que es ------- por la --------\n","answers":{"qfi2-1":{"answer_text":"/recursiva/i","correct":true,"explanation":null,"type":"Regexp"},"qfi2-2":{"answer_text":"/izquierda/i","correct":true,"explanation":null,"type":"Regexp"}},"points":1,"order":true,"question_comment":""},"question-2":{"question_text":"\nRecuerde el <b>analizador sintáctico descendente predictivo recursivo</b> \npara la <a id=\"grammar\">gramática</a>:<br/>\n<ul>\n  <li> $\\Sigma = { ; =, ID, P, ADDOP, MULOP, COMPARISON, (, ), NUM }$, \n  <li> $V = { statements, statement, condition, expression, term, factor }$\n  <li> Productions:\n  <ol>\n    <li>\n    statements  $ \\rightarrow$ statement ';' statements  $\\vert$ statement\n    <li>\n    statement  $ \\rightarrow$ ID '=' expression  $\\vert$ P expression\n $ \\vert$ IF condition THEN statement·\n    <li> condition $ \\rightarrow$ expression COMPARISON expression\n    <li>\n    expression  $ \\rightarrow$ term ADDOP expression  $\\vert$ term\n    <li>\n    term  $ \\rightarrow$ factor MULOP term  $\\vert$ factor\n    <li>\n    factor  $ \\rightarrow$ '(' expression ')' $\\vert$ ID $ \\vert$ NUM\n  </ol>\n  <li> Start symbol: $statements$\n</ul>\nRellene las partes que faltan de código CoffeeScript del \nmétodo que se encarga de reconocer el lenguaje generado\npor <tt>expression</tt>:\n<pre>\n  expression = ->\n    result = term()\n    while ------ and --------- is \"ADDOP\"\n      type = lookahead.value\n      match \"ADDOP\"\n      right = ----\n      result =\n        type: ----\n        left: result\n        right: right\n    result\n</pre>\n","answers":{"qfi3-1":{"answer_text":"lookahead","correct":true,"explanation":null,"type":"String"},"qfi3-2":{"answer_text":"lookahead.type","correct":true,"explanation":null,"type":"String"},"qfi3-3":{"answer_text":"term()","correct":true,"explanation":null,"type":"String"},"qfi3-4":{"answer_text":"type","correct":true,"explanation":null,"type":"String"}},"points":1,"order":true,"question_comment":""},"question-3":{"question_text":"\nRellene las partes que faltan de código CoffeeScript del \nmétodo que se encarga de reconocer el lenguaje generado\npor <tt>statement</tt> para la <a href=\"#grammar\">gramática\ndefinida anteriormente</a>:\n<pre>\n    statement = function() {\n      var left, result, right;\n      result = null;\n      if (------ && ------ === \"ID\") {\n        left = {\n          type: \"---\",\n          value: ------.value\n        };\n        match(\"ID\");\n        match(\"=\");\n        right = ------();\n        result = {\n          type: \"=\",\n          left: left,\n          right: right\n        };\n      } else if (------ && ------.------ === \"P\") {\n        match(\"P\");\n        right = expression();\n        result = {\n          type: \"P\",\n          value: ------\n        };\n      } else if (------ && ------.------ === \"IF\") {\n        match(\"---\");\n        left = ------;\n        match(\"THEN\");\n        right = ------;\n        result = {\n          type: \"IF\",\n          left: ----,\n          right: ----\n        };\n      } else {\n        throw \"Syntax Error. Expected identifier but found \" + \n         (lookahead ? lookahead.value : \"end of input\") + \n         (\" near '\" + (input.substr(lookahead.from)) + \"'\");\n      }\n      return result;\n    };\n</pre>\n","answers":{"qfi4-1":{"answer_text":"lookahead","correct":true,"explanation":null,"type":"String"},"qfi4-2":{"answer_text":"lookahead.type","correct":true,"explanation":null,"type":"String"},"qfi4-3":{"answer_text":"id","correct":true,"explanation":null,"type":"String"},"qfi4-4":{"answer_text":"lookahead","correct":true,"explanation":null,"type":"String"},"qfi4-5":{"answer_text":"expression","correct":true,"explanation":null,"type":"String"},"qfi4-6":{"answer_text":"lookahead","correct":true,"explanation":null,"type":"String"},"qfi4-7":{"answer_text":"lookahead","correct":true,"explanation":null,"type":"String"},"qfi4-8":{"answer_text":"type","correct":true,"explanation":null,"type":"String"},"qfi4-9":{"answer_text":"right","correct":true,"explanation":null,"type":"String"},"qfi4-10":{"answer_text":"lookahead","correct":true,"explanation":null,"type":"String"},"qfi4-11":{"answer_text":"lookahead","correct":true,"explanation":null,"type":"String"},"qfi4-12":{"answer_text":"type","correct":true,"explanation":null,"type":"String"},"qfi4-13":{"answer_text":"if","correct":true,"explanation":null,"type":"String"},"qfi4-14":{"answer_text":"/expression|condition/","correct":true,"explanation":null,"type":"Regexp"},"qfi4-15":{"answer_text":"/statement/","correct":true,"explanation":null,"type":"Regexp"},"qfi4-16":{"answer_text":"/left/","correct":true,"explanation":null,"type":"Regexp"},"qfi4-17":{"answer_text":"/right/","correct":true,"explanation":null,"type":"Regexp"}},"points":1,"order":true,"question_comment":""},"question-4":{"question_text":"Rellene las partes que faltan del código CoffeeScript\nque reconoce el sublenguaje generado por <i>condition</i>:\n  <pre>\n  condition = ->\n    left = ----------()\n    type = ---------.-----\n    match \"COMPARISON\"\n    right = ---------()\n    result =\n      type: type\n      left: left\n      right: right\n    result\n  </pre>\n","answers":{"qfi5-1":{"answer_text":"expression","correct":true,"explanation":null,"type":"String"},"qfi5-2":{"answer_text":"lookahead","correct":true,"explanation":null,"type":"String"},"qfi5-3":{"answer_text":"value","correct":true,"explanation":null,"type":"String"},"qfi5-4":{"answer_text":"expression","correct":true,"explanation":null,"type":"String"}},"points":1,"order":true,"question_comment":""},"question-5":{"question_text":"\nComplete este fragmento de <tt>slim</tt> que establece el favicon de \nla página HTML:\n<pre>\n    link rel=\"------\" type=\"image/jpg\" href=\"images/favicon.jpg\"\n</pre>","answers":{"qfi6-1":{"answer_text":"/(shortcut\\s+)?icon/i","correct":true,"explanation":null,"type":"Regexp"}},"points":1,"order":true,"question_comment":""}};
+      language = 'en';
       
       function findCorrectAnswer(idQuestion, questionType) {
         correctIds = [];
@@ -584,7 +584,7 @@ Borrar respuestas    </button>
       
       function deleteAnswers() {
         localStorage.clear();
-        alert("Local storage deleted");
+        alert(i18n[language]['alerts']['storage']);
       }
      
       $("#submit").click(function() {
