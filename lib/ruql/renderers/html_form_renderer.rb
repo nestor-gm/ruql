@@ -78,7 +78,7 @@ class HtmlFormRenderer
           end
         end
       end
-      @h.div :id => 'score' do
+      @h.div :id => 'score', :class => 'score' do
       end
       @h.div :class => 'btn-footer' do
         insert_button('submit', translate(:submit, 'buttons'), 'btn btn-primary')
@@ -770,7 +770,7 @@ class HtmlFormRenderer
       }
       
       function showTotalScore() {
-        $("#score").html("<strong>" + i18n[language]['questions']['score'] + ": " + userPoints.toFixed(2) + "/" + totalPoints.toFixed(2) + " " + i18n[language]['questions']['points'] + "</strong>")
+        $("#score").html(i18n[language]['questions']['score'] + ": " + userPoints.toFixed(2) + "/" + totalPoints.toFixed(2) + " " + i18n[language]['questions']['points'])
       }
       
       $("#submit").click(function() {
