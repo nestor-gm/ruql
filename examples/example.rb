@@ -30,6 +30,10 @@ quiz 'Example quiz' do
   end
   
   fill_in do
+    textanswer 'The three stooges are -----{larry}, ----{moe}, and -----{curly}.'
+  end
+  
+  fill_in do
     text %q{
       Calculate the determinant of this matrix:
       $$\mathbf{A} = \begin{vmatrix} 

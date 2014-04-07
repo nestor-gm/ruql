@@ -16,6 +16,14 @@ class Question
   
   def text(s) ; @question_text = s ; end
   
+  def textanswer(text, opts={})
+    @question_text = text.split(/{\w+}/).join()
+    answers = []
+    substring = text.split(' ')
+    substring.each { |s| answers << s if (s =~ /----+{\w+}/)}
+    answers.each { |a| @answers << Answer.new(a[/\w+/], correct=true, opts[:explanation]) }
+  end
+  
   def explanation(text)
     @default_explanation = text
   end
