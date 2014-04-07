@@ -56,7 +56,7 @@ class HtmlFormRenderer
     @i18n = yml_to_json
    
     render_questions
-    @validation_js = insert_defaultJS
+    @validation_js = insert_defaultJS(@quiz.points)
     @sass = insert_sass if !@size_inputs.empty?
     
     # the ERB template includes 'yield' where questions should go:
@@ -77,6 +77,8 @@ class HtmlFormRenderer
             raise "Unknown question type: #{q}"
           end
         end
+      end
+      @h.div :id => 'score' do
       end
       @h.div :class => 'btn-footer' do
         insert_button('submit', translate(:submit, 'buttons'), 'btn btn-primary')
@@ -149,24 +151,9 @@ class HtmlFormRenderer
       type = 'Regexp'
       [0, -1].each {|index| ans.insert(index, '/')}
       opts = item.options
-      
       ans << 'i' if (opts & 1 == 1)
       ans << 'x' if (opts & 2 == 2)
       ans << 'm' if (opts & 4 == 4)
-=begin
-      case opts
-        when 0, 16
-        when 1, 3, 17
-          ans << 'i'
-        when 4, 6, 20
-          ans << 'm'
-        when 5, 7, 21
-          ans << 'mi'
-      end
-      if ((opts != 0) && (opts != 1) && (opts != 4) && (opts != 5) && (opts != 16) && (opts != 17) && (opts != 20) && (opts != 21))
-        $stderr.puts "\n*** WARNING *** These RegExps only support i and m options. Other options will be ignored.\n\n"
-      end
-=end
     elsif (item.class == String)
       ans = item.downcase
       type = 'String'
@@ -297,7 +284,7 @@ class HtmlFormRenderer
       j << yml_to_json
     end
     @h.script(:type => 'text/javascript') do |j|
-      j << insert_defaultJS
+      j << insert_defaultJS(@quiz.points)
     end
   end
   
@@ -444,10 +431,12 @@ class HtmlFormRenderer
     end
   end
  
-  def insert_defaultJS
+  def insert_defaultJS(totalPoints)
     <<-JS
       data = #{@data.to_json};
       language = '#{@language.to_s}';
+      totalPoints = #{totalPoints};
+      userPoints = 0;
       
       function findCorrectAnswer(idQuestion, questionType) {
         correctIds = [];
@@ -485,7 +474,7 @@ class HtmlFormRenderer
             nIncorrects += 1;
         });
         
-        calculateMark(data[x.toString()], x.toString(), null, 3, nCorrects, nIncorrects);
+        userPoints += calculateMark(data[x.toString()], x.toString(), null, 3, nCorrects, nIncorrects);
       }
       
       function printResults(id, type, explanation, typeQuestion) {
@@ -531,10 +520,16 @@ class HtmlFormRenderer
       function calculateMark(question, id, result, typeQuestion, numberCorrects, numberIncorrects) {
         stringPoints = i18n[language]['questions']['points'];
         if (typeQuestion == 2) {
-          if (result)
+          if (result) {
             $("#" + id).append("<strong class=mark> " + question['points'].toFixed(2) + "/" + question['points'].toFixed(2) + " " + stringPoints + "</strong></br></br>");
-          else
+            
+            return parseFloat(question['points']);
+          }
+          else {
             $("#" + id).append("<strong class=mark> 0.00/" + question['points'].toFixed(2) + " " + stringPoints + "</strong></br></br>");
+            
+            return parseFloat(0);
+          }
         }
         else if (typeQuestion == 1) {
           size = 0;
@@ -544,6 +539,8 @@ class HtmlFormRenderer
               
           pointsUser = ((question['points'] / size) * numberCorrects).toFixed(2);
           $("#" + id).append("<strong class=mark> " + pointsUser + "/" + question['points'].toFixed(2) + " " + stringPoints + "</strong></br></br>");
+         
+          return parseFloat(pointsUser);
         }
         else {
           totalCorrects = 0;
@@ -560,6 +557,8 @@ class HtmlFormRenderer
             mark = 0;
             
           $("#" + id).append("<strong class=mark> " + mark.toFixed(2) + "/" + question['points'].toFixed(2) + " " + stringPoints + "</strong></br></br>");        
+          
+          return parseFloat(mark);
         }
       }
       
@@ -707,7 +706,7 @@ class HtmlFormRenderer
               
               if (!allEmpty) {
                 printResults(results, null, explanation, 1);
-                calculateMark(data[x.toString()], x.toString(), null, 1, nCorrects, null);
+                userPoints += calculateMark(data[x.toString()], x.toString(), null, 1, nCorrects, null);
               }
             }
             
@@ -723,7 +722,7 @@ class HtmlFormRenderer
                   id = $("#" + x.toString() + " :checked").attr('id');
                   printResults(id, 0, data[x.toString()]['answers'][id]['explanation'], 0);
                 }
-                calculateMark(data[x.toString()], x.toString(), correct, 2, null, null);
+                userPoints += calculateMark(data[x.toString()], x.toString(), correct, 2, null, null);
               }
             }
             
@@ -769,7 +768,11 @@ class HtmlFormRenderer
         localStorage.clear();
         alert(i18n[language]['alerts']['storage']);
       }
-     
+      
+      function showTotalScore() {
+        $("#score").html("<strong>" + i18n[language]['questions']['score'] + ": " + userPoints.toFixed(2) + "/" + totalPoints.toFixed(2) + " " + i18n[language]['questions']['points'] + "</strong>")
+      }
+      
       $("#submit").click(function() {
         checkAnswers();
         filledAllQuiz = true;
@@ -782,6 +785,7 @@ class HtmlFormRenderer
           $("#submit").detach();
         
         storeAnswers();
+        showTotalScore();
       });
 
       $("#reset").click(function() {
@@ -790,6 +794,7 @@ class HtmlFormRenderer
       
       $("#deleteStorage").click(function() {
         deleteAnswers();
+        window.location.reload();
       });
       
       $(document).ready(function() {

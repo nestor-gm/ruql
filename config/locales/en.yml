@@ -6,6 +6,7 @@ en:
     correct: Correct
     incorrect: Incorrect
     points: points
+    score: Total score
   buttons:
     submit: Submit
     reset: Reset
