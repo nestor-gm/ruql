@@ -25,7 +25,10 @@ quiz 'Example quiz' do
   end
   
   fill_in do
-    text 'The three stooges are -----, ----, and -----.'
+    text %Q{The three stooges are -----, ----, and -----.
+  <li> $\Sigma = \{ ; =, ID, P, ADDOP, MULOP, COMPARISON, (, ), NUM \}$
+  <li> $V = \\{ statements, statement, condition, expression, term, factor \\}$
+    }
     answer %w(larry moe curly), :order => true 
   end
   

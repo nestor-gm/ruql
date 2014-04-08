@@ -9,7 +9,7 @@ ANÁLISIS SINTÁCTICO} do
 Dado un conjunto $A$, se define $A^*$ el cierre de Kleene de $A$ como:
 \( A^* = \cup_{n=1}^{\infty} A^n \)
 Se admite que $A^0 = \{ \epsilon \}$, donde $\epsilon$ denota la
---------------- ---- esto es
+palabra ---- esto es
 la palabra que tiene longitud cero, formada por cero símbolos del conjunto base $A$.}
     answer [/palabra/i, /vac[ií]a/i], :order => true
   end
@@ -45,7 +45,7 @@ se dice que es --------- por la ---------
 Recuerde el <b>analizador sintáctico descendente predictivo recursivo</b> 
 para la <a id="grammar">gramática</a>:<br/>
 <ul>
-  <li> $\Sigma = \\{ ; =, ID, P, ADDOP, MULOP, COMPARISON, (, ), NUM \\}$
+  <li> $\Sigma = \{ ; =, ID, P, ADDOP, MULOP, COMPARISON, (, ), NUM \}$
   <li> $V = \\{ statements, statement, condition, expression, term, factor \\}$
   <li> Productions:
   <ol>

@@ -8,7 +8,7 @@ Gem::Specification.new do |s|
   s.email       = 'fox@cs.berkeley.edu'
   s.files = []
   s.files = Dir.glob("lib/**/*.rb")
-  s.files = Dir.glob("config/locales/*.yml")
+  s.files += Dir.glob("config/locales/*.yml")
   # add the templates
   s.files += Dir["templates/*.erb"]
   s.executables << 'ruql'
