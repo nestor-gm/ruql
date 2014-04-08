@@ -5,6 +5,7 @@ class HtmlFormRenderer
   require 'sass'
   require 'yaml'
   require 'i18n'
+  require 'locale'
   require 'opal'
   
   attr_reader :output
@@ -21,7 +22,7 @@ class HtmlFormRenderer
     @h = Builder::XmlMarkup.new(:target => @output, :indent => 2)
     @data = {}
     @size_inputs = []
-    @language = I18n.locale #:es
+    @language = (Locale.current[0].language || 'en').to_sym
     #@opal = ""
   end
 
