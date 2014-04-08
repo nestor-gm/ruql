@@ -9,7 +9,7 @@ ANÁLISIS SINTÁCTICO} do
 Dado un conjunto $A$, se define $A^*$ el cierre de Kleene de $A$ como:
 \( A^* = \cup_{n=1}^{\infty} A^n \)
 Se admite que $A^0 = \{ \epsilon \}$, donde $\epsilon$ denota la
-palabra ---- esto es
+------- ---- esto es
 la palabra que tiene longitud cero, formada por cero símbolos del conjunto base $A$.}
     answer [/palabra/i, /vac[ií]a/i], :order => true
   end
@@ -299,7 +299,7 @@ Complete las partes que faltan para que el PEGjs reconozca este
 clásico ejemplo de lenguaje que no es independiente del contexto
                $\\{ a^nb^nc^n / n \ge{} 1 \\}$
 <pre>
-S = ---(--- ---) 'a'+ B:--- !('c'/[---]) { return B; }
+S = ----(---- ----) 'a'+ B:---- !('c'/[----]) { return B; }
 A = 'a' A:A? 'b' { if (A) { return A+1; } else return 1; }
 B = 'b' B:B? 'c' { if (B) { return B+1; } else return 1; }
 </pre>
@@ -315,7 +315,7 @@ los comentarios Pascal:
 P     =   prog:N+                          { return prog; }
 N     =   chars:$(!Begin ANY)+             { return chars;}
         / C
-C     = Begin chars:--- End                { return chars.join(''); }
+C     = Begin chars:---- End                { return chars.join(''); }
 T     =   C 
         / (!----- ---- char:ANY)           { return char;}
 Begin = '(*'

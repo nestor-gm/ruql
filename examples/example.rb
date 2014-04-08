@@ -8,7 +8,7 @@ quiz 'Example quiz' do
   
   tag = '<a href="www.google.es"></a> '
   fill_in do
-    text '<i>Example of escaped HTML and three hyphens not evaluated:</i><br>' + "#{coder.encode(tag)}" + '<b>is</b> a --- ---- ---'
+    text "<i>Example of escaped HTML and three hyphens not evaluated:</i><br> #{coder.encode(tag)}" + "<b>is</b> a \\-\\-\\- ---- " + '\-\-\-'
     answer /^link$/
   end
   
@@ -25,10 +25,7 @@ quiz 'Example quiz' do
   end
   
   fill_in do
-    text %Q{The three stooges are -----, ----, and -----.
-  <li> $\Sigma = \{ ; =, ID, P, ADDOP, MULOP, COMPARISON, (, ), NUM \}$
-  <li> $V = \\{ statements, statement, condition, expression, term, factor \\}$
-    }
+    text 'The three stooges are -----, ----, and -----.'
     answer %w(larry moe curly), :order => true 
   end
   

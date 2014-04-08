@@ -221,18 +221,14 @@ class HtmlFormRenderer
         qtext = "[#{question.points} point#{'s' if question.points>1}] " <<
           ('Select ALL that apply: ' if question.multiple).to_s <<
           if question.class == FillIn
-            #question.question_text.chop! if question.question_text[-1] == '.'
             
-            hyphen = []
-            tmp = question.question_text.split(/[^-]/)
-            tmp.each { |w| hyphen << w if (w =~ /----+/)}
-            
+            hyphen = question.question_text.scan(/(?<!\\)---+/)
             hyphen.length.times { |i|
                                  nHyphen = hyphen[i].count('-')
                                  @size_inputs << nHyphen
-                                 question.question_text.sub!(/----+/, "<input type=text id=qfi#{index + 1}-#{i + 1} class='fillin size-#{nHyphen}'></input>")
+                                 question.question_text.sub!(/(?<!\\)---+/, "<input type=text id=qfi#{index + 1}-#{i + 1} class='fillin size-#{nHyphen}'></input>")
                                 }
-            
+            question.question_text.gsub!(/\\-/, '-')
             question.question_text << "<div id=qfi#{index + 1}-#{hyphen.length}r class=quiz></div></br></br>"
           else 
             if (question.raw?)
