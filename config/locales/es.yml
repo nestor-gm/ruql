@@ -12,4 +12,4 @@ es:
     reset: Reset
     delete: Borrar respuestas
   alerts:
-    storage: Almacenamiento local borrado
+    storage: Las respuestas han sido borradas
