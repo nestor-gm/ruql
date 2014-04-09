@@ -17,20 +17,22 @@ class Question
 
   def raw? ; !!@raw ; end
   
-  def text(s) ; @question_text = s ; end
-  
-  def textanswer(text, opts={})
-    @question_text = text.split(/{\w+}/).join()
-    answers = []
-    substring = text.split(' ')
-    substring.each { |s| answers << s if (s =~ /----+{\w+}/)}
-    answers.each { |a| @answers << Answer.new(a[/\w+/], correct=true, opts[:explanation]) }
-  end
-  
-  def texthash(text, opts={})
-    @question_text = text.split(/{\w+}/).join()
-    substring = text.split(' ')
-    substring.each { |s| @keys << s[/\w+/].to_sym if (s =~ /----+{\w+}/)}
+  def text(s, opts={})
+    regexp = /{:?\w+}/ 
+    if (s[/---+{:?\w+}/] == nil)
+      @question_text = s
+    else
+      @question_text = s.split(regexp).join()
+      answers = s.scan(regexp)
+      answers.each do |a|
+        ans = a[/:?\w+/]
+        if (ans[0] == ':')
+          @keys << ans.delete(':').to_sym
+        else
+          @answers << Answer.new(ans, correct=true, opts[:explanation])
+        end
+      end
+    end
   end
   
   def escape(text)
@@ -38,16 +40,16 @@ class Question
     coder.encode(text)
   end
   
-  def answerhash(hash, opts={})
-    @keys.each { |k| @answers << Answer.new(hash[k], correct=true, opts[:explanation])}
-  end
-  
   def explanation(text)
     @default_explanation = text
   end
 
   def answer(text, opts={})
-    @answers << Answer.new(text, correct=true, opts[:explanation])
+    if (text.class == Hash)
+      @keys.each { |k| @answers << Answer.new(text[k], correct=true, opts[:explanation])}
+    else
+      @answers << Answer.new(text, correct=true, opts[:explanation])
+    end
   end
 
   def distractor(text, opts={})

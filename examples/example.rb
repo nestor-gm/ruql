@@ -22,16 +22,16 @@ quiz 'Example quiz' do
   
   fill_in do
     text 'The three stooges are -----, ----, and -----.'
-    answer %w(larry moe curly), :order => true 
+    answer %w(larry moe curly)
   end
   
   fill_in do
-    textanswer 'The three stooges are -----{larry}, ----{moe}, and -----{curly}.'
+    text 'The three stooges are -----{larry}, ----{moe}, and -----{curly}.', :order => false
   end
   
   fill_in do
-    texthash "The capital of Tenerife is -----{santa} Cruz de --------{tenerife}"
-    answerhash :santa => /Santa/i, :tenerife => /Tenerife/i
+    text "The capital of Tenerife is -----{:santa} Cruz de --------{:tenerife}"
+    answer :santa => /Santa/i, :tenerife => /Tenerife/i
   end
   
   fill_in do

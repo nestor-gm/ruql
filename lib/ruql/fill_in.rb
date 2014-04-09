@@ -17,4 +17,9 @@ class FillIn < Question
     self.order = opts[:order] if opts[:order] == false
   end
   
+  def text(text, opts={})
+    super
+    self.order = opts[:order] if opts[:order] == false
+  end
+  
 end
