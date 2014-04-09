@@ -1,3 +1,5 @@
+require 'htmlentities'
+
 class Question
   attr_accessor :question_text, :answers, :randomize, :points, :name, :question_tags, :question_comment, :default_explanation, :keys
   
@@ -29,6 +31,11 @@ class Question
     @question_text = text.split(/{\w+}/).join()
     substring = text.split(' ')
     substring.each { |s| @keys << s[/\w+/].to_sym if (s =~ /----+{\w+}/)}
+  end
+  
+  def escape(text)
+    coder = HTMLEntities.new
+    coder.encode(text)
   end
   
   def answerhash(hash, opts={})

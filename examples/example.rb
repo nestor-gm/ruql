@@ -1,14 +1,10 @@
-require 'htmlentities'
-
-coder = HTMLEntities.new
-
 quiz 'Example quiz' do
 
   #head :'examples/header.html'
   
   tag = '<a href="www.google.es"></a> '
   fill_in do
-    text "<i>Example of escaped HTML and three hyphens not evaluated:</i><br> #{coder.encode(tag)}" + "<b>is</b> a \\-\\-\\- ---- " + '\-\-\-'
+    text "<i>Example of escaped HTML and three hyphens not evaluated:</i><br> #{escape(tag)}" + "<b>is</b> a \\-\\-\\- ---- " + '\-\-\-'
     answer /^link$/
   end
   
