@@ -443,6 +443,8 @@ class HtmlFormRenderer
   def insert_defaultJS(totalPoints)
     <<-JS
       data = #{@data.to_json};
+      timestamp = #{Time.now.getutc.to_i}
+      timestamp = timestamp.toString();
       language = '#{@language.to_s}';
       totalPoints = #{totalPoints};
       userPoints = 0;
@@ -760,22 +762,39 @@ class HtmlFormRenderer
       }
       
       function storeAnswers() {
-        if(typeof(Storage) !== "undefined") {
+        if(typeof(Storage) !== undefined) {
+          tmp = {}
+          
           inputText = $('input:text').filter(function() { return $(this).val() != ""; });
           for (i = 0; i < inputText.length; i++) {
             idAnswer = inputText[i].id;
-            localStorage[idAnswer] = inputText[i].value;
+            tmp[idAnswer] = inputText[i].value;
+            //localStorage[timestamp.toString()][idAnswer] = inputText[i].value;
           }
           
           inputRadioCheckBox = $('input:checked');
           for (i = 0; i < inputRadioCheckBox.length; i++) {
             idAnswer = inputRadioCheckBox[i].id;
             nquestion = parseInt(idAnswer.split('-')[0].substr(3)) - 1;
-            localStorage[idAnswer] = data["question-" + nquestion.toString()]['answers'][idAnswer]['answer_text'];
+            tmp[idAnswer] = data["question-" + nquestion.toString()]['answers'][idAnswer]['answer_text'];
+            //localStorage[timestamp.toString()][idAnswer] = data["question-" + nquestion.toString()]['answers'][idAnswer]['answer_text'];
           }
+          localStorage.setItem(timestamp, JSON.stringify(tmp));
         }
         else {
-          alert("Sorry! No Web Storage supported.");
+          alert(i18n[language]['alerts']['noStorage']);
+        }
+      }
+      
+      function loadAnswers() {
+        if ((localStorage.length != 0) && (localStorage[timestamp] !== undefined)) {
+          tmp = JSON.parse(localStorage[timestamp]);
+          for (x in tmp) {
+            if (x.match(/qfi/))
+              $("#" + x.toString()).val(tmp[x.toString()]);
+            else
+              $("#" + x.toString()).attr('checked', 'checked');
+          }
         }
       }
       
@@ -813,15 +832,7 @@ class HtmlFormRenderer
       });
       
       $(document).ready(function() {
-        if (localStorage.length != 0) {
-          for (x in localStorage) {
-            if (x.match(/qfi/))                                         // FillIn question
-              $("#" + x.toString()).val(localStorage[x.toString()]);
-            else {                                                      // SelectMultiple/MultipleChoice question
-              $("#" + x.toString()).attr('checked', 'checked');
-            }
-          }
-        }
+        loadAnswers();
       });
       JS
   end

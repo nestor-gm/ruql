@@ -13,3 +13,4 @@ en:
     delete: Delete storage
   alerts:
     storage: Answers deleted
+    noStorage: Your browser doesn't support answers storage

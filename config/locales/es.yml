@@ -13,3 +13,4 @@ es:
     delete: Borrar respuestas
   alerts:
     storage: Las respuestas han sido borradas
+    noStorage: El navegador no soporta almacenamiento de respuestas
