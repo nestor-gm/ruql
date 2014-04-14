@@ -10,7 +10,11 @@ en:
   buttons:
     submit: Submit
     reset: Reset
-    delete: Delete storage
+    delete: Delete answers
+    deleteAll: Delete storage
+    show: Show answer
+    hide: Hide answer
   alerts:
-    storage: Answers deleted
+    answers: Answers deleted
+    storage: Storage deleted
     noStorage: Your browser doesn't support answers storage

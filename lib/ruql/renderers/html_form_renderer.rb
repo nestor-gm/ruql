@@ -86,8 +86,9 @@ class HtmlFormRenderer
       end
       @h.div :class => 'btn-footer' do
         insert_button('submit', translate(:submit, 'buttons'), 'btn btn-primary')
-        insert_button('reset', translate(:reset, 'buttons'), 'btn btn-warning')
-        insert_button('deleteStorage', translate(:delete, 'buttons'), 'btn btn-danger')
+        insert_button('reset', translate(:reset, 'buttons'), 'btn btn-info')
+        insert_button('deleteAnswers', translate(:delete, 'buttons'), 'btn btn-warning')
+        insert_button('deleteStorage', translate(:deleteAll, 'buttons'), 'btn btn-danger')
       end
     end
   end
@@ -257,6 +258,10 @@ class HtmlFormRenderer
           end
       end
       yield # render answers
+      insert_button("show-answer-q#{index}", translate(:show, 'buttons'), 'btn btn-success btn-sm')
+      insert_button("q-#{index}", translate(:submit, 'buttons'), 'btn btn-primary btn-sm')
+      @h.br do
+      end
     end
     self
   end
@@ -648,116 +653,119 @@ class HtmlFormRenderer
         return correction;
       }
       
-      function checkAnswers() {
-        
-        for (x in data) {
-          if ($("#" + x.toString() + " strong").length == 0) {
-            correct = false;
-            answers = $("#" + x.toString() + " input");
+      function checkAnswer(x) {
+        if ($("#" + x.toString() + " strong").length == 0) {
+          correct = false;
+          answers = $("#" + x.toString() + " input");
+          
+          if (answers.attr('class').match("fillin")) {
+            correctAnswers = {};
+            distractorAnswers = {};
+            explanation = {};
+            stringAnswer = false;
             
-            if (answers.attr('class').match("fillin")) {
-              correctAnswers = {};
-              distractorAnswers = {};
-              explanation = {};
-              stringAnswer = false;
-              
-              for (ans in data[x.toString()]['answers']) {
-                if (data[x.toString()]['answers'][ans]['correct'] == true) {
-                  if (data[x.toString()]['answers'][ans]['type'] == "Regexp") {
-                    string = data[x.toString()]['answers'][ans]['answer_text'].split('/');
-                    regexp = string[1];
-                    options = string[2];
-                    correctAnswers[ans.toString()] = XRegExp(regexp, options);
-                  }
-                  else if (data[x.toString()]['answers'][ans]['type'] == "Proc") {
-                  
-                  }
-                  else { // String or Number
-                    correctAnswers[ans.toString()] = data[x.toString()]['answers'][ans]['answer_text'];
-                    stringAnswer = true;
-                  }
+            for (ans in data[x.toString()]['answers']) {
+              if (data[x.toString()]['answers'][ans]['correct'] == true) {
+                if (data[x.toString()]['answers'][ans]['type'] == "Regexp") {
+                  string = data[x.toString()]['answers'][ans]['answer_text'].split('/');
+                  regexp = string[1];
+                  options = string[2];
+                  correctAnswers[ans.toString()] = XRegExp(regexp, options);
                 }
-                else {
-                  if (data[x.toString()]['answers'][ans]['type'] == "Regexp") {
-                    string = data[x.toString()]['answers'][ans]['answer_text'].split('/');
-                    regexp = string[1];
-                    options = string[2];
-                    distractorAnswers[ans.toString()] = XRegExp(regexp, options);
-                  }
-                  else if (data[x.toString()]['answers'][ans]['type'] == "Proc") {
-                  
-                  }
-                  else {// String or Number
-                    distractorAnswers[ans.toString()] = data[x.toString()]['answers'][ans]['answer_text'];
-                    stringAnswer = true;
-                  }
+                else if (data[x.toString()]['answers'][ans]['type'] == "Proc") {
+                
                 }
-                explanation[ans] = data[x.toString()]['answers'][ans]['explanation'];
+                else { // String or Number
+                  correctAnswers[ans.toString()] = data[x.toString()]['answers'][ans]['answer_text'];
+                  stringAnswer = true;
+                }
               }
-              
-              userAnswers = {};
-              for (i = 0; i < answers.length; i++) {
-                if (answers[i].value == '')
-                  userAnswers[answers[i].id.toString()] = undefined;
-                else
-                  if (stringAnswer)
-                    userAnswers[answers[i].id.toString()] = answers[i].value.toLowerCase();
-                  else
-                    userAnswers[answers[i].id.toString()] = answers[i].value;
+              else {
+                if (data[x.toString()]['answers'][ans]['type'] == "Regexp") {
+                  string = data[x.toString()]['answers'][ans]['answer_text'].split('/');
+                  regexp = string[1];
+                  options = string[2];
+                  distractorAnswers[ans.toString()] = XRegExp(regexp, options);
+                }
+                else if (data[x.toString()]['answers'][ans]['type'] == "Proc") {
+                
+                }
+                else {// String or Number
+                  distractorAnswers[ans.toString()] = data[x.toString()]['answers'][ans]['answer_text'];
+                  stringAnswer = true;
+                }
               }
-              
-              if (data[x.toString()]['order'] == false)
-                results = checkFillin(correctAnswers, userAnswers, distractorAnswers, 0);
+              explanation[ans] = data[x.toString()]['answers'][ans]['explanation'];
+            }
+            
+            userAnswers = {};
+            for (i = 0; i < answers.length; i++) {
+              if (answers[i].value == '')
+                userAnswers[answers[i].id.toString()] = undefined;
               else
-                results = checkFillin(correctAnswers, userAnswers, distractorAnswers, 1);
-                
-              allEmpty = true;
-              nCorrects = 0;
-              
-              for (r in results) {
-                if (results[r] == true)
-                  nCorrects += 1;
-                if (results[r] != "n/a")
-                  allEmpty = false;
-              }
-              
-              if (!allEmpty) {
-                printResults(results, null, explanation, 1);
-                userPoints += calculateMark(data[x.toString()], x.toString(), null, 1, nCorrects, null);
-              }
+                if (stringAnswer)
+                  userAnswers[answers[i].id.toString()] = answers[i].value.toLowerCase();
+                else
+                  userAnswers[answers[i].id.toString()] = answers[i].value;
             }
             
-            else if (answers.attr('class') == "select") {
-              idCorrectAnswer = findCorrectAnswer(x.toString(), 0);
+            if (data[x.toString()]['order'] == false)
+              results = checkFillin(correctAnswers, userAnswers, distractorAnswers, 0);
+            else
+              results = checkFillin(correctAnswers, userAnswers, distractorAnswers, 1);
               
-              if ($("#" + x.toString() + " :checked").size() != 0) {
-                if ($("#" + x.toString() + " :checked").attr('id') == idCorrectAnswer) {
-                  printResults($("#" + x.toString() + " :checked").attr('id'), 1, "", 0);
-                  correct = true;
-                }
-                else {
-                  id = $("#" + x.toString() + " :checked").attr('id');
-                  printResults(id, 0, data[x.toString()]['answers'][id]['explanation'], 0);
-                }
-                userPoints += calculateMark(data[x.toString()], x.toString(), correct, 2, null, null);
-              }
+            allEmpty = true;
+            nCorrects = 0;
+            
+            for (r in results) {
+              if (results[r] == true)
+                nCorrects += 1;
+              if (results[r] != "n/a")
+                allEmpty = false;
             }
             
-            else {
-              if ($("#" + x.toString() + " :checked").size() != 0) {
-                answers = $("#" + x.toString() + " :checked");
-                checkedIds = [];
-                
-                $.each(answers, function(index, value){
-                  checkedIds.push(value['id']);
-                });
-                
-                correctIds = [];
-                correctIds = findCorrectAnswer(x.toString(), 1);
-                checkSelectMultiple(x, checkedIds, correctIds);
-              }
+            if (!allEmpty) {
+              printResults(results, null, explanation, 1);
+              userPoints += calculateMark(data[x.toString()], x.toString(), null, 1, nCorrects, null);
             }
           }
+          
+          else if (answers.attr('class') == "select") {
+            idCorrectAnswer = findCorrectAnswer(x.toString(), 0);
+            
+            if ($("#" + x.toString() + " :checked").size() != 0) {
+              if ($("#" + x.toString() + " :checked").attr('id') == idCorrectAnswer) {
+                printResults($("#" + x.toString() + " :checked").attr('id'), 1, "", 0);
+                correct = true;
+              }
+              else {
+                id = $("#" + x.toString() + " :checked").attr('id');
+                printResults(id, 0, data[x.toString()]['answers'][id]['explanation'], 0);
+              }
+              userPoints += calculateMark(data[x.toString()], x.toString(), correct, 2, null, null);
+            }
+          }
+          
+          else {
+            if ($("#" + x.toString() + " :checked").size() != 0) {
+              answers = $("#" + x.toString() + " :checked");
+              checkedIds = [];
+              
+              $.each(answers, function(index, value){
+                checkedIds.push(value['id']);
+              });
+              
+              correctIds = [];
+              correctIds = findCorrectAnswer(x.toString(), 1);
+              checkSelectMultiple(x, checkedIds, correctIds);
+            }
+          }
+        }
+      }
+      
+      function checkAnswers() {
+        for (x in data) {
+          checkAnswer(x);
         }
       }
       
@@ -769,7 +777,6 @@ class HtmlFormRenderer
           for (i = 0; i < inputText.length; i++) {
             idAnswer = inputText[i].id;
             tmp[idAnswer] = inputText[i].value;
-            //localStorage[timestamp.toString()][idAnswer] = inputText[i].value;
           }
           
           inputRadioCheckBox = $('input:checked');
@@ -777,7 +784,6 @@ class HtmlFormRenderer
             idAnswer = inputRadioCheckBox[i].id;
             nquestion = parseInt(idAnswer.split('-')[0].substr(3)) - 1;
             tmp[idAnswer] = data["question-" + nquestion.toString()]['answers'][idAnswer]['answer_text'];
-            //localStorage[timestamp.toString()][idAnswer] = data["question-" + nquestion.toString()]['answers'][idAnswer]['answer_text'];
           }
           localStorage.setItem(timestamp, JSON.stringify(tmp));
         }
@@ -798,13 +804,23 @@ class HtmlFormRenderer
         }
       }
       
-      function deleteAnswers() {
-        localStorage.clear();
-        alert(i18n[language]['alerts']['storage']);
+      function deleteAnswers(all) {
+        if (all) {
+          localStorage.clear();
+          alert(i18n[language]['alerts']['storage']);
+        }
+        else {
+          localStorage.removeItem(timestamp);
+          alert(i18n[language]['alerts']['answers']);
+        }
       }
       
       function showTotalScore() {
         $("#score").html(i18n[language]['questions']['score'] + ": " + userPoints.toFixed(2) + "/" + totalPoints.toFixed(2) + " " + i18n[language]['questions']['points'])
+      }
+      
+      function reload() {
+        window.location.reload();
       }
       
       $("#submit").click(function() {
@@ -823,12 +839,36 @@ class HtmlFormRenderer
       });
 
       $("#reset").click(function() {
-        window.location.reload();
+        reload();
+      });
+      
+      $("#deleteAnswers").click(function() {
+        deleteAnswers(false);
+        reload();
       });
       
       $("#deleteStorage").click(function() {
-        deleteAnswers();
-        window.location.reload();
+        deleteAnswers(true);
+        reload();
+      });
+      
+      $("button[id^=show-answer-q").click(function() {
+        button = $(this);
+        if (button.attr('class').match('success')) {
+          button.attr('class', button.attr('class').replace('success', 'danger'));
+          button.html(i18n[language]['buttons']['hide']);
+        }
+        else if (button.attr('class').match('danger')){
+          button.attr('class', button.attr('class').replace('danger', 'success'));
+          button.html(i18n[language]['buttons']['show']);
+        }
+      });
+      
+      $("button[id^=q-").click(function() {
+        nQuestion = $(this).attr('id').split('-')[1];
+        checkAnswer('question-' + nQuestion);
+        storeAnswers();
+        showTotalScore();
       });
       
       $(document).ready(function() {

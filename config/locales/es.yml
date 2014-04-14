@@ -6,11 +6,15 @@ es:
     correct: Correcto
     incorrect: Incorrecto
     points: puntos
-    score: Puntuación total
+    score: Puntuaci&oacute;n total
   buttons:
     submit: Enviar
     reset: Reset
     delete: Borrar respuestas
+    deleteAll: Borrar almacenamiento
+    show: Mostrar respuesta
+    hide: Ocultar respuesta
   alerts:
-    storage: Las respuestas han sido borradas
+    answers: Respuestas borradas
+    storage: Almacenamiento borrado
     noStorage: El navegador no soporta almacenamiento de respuestas
