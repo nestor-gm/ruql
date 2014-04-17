@@ -21,6 +21,9 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'locale', '~> 2.1'
   s.add_runtime_dependency 'htmlentities', '~> 4.3'
   s.add_runtime_dependency 'opal', '~> 0.6'
+  s.add_runtime_dependency 'ruby_parser', '~> 3.5'
+  s.add_runtime_dependency 'file-tail', '~> 1.0'
+  s.add_runtime_dependency 'sourcify', '~> 0.5'
   s.homepage    = 'http://github.com/saasbook/ruql'
   s.license       = 'CC By-SA'
 end

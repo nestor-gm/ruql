@@ -7,6 +7,7 @@ class HtmlFormRenderer
   require 'i18n'
   require 'locale'
   require 'opal'
+  require 'sourcify'
   
   attr_reader :output
 
@@ -119,6 +120,7 @@ class HtmlFormRenderer
       end
     end
     question_comment(q)
+    insert_buttons_each_question(index)
     self
   end
 
@@ -147,18 +149,17 @@ class HtmlFormRenderer
       end
     end
     question_comment(q)
+    insert_buttons_each_question(index)
     self
   end
   
-  def type_answer_fill_in(answer, item, idx, id_answer)
-=begin
-    if (eval(item).respond_to?('call'))
+  def type_answer_fill_in(answer, item, idx, id_answer)  
+    if (item.respond_to?('call'))
       ans = item
       type = 'Proc'
-      opal = Opal.compile(item)
-      @opal << opal
+      #opal = Opal.compile(item)
+      #@opal << opal
     else
-=end
       if (item.class == Regexp)
         ans = item.source
         type = 'Regexp'
@@ -174,7 +175,7 @@ class HtmlFormRenderer
         ans = item
         type = 'Fixnum'
       end
-    #end
+    end
     @data[:"question-#{idx}"][:answers]["qfi#{idx + 1}-#{id_answer}".to_sym] = {:answer_text => ans, :correct => answer.correct, 
                                                                                 :explanation => answer.explanation, :type => type}
   end
@@ -196,7 +197,9 @@ class HtmlFormRenderer
       end
       
       id_answer = 1
+      flag_proc = false
       answers.each do |a|
+        flag_proc = true if (a.respond_to?('call'))
         type_answer_fill_in(answer, a, idx, id_answer)
         id_answer += 1
       end
@@ -208,6 +211,7 @@ class HtmlFormRenderer
           id_distractor += 1
         end
       end
+      insert_buttons_each_question(idx, flag_proc)
     end
   end
   
@@ -258,10 +262,6 @@ class HtmlFormRenderer
           end
       end
       yield # render answers
-      insert_button("show-answer-q#{index}", translate(:show, 'buttons'), 'btn btn-success btn-sm')
-      insert_button("q-#{index}", translate(:submit, 'buttons'), 'btn btn-primary btn-sm')
-      @h.br do
-      end
     end
     self
   end
@@ -279,6 +279,13 @@ class HtmlFormRenderer
   def insert_button(id, name, type)
     @h.button(:type => 'button', :id => id, :class => type) do |b|
       b << name
+    end
+  end
+  
+  def insert_buttons_each_question(index, flag=false)
+    insert_button("show-answer-q-#{index}", translate(:show, 'buttons'), 'btn btn-success btn-sm') unless flag
+    insert_button("q-#{index}", translate(:submit, 'buttons'), 'btn btn-primary btn-sm')
+    @h.br do
     end
   end
   
@@ -413,7 +420,7 @@ class HtmlFormRenderer
   end
   
   def load_yml
-    #I18n.enforce_available_locales = true
+    #I18n.enforce_available_locales = false
     I18n.load_path = Dir['config/locales/*.yml']
   end
   
@@ -823,6 +830,65 @@ class HtmlFormRenderer
         window.location.reload();
       }
       
+      function changeButton(button, numQuestion) {
+        if (button.attr('class').match('success')) {
+          button.attr('class', button.attr('class').replace('success', 'danger'));
+          button.html(i18n[language]['buttons']['hide']);
+          showOrHideAnswer(numQuestion, 1);
+        }
+        else if (button.attr('class').match('danger')){
+          button.attr('class', button.attr('class').replace('danger', 'success'));
+          button.html(i18n[language]['buttons']['show']);
+          showOrHideAnswer(numQuestion, 0);
+        }
+      }
+      
+      function showOrHideAnswer(numQuestion, flag) {
+        answers = data['question-' + numQuestion.toString()]['answers'];
+        typeQuestion = Object.keys(answers)[0].split('-')[0].slice(0, 3);
+        numQuestion = (++numQuestion).toString();
+        
+        if (typeQuestion.match(/^qfi$/)) {
+          inputs = $("input[id^=qfi" + numQuestion + "-");
+          
+          $.each(inputs, function(index, value) {
+            if (flag == 1)
+              $("input[id=" + value.id).attr('value', answers[value.id]['answer_text']);
+            else
+              $("input[id=" + value.id).attr('value', '');
+          });
+        }
+        else if (typeQuestion.match(/^qmc$/)){
+          inputs = $("input[id^=qmc" + numQuestion + "-");
+          correct = '';
+          
+          $.each(answers, function(key, value) {
+            if (value['correct'] == true)
+              correct = key;
+          })
+          
+          if (flag == 1)
+            $("input[id=" + correct).prop('checked', true);
+          else
+            $("input[id=" + correct).prop('checked', false);
+        }
+        else {
+          inputs = $("input[id^=qsm" + numQuestion + "-");
+          corrects = [];
+          $.each(answers, function(key, value) {
+            if (answers[key]['correct'] == true)
+              corrects.push(key);
+          }); 
+          
+          $.each(corrects, function(index, value) {
+            if (flag == 1)
+              $("input[id=" + value).prop('checked', true);
+            else
+              $("input[id=" + value).prop('checked', false);
+          });
+        }
+      }
+      
       $("#submit").click(function() {
         checkAnswers();
         filledAllQuiz = true;
@@ -852,16 +918,9 @@ class HtmlFormRenderer
         reload();
       });
       
-      $("button[id^=show-answer-q").click(function() {
-        button = $(this);
-        if (button.attr('class').match('success')) {
-          button.attr('class', button.attr('class').replace('success', 'danger'));
-          button.html(i18n[language]['buttons']['hide']);
-        }
-        else if (button.attr('class').match('danger')){
-          button.attr('class', button.attr('class').replace('danger', 'success'));
-          button.html(i18n[language]['buttons']['show']);
-        }
+      $("button[id^=show-answer-q-").click(function() {
+        numQuestion = parseInt($(this).attr('id').split('-')[3]);
+        changeButton($(this), numQuestion);
       });
       
       $("button[id^=q-").click(function() {
