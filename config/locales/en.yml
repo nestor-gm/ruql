@@ -18,3 +18,5 @@ en:
     answers: Answers deleted
     storage: Storage deleted
     noStorage: Your browser doesn't support answers storage
+  exceptions:
+    syntax: Incomplete method block in the Ruby input file.

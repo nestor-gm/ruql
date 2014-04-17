@@ -74,12 +74,16 @@ class HtmlFormRenderer
     @h.form(:id => 'form') do
       @h.ol :class => 'questions' do
         @quiz.questions.each_with_index do |q,i|
-          case q
-          when SelectMultiple then render_select_multiple(q,i)
-          when MultipleChoice, TrueFalse then render_multiple_choice(q,i)
-          when FillIn then render_fill_in(q, i)
-          else
-            raise "Unknown question type: #{q}"
+          begin
+            case q
+            when SelectMultiple then render_select_multiple(q,i)
+            when MultipleChoice, TrueFalse then render_multiple_choice(q,i)
+            when FillIn then render_fill_in(q, i)
+            else
+              raise "Unknown question type: #{q}"
+            end
+          rescue Exception => e
+            $stderr.puts "*** #{e.class} *** #{translate(:syntax, 'exceptions')}"
           end
         end
       end

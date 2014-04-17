@@ -18,3 +18,5 @@ es:
     answers: Respuestas borradas
     storage: Almacenamiento borrado
     noStorage: El navegador no soporta almacenamiento de respuestas
+  exceptions:
+    syntax: Bloque incompleto en un método del fichero Ruby procesado.

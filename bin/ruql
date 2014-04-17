@@ -87,8 +87,12 @@ def main
     ['-n', '--name', Getopt::REQUIRED],
     ['-l', '--log', Getopt::REQUIRED],
     )
-  Quiz.instance_eval "#{IO.read(filename)}"
-  Quiz.quizzes.each { |quiz| puts quiz.render_with(renderer, opts)  }
+  begin
+    Quiz.instance_eval "#{IO.read(filename)}"
+    Quiz.quizzes.each { |quiz| puts quiz.render_with(renderer, opts)  }
+  rescue Exception => e
+    $stderr.puts "*** #{e.class} *** #{e.message}"
+  end
 end
 
 if ARGV.length < 2
