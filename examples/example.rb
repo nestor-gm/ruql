@@ -38,7 +38,7 @@ quiz 'Example quiz' do
     text %q{
       Diga dos números x = ---- e  y = ---- que multiplicados den 100
     }
-    answer result = lambda { |x, y| x * y == 100 }
+    answer "lambda { |x, y| x * y == 100 }"
   end
 
   fill_in do
