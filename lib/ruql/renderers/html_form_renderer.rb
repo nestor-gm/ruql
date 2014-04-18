@@ -23,8 +23,7 @@ class HtmlFormRenderer
     @data = {}
     @size_inputs = []
     @language = (Locale.current[0].language || 'en').to_sym
-    @opal_runtime = ""
-    @opal_functions = ""
+    #@opal = ""
   end
 
   def render_quiz
@@ -62,8 +61,7 @@ class HtmlFormRenderer
     render_questions
     @validation_js = insert_defaultJS(@quiz.points)
     @sass = insert_sass if !@size_inputs.empty?
-    @opal_rt = @opal_runtime
-    @opal_f = @opal_functions
+    #@opal2 = @opal
     
     # the ERB template includes 'yield' where questions should go:
     output = ERB.new(IO.read(File.expand_path @template)).result(binding)
@@ -158,30 +156,28 @@ class HtmlFormRenderer
     self
   end
   
-  def type_answer_fill_in(answer, item, idx, id_answer) 
-    if (item.class == Regexp)
-      ans = item.source
-      type = 'Regexp'
-      [0, -1].each {|index| ans.insert(index, '/')}
-      opts = item.options
-      ans << 'i' if (opts & 1 == 1)
-      ans << 'x' if (opts & 2 == 2)
-      ans << 'm' if (opts & 4 == 4)
-    elsif (item.class == String)
-      begin
-        if (eval(item).respond_to?('call'))
-          ans = item
-          type = 'Proc'
-          @opal_runtime = Opal::Builder.build('opal')
-          @opal_functions << "qfi#{idx} = " + Opal.compile(item) + "\n"
-        end
-        rescue
-          ans = item.downcase
-          type = 'String'
-        end
-    else
+  def type_answer_fill_in(answer, item, idx, id_answer)  
+    if (item.respond_to?('call'))
       ans = item
-      type = 'Fixnum'
+      type = 'Proc'
+      #opal = Opal.compile(item)
+      #@opal << opal
+    else
+      if (item.class == Regexp)
+        ans = item.source
+        type = 'Regexp'
+        [0, -1].each {|index| ans.insert(index, '/')}
+        opts = item.options
+        ans << 'i' if (opts & 1 == 1)
+        ans << 'x' if (opts & 2 == 2)
+        ans << 'm' if (opts & 4 == 4)
+      elsif (item.class == String)
+        ans = item.downcase
+        type = 'String'
+      else
+        ans = item
+        type = 'Fixnum'
+      end
     end
     @data[:"question-#{idx}"][:answers]["qfi#{idx + 1}-#{id_answer}".to_sym] = {:answer_text => ans, :correct => answer.correct, 
                                                                                 :explanation => answer.explanation, :type => type}
@@ -206,10 +202,7 @@ class HtmlFormRenderer
       id_answer = 1
       flag_proc = false
       answers.each do |a|
-        begin
-          flag_proc = true if eval(a).respond_to?('call')
-        rescue
-        end
+        flag_proc = true if (a.respond_to?('call'))
         type_answer_fill_in(answer, a, idx, id_answer)
         id_answer += 1
       end
@@ -552,7 +545,6 @@ class HtmlFormRenderer
       
       function calculateMark(question, id, result, typeQuestion, numberCorrects, numberIncorrects) {
         stringPoints = i18n[language]['questions']['points'];
-        
         if (typeQuestion == 2) {
           if (result) {
             $("#" + id).append("<strong class=mark> " + question['points'].toFixed(2) + "/" + question['points'].toFixed(2) + " " + stringPoints + "</strong></br></br>");
@@ -596,75 +588,60 @@ class HtmlFormRenderer
         }
       }
       
-      function checkFillin(correctAnswers, userAnswers, distractorAnswers, typeCorrection, flag_proc, id_function) {
+      function checkFillin(correctAnswers, userAnswers, distractorAnswers, typeCorrection) {
         correction = {};
         checkedAnswers = {};
         
         if (typeCorrection == 0) {          // Order doesn't matter
-          if (flag_proc == false) {
-            for (u in userAnswers) {
-              if (userAnswers[u] != undefined) {    // No empty field
-                matchedCorrect = false;
-                for (y in correctAnswers) {
-                  if (checkAnswers[u] == undefined) {
-                    if ((typeof(correctAnswers[y]) == "string") || (typeof(correctAnswers[y]) == "number")) {    // Answer is a String or a Number
-                      if (userAnswers[u] == correctAnswers[y]) {
-                        correction[u] = true;
-                        checkedAnswers[u] = userAnswers[u];
-                        matchedCorrect = true;
-                        break;
-                      }
+          for (u in userAnswers) {
+            if (userAnswers[u] != undefined) {    // No empty field
+              matchedCorrect = false;
+              for (y in correctAnswers) {
+                if (checkAnswers[u] == undefined) {
+                  if ((typeof(correctAnswers[y]) == "string") || (typeof(correctAnswers[y]) == "number")) {    // Answer is a String or a Number
+                    if (userAnswers[u] == correctAnswers[y]) {
+                      correction[u] = true;
+                      checkedAnswers[u] = userAnswers[u];
+                      matchedCorrect = true;
+                      break;
                     }
-                    else {  // Answer is a Regexp
-                      if (XRegExp.exec(userAnswers[u], correctAnswers[y])) {
-                        correction[u] = true;
-                        checkedAnswers[u] = userAnswers[u];
-                        matchedCorrect = true;
-                        break;
-                      }
+                  }
+                  else {  // Answer is a Regexp
+                    if (XRegExp.exec(userAnswers[u], correctAnswers[y])) {
+                      correction[u] = true;
+                      checkedAnswers[u] = userAnswers[u];
+                      matchedCorrect = true;
+                      break;
                     }
                   }
                 }
-                if (!matchedCorrect)
-                  correction[u] = false;
               }
-              else
-                correction[u] = "n/a";
+              if (!matchedCorrect)
+                correction[u] = false;
             }
-          }
-          else {
-            //
+            else
+              correction[u] = "n/a";
           }
         }
         else {                            // Order matters
-          
-            for (u in userAnswers) {
-              if (flag_proc == false) {
-                if (userAnswers[u] != undefined) {
-                  if ((typeof(correctAnswers[u]) == "string") || (typeof(correctAnswers[u]) == "number")) {
-                    if (userAnswers[u] == correctAnswers[u])
-                      correction[u] = true;
-                    else
-                      correction[u] = false;
-                  }
-                  else {
-                    if (XRegExp.exec(userAnswers[u], correctAnswers[u]))
-                      correction[u] = true;
-                    else
-                      correction[u] = false;
-                  }
-                }
+          for (u in userAnswers) {
+            if (userAnswers[u] != undefined) {
+              if ((typeof(correctAnswers[u]) == "string") || (typeof(correctAnswers[u]) == "number")) {
+                if (userAnswers[u] == correctAnswers[u])
+                  correction[u] = true;
                 else
-                  correction[u] = "n/a";
+                  correction[u] = false;
               }
               else {
-                values = [];
-                $.each(userAnswers, function(k, v) {
-                  values.push(eval(v));
-                });
-                correction[u] = eval(id_function).apply(this, values);
+                if (XRegExp.exec(userAnswers[u], correctAnswers[u]))
+                  correction[u] = true;
+                else
+                  correction[u] = false;
               }
             }
+            else
+              correction[u] = "n/a";
+          }
         }
         
         if (Object.keys(userAnswers).length == 1) {
@@ -689,8 +666,6 @@ class HtmlFormRenderer
       function checkAnswer(x) {
         if ($("#" + x.toString() + " strong").length == 0) {
           correct = false;
-          flag_proc = false;
-          id_function = "";
           answers = $("#" + x.toString() + " input");
           
           if (answers.attr('class').match("fillin")) {
@@ -708,9 +683,7 @@ class HtmlFormRenderer
                   correctAnswers[ans.toString()] = XRegExp(regexp, options);
                 }
                 else if (data[x.toString()]['answers'][ans]['type'] == "Proc") {
-                  flag_proc = true;
-                  nQuestion = x.toString().split('-')[1];
-                  id_function = "qfi" + nQuestion;
+                
                 }
                 else { // String or Number
                   correctAnswers[ans.toString()] = data[x.toString()]['answers'][ans]['answer_text'];
@@ -725,7 +698,7 @@ class HtmlFormRenderer
                   distractorAnswers[ans.toString()] = XRegExp(regexp, options);
                 }
                 else if (data[x.toString()]['answers'][ans]['type'] == "Proc") {
-                  //
+                
                 }
                 else {// String or Number
                   distractorAnswers[ans.toString()] = data[x.toString()]['answers'][ans]['answer_text'];
@@ -734,7 +707,7 @@ class HtmlFormRenderer
               }
               explanation[ans] = data[x.toString()]['answers'][ans]['explanation'];
             }
-           
+            
             userAnswers = {};
             for (i = 0; i < answers.length; i++) {
               if (answers[i].value == '')
@@ -747,29 +720,23 @@ class HtmlFormRenderer
             }
             
             if (data[x.toString()]['order'] == false)
-              results = checkFillin(correctAnswers, userAnswers, distractorAnswers, 0, flag_proc, id_function);
+              results = checkFillin(correctAnswers, userAnswers, distractorAnswers, 0);
             else
-              results = checkFillin(correctAnswers, userAnswers, distractorAnswers, 1, flag_proc, id_function);
+              results = checkFillin(correctAnswers, userAnswers, distractorAnswers, 1);
               
             allEmpty = true;
             nCorrects = 0;
             
             for (r in results) {
               if (results[r] == true)
-                if (flag_proc == false)
-                  nCorrects += 1;
-                else
-                  correct = true;
+                nCorrects += 1;
               if (results[r] != "n/a")
                 allEmpty = false;
             }
             
             if (!allEmpty) {
               printResults(results, null, explanation, 1);
-              if (flag_proc == false)
-                userPoints += calculateMark(data[x.toString()], x.toString(), null, 1, nCorrects, null);
-              else
-                userPoints += calculateMark(data[x.toString()], x.toString(), correct, 2, null, null);
+              userPoints += calculateMark(data[x.toString()], x.toString(), null, 1, nCorrects, null);
             }
           }
           
