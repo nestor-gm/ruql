@@ -10,9 +10,6 @@ gem 'i18n'
 gem 'locale'
 gem 'htmlentities'
 gem 'opal'
-gem 'ruby_parser'
-gem 'file-tail'
-gem 'sourcify'
 
 group :development, :test do
   gem 'ruby-debug19'

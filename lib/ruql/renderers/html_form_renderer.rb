@@ -7,7 +7,6 @@ class HtmlFormRenderer
   require 'i18n'
   require 'locale'
   require 'opal'
-  require 'sourcify'
   
   attr_reader :output
 
