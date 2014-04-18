@@ -6,7 +6,6 @@ class HtmlFormRenderer
   require 'yaml'
   require 'i18n'
   require 'locale'
-  require 'opal'
   
   attr_reader :output
 
@@ -23,7 +22,6 @@ class HtmlFormRenderer
     @data = {}
     @size_inputs = []
     @language = (Locale.current[0].language || 'en').to_sym
-    #@opal = ""
   end
 
   def render_quiz
@@ -61,7 +59,6 @@ class HtmlFormRenderer
     render_questions
     @validation_js = insert_defaultJS(@quiz.points)
     @sass = insert_sass if !@size_inputs.empty?
-    #@opal2 = @opal
     
     # the ERB template includes 'yield' where questions should go:
     output = ERB.new(IO.read(File.expand_path @template)).result(binding)
@@ -156,28 +153,24 @@ class HtmlFormRenderer
     self
   end
   
-  def type_answer_fill_in(answer, item, idx, id_answer)  
-    if (item.respond_to?('call'))
+  def type_answer_fill_in(answer, item, idx, id_answer) 
+    if (item.class == Regexp)
+      ans = item.source
+      type = 'Regexp'
+      [0, -1].each {|index| ans.insert(index, '/')}
+      opts = item.options
+      ans << 'i' if (opts & 1 == 1)
+      ans << 'x' if (opts & 2 == 2)
+      ans << 'm' if (opts & 4 == 4)
+    elsif (item.class == String)
+      ans = item.downcase
+      type = 'String'
+    elsif (item.class == Fixnum)
       ans = item
-      type = 'Proc'
-      #opal = Opal.compile(item)
-      #@opal << opal
+      type = 'Fixnum'
     else
-      if (item.class == Regexp)
-        ans = item.source
-        type = 'Regexp'
-        [0, -1].each {|index| ans.insert(index, '/')}
-        opts = item.options
-        ans << 'i' if (opts & 1 == 1)
-        ans << 'x' if (opts & 2 == 2)
-        ans << 'm' if (opts & 4 == 4)
-      elsif (item.class == String)
-        ans = item.downcase
-        type = 'String'
-      else
-        ans = item
-        type = 'Fixnum'
-      end
+      ans = item.to_javascript
+      type = 'JS'
     end
     @data[:"question-#{idx}"][:answers]["qfi#{idx + 1}-#{id_answer}".to_sym] = {:answer_text => ans, :correct => answer.correct, 
                                                                                 :explanation => answer.explanation, :type => type}
@@ -200,9 +193,9 @@ class HtmlFormRenderer
       end
       
       id_answer = 1
-      flag_proc = false
+      flag_js = false
       answers.each do |a|
-        flag_proc = true if (a.respond_to?('call'))
+        flag_js = true if (a.class == JS)
         type_answer_fill_in(answer, a, idx, id_answer)
         id_answer += 1
       end
@@ -214,7 +207,7 @@ class HtmlFormRenderer
           id_distractor += 1
         end
       end
-      insert_buttons_each_question(idx, flag_proc)
+      insert_buttons_each_question(idx, flag_js)
     end
   end
   
@@ -673,6 +666,7 @@ class HtmlFormRenderer
             distractorAnswers = {};
             explanation = {};
             stringAnswer = false;
+            flag_js = false;
             
             for (ans in data[x.toString()]['answers']) {
               if (data[x.toString()]['answers'][ans]['correct'] == true) {
@@ -682,8 +676,8 @@ class HtmlFormRenderer
                   options = string[2];
                   correctAnswers[ans.toString()] = XRegExp(regexp, options);
                 }
-                else if (data[x.toString()]['answers'][ans]['type'] == "Proc") {
-                
+                else if (data[x.toString()]['answers'][ans]['type'] == "JS") {
+                  flag_js = true;
                 }
                 else { // String or Number
                   correctAnswers[ans.toString()] = data[x.toString()]['answers'][ans]['answer_text'];
@@ -697,8 +691,8 @@ class HtmlFormRenderer
                   options = string[2];
                   distractorAnswers[ans.toString()] = XRegExp(regexp, options);
                 }
-                else if (data[x.toString()]['answers'][ans]['type'] == "Proc") {
-                
+                else if (data[x.toString()]['answers'][ans]['type'] == "JS") {
+                  //
                 }
                 else {// String or Number
                   distractorAnswers[ans.toString()] = data[x.toString()]['answers'][ans]['answer_text'];
@@ -719,24 +713,49 @@ class HtmlFormRenderer
                   userAnswers[answers[i].id.toString()] = answers[i].value;
             }
             
-            if (data[x.toString()]['order'] == false)
-              results = checkFillin(correctAnswers, userAnswers, distractorAnswers, 0);
-            else
-              results = checkFillin(correctAnswers, userAnswers, distractorAnswers, 1);
+            if (flag_js == false) {
+              if (data[x.toString()]['order'] == false)
+                results = checkFillin(correctAnswers, userAnswers, distractorAnswers, 0);
+              else
+                results = checkFillin(correctAnswers, userAnswers, distractorAnswers, 1);
               
-            allEmpty = true;
-            nCorrects = 0;
-            
-            for (r in results) {
-              if (results[r] == true)
-                nCorrects += 1;
-              if (results[r] != "n/a")
-                allEmpty = false;
+              allEmpty = true;
+              nCorrects = 0;
+              
+              for (r in results) {
+                if (results[r] == true)
+                  nCorrects += 1;
+                if (results[r] != "n/a")
+                  allEmpty = false;
+              }
+              
+              if (!allEmpty) {
+                printResults(results, null, explanation, 1);
+                userPoints += calculateMark(data[x.toString()], x.toString(), null, 1, nCorrects, null);
+              }
             }
-            
-            if (!allEmpty) {
-              printResults(results, null, explanation, 1);
-              userPoints += calculateMark(data[x.toString()], x.toString(), null, 1, nCorrects, null);
+            else {
+              nQuestion = parseInt(x.toString().split('-')[1]) + 1;
+              id_answer_js = 'qfi' + nQuestion.toString() + '-1';
+              result_function = eval(data[x.toString()]['answers'][id_answer_js]['answer_text']);
+              
+              values = [];
+              ids = {};
+              $.each(userAnswers, function(k,v) {
+                ids[k] = false;
+                values.push(eval(v));
+              });
+              
+              result = result_function.apply(this, values);     // Execution of the function
+              
+              if (result) {
+                $.each(ids, function(k,v) {
+                  ids[k] = true;
+                });
+              }
+              
+              printResults(ids, null, explanation, 1);
+              userPoints += calculateMark(data[x.toString()], x.toString(), result, 2, null, null);
             }
           }
           
