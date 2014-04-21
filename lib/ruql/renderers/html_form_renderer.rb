@@ -255,8 +255,8 @@ class HtmlFormRenderer
             question.question_text << "<br/><br/>"
             question.question_text << "<div> #{translate(:answers, '')}: "
             question.answers[0].answer_text.each_with_index do |a, i|
-              @size_divs << a.length
-              question.question_text << "<button class='dragdrop size-#{a.length} btn btn-default btn-sm' id=qdda#{i + 1}-#{i + 1} draggable=true ondragstart=drag(event)>#{a}</button>&nbsp&nbsp"
+              @size_divs << a.to_s.length
+              question.question_text << "<button class='dragdrop size-#{a.to_s.length} btn btn-default btn-sm' id=qdda#{i + 1}-#{i + 1} draggable=true ondragstart=drag(event)>#{a}</button>&nbsp&nbsp"
             end
             question.question_text << "<div/>"
             question.question_text << "</br></br>"
