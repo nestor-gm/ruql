@@ -91,7 +91,7 @@ fill_in do
 end
 ```
 
-Another notation is allowed to fill_in questions:
+Another notation is allowed to fill_in questions for HTML Form renderer:
 
 ```ruby
 fill_in do
