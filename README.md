@@ -286,8 +286,8 @@ Besides, this renderer has the following features:
 NOTE: In Ruby 1.9.3p194, the method 'enforce_available_locales' in the i18n module doesn't exist. This cause
 an error when the gem is executed.
 + The options of Ruby Regexps support -s option. (Using XRegExp)  - http://xregexp.com/
-+ Used the MathJax library to use LaTeX expressions - http://www.mathjax.org/
-Use a slash for the braces if you use a single quote ('\{\}') or two slashes for double quotes ("\{\}").
++ Used the MathJax library to use LaTeX expressions - http://www.mathjax.org/. 
+Use a slash for the braces if you use a single quote ('\\{\\}') or two slashes for double quotes ("\\\\{\\\\}").
 
 
 Creating an AutoQCM quiz
