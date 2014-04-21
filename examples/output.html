@@ -40,6 +40,7 @@
 input.size-5 { width: 3.5em; }
 
 input.size-8 { width: 5.6em; }
+div.size-3 { width: 2.1em; display: inline; }
 
     </style>
     <!-- Any CSS included by the user -->
@@ -74,7 +75,7 @@ input.size-8 { width: 5.6em; }
           </div>
         </div>
       
-      <!-- Seed: 248098789419147260371029937739998795096 -->
+      <!-- Seed: 202799275249960305490613115875186630746 -->
 <form id="form">
   <ol class="questions">
     <li id="question-0" class="question fillin ">
@@ -109,11 +110,9 @@ Enviar      </button>
       <br>
       </br>
     </li>
-    <li id="question-3" class="question fillin ">
+    <li id="question-3" class="question dragdrop ">
       <div class="quiz text">
-[1 point] The three stooges are <input type=text id=qfi4-1 class='fillin size-5'></input>, <input type=text id=qfi4-2 class='fillin size-4'></input>, and <input type=text id=qfi4-3 class='fillin size-5'></input>.<div id=qfi4-3r class=quiz></div></br></br>      </div>
-      <button type="button" id="show-answer-q-3" class="btn btn-success btn-sm">
-Mostrar respuesta      </button>
+[1 point] The <input id=qdd4-1 class='dragdrop size-4' ondrop=drop(event,'qdd4-1') ondragover=allowDrop(event)></input> brown fox jumped over the lazy <input id=qdd4-2 class='dragdrop size-4' ondrop=drop(event,'qdd4-2') ondragover=allowDrop(event)></input><br/><br/><div> Respuestas: <button class='dragdrop size-3 btn btn-default btn-sm' id=qdda1-1 draggable=true ondragstart=drag(event)>fox</button>&nbsp&nbsp<button class='dragdrop size-3 btn btn-default btn-sm' id=qdda2-2 draggable=true ondragstart=drag(event)>dog</button>&nbsp&nbsp<div/></br></br>      </div>
       <button type="button" id="q-3" class="btn btn-primary btn-sm">
 Enviar      </button>
       <br>
@@ -131,7 +130,7 @@ Enviar      </button>
     </li>
     <li id="question-5" class="question fillin ">
       <div class="quiz text">
-[1 point] The capital of Tenerife is <input type=text id=qfi6-1 class='fillin size-5'></input> Cruz de <input type=text id=qfi6-2 class='fillin size-8'></input><div id=qfi6-2r class=quiz></div></br></br>      </div>
+[1 point] The three stooges are <input type=text id=qfi6-1 class='fillin size-5'></input>, <input type=text id=qfi6-2 class='fillin size-4'></input>, and <input type=text id=qfi6-3 class='fillin size-5'></input>.<div id=qfi6-3r class=quiz></div></br></br>      </div>
       <button type="button" id="show-answer-q-5" class="btn btn-success btn-sm">
 Mostrar respuesta      </button>
       <button type="button" id="q-5" class="btn btn-primary btn-sm">
@@ -141,9 +140,9 @@ Enviar      </button>
     </li>
     <li id="question-6" class="question fillin ">
       <div class="quiz text">
-[1 point] 
-      Diga dos números x = <input type=text id=qfi7-1 class='fillin size-4'></input> e  y = <input type=text id=qfi7-2 class='fillin size-4'></input> que multiplicados den 100
-    <div id=qfi7-2r class=quiz></div></br></br>      </div>
+[1 point] The capital of Tenerife is <input type=text id=qfi7-1 class='fillin size-5'></input> Cruz de <input type=text id=qfi7-2 class='fillin size-8'></input><div id=qfi7-2r class=quiz></div></br></br>      </div>
+      <button type="button" id="show-answer-q-6" class="btn btn-success btn-sm">
+Mostrar respuesta      </button>
       <button type="button" id="q-6" class="btn btn-primary btn-sm">
 Enviar      </button>
       <br>
@@ -152,16 +151,8 @@ Enviar      </button>
     <li id="question-7" class="question fillin ">
       <div class="quiz text">
 [1 point] 
-      Calculate the determinant of this matrix:
-      $$\mathbf{A} = \begin{vmatrix} 
-      1 & 3 \\ 
-      2 & 4 
-      \end{vmatrix}$$
-      <br/>
-      <input type=text id=qfi8-1 class='fillin size-4'></input>
-    <div id=qfi8-1r class=quiz></div></br></br>      </div>
-      <button type="button" id="show-answer-q-7" class="btn btn-success btn-sm">
-Mostrar respuesta      </button>
+      Diga dos números x = <input type=text id=qfi8-1 class='fillin size-4'></input> e  y = <input type=text id=qfi8-2 class='fillin size-4'></input> que multiplicados den 100
+    <div id=qfi8-2r class=quiz></div></br></br>      </div>
       <button type="button" id="q-7" class="btn btn-primary btn-sm">
 Enviar      </button>
       <br>
@@ -170,9 +161,12 @@ Enviar      </button>
     <li id="question-8" class="question fillin ">
       <div class="quiz text">
 [1 point] 
-      Solve: 
-      $$\binom{n}{k} = \frac{n!}{k!(n-k)!}$$
-      when n = 5 and k = 2:
+      Calculate the determinant of this matrix:
+      $$\mathbf{A} = \begin{vmatrix} 
+      1 & 3 \\ 
+      2 & 4 
+      \end{vmatrix}$$
+      <br/>
       <input type=text id=qfi9-1 class='fillin size-4'></input>
     <div id=qfi9-1r class=quiz></div></br></br>      </div>
       <button type="button" id="show-answer-q-8" class="btn btn-success btn-sm">
@@ -185,7 +179,9 @@ Enviar      </button>
     <li id="question-9" class="question fillin ">
       <div class="quiz text">
 [1 point] 
-      When x = 2, the solution of $\sqrt{3x+3}+(1+x)^2$ is:
+      Solve: 
+      $$\binom{n}{k} = \frac{n!}{k!(n-k)!}$$
+      when n = 5 and k = 2:
       <input type=text id=qfi10-1 class='fillin size-4'></input>
     <div id=qfi10-1r class=quiz></div></br></br>      </div>
       <button type="button" id="show-answer-q-9" class="btn btn-success btn-sm">
@@ -195,54 +191,34 @@ Enviar      </button>
       <br>
       </br>
     </li>
-    <li id="question-10" class="question multiplechoice ">
+    <li id="question-10" class="question fillin ">
+      <div class="quiz text">
+[1 point] 
+      When x = 2, the solution of $\sqrt{3x+3}+(1+x)^2$ is:
+      <input type=text id=qfi11-1 class='fillin size-4'></input>
+    <div id=qfi11-1r class=quiz></div></br></br>      </div>
+      <button type="button" id="show-answer-q-10" class="btn btn-success btn-sm">
+Mostrar respuesta      </button>
+      <button type="button" id="q-10" class="btn btn-primary btn-sm">
+Enviar      </button>
+      <br>
+      </br>
+    </li>
+    <li id="question-11" class="question multiplechoice ">
       <div class="quiz text">
 [1 point] What is the largest US state?<br></br>      </div>
       <ol class="answers">
-        <input type="radio" id="qmc11-1" name="qmc11" class="select">
-Hawaii<br class=qmc11-1br>        </input>
-        <div id="qmc11-1r" class="quiz">
+        <input type="radio" id="qmc12-1" name="qmc12" class="select">
+Alaska<br class=qmc12-1br>        </input>
+        <div id="qmc12-1r" class="quiz">
         </div>
-        <input type="radio" id="qmc11-2" name="qmc11" class="select">
-Texas<br class=qmc11-2br>        </input>
-        <div id="qmc11-2r" class="quiz">
+        <input type="radio" id="qmc12-2" name="qmc12" class="select">
+Texas<br class=qmc12-2br>        </input>
+        <div id="qmc12-2r" class="quiz">
         </div>
-        <input type="radio" id="qmc11-3" name="qmc11" class="select">
-Alaska<br class=qmc11-3br>        </input>
-        <div id="qmc11-3r" class="quiz">
-        </div>
-        <br/>
-      </ol>
-    </li>
-    <button type="button" id="show-answer-q-10" class="btn btn-success btn-sm">
-Mostrar respuesta    </button>
-    <button type="button" id="q-10" class="btn btn-primary btn-sm">
-Enviar    </button>
-    <br>
-    </br>
-    <li id="question-11" class="question selectmultiple multiple">
-      <div class="quiz text">
-[1 point] Select ALL that apply: Which are American political parties?<br></br>      </div>
-      <ol class="answers">
-        <input type="checkbox" id="qsm12-1" class="check">
-Democrats<br class=qsm12-1br>        </input>
-        <div id="qsm12-1r" class="quiz">
-        </div>
-        <input type="checkbox" id="qsm12-2" class="check">
-Republicans<br class=qsm12-2br>        </input>
-        <div id="qsm12-2r" class="quiz">
-        </div>
-        <input type="checkbox" id="qsm12-3" class="check">
-Greens<br class=qsm12-3br>        </input>
-        <div id="qsm12-3r" class="quiz">
-        </div>
-        <input type="checkbox" id="qsm12-4" class="check">
-Tories<br class=qsm12-4br>        </input>
-        <div id="qsm12-4r" class="quiz">
-        </div>
-        <input type="checkbox" id="qsm12-5" class="check">
-Social Democrats<br class=qsm12-5br>        </input>
-        <div id="qsm12-5r" class="quiz">
+        <input type="radio" id="qmc12-3" name="qmc12" class="select">
+Hawaii<br class=qmc12-3br>        </input>
+        <div id="qmc12-3r" class="quiz">
         </div>
         <br/>
       </ol>
@@ -253,17 +229,29 @@ Mostrar respuesta    </button>
 Enviar    </button>
     <br>
     </br>
-    <li id="question-12" class="question truefalse ">
+    <li id="question-12" class="question selectmultiple multiple">
       <div class="quiz text">
-[1 point] True or False: The earth is flat.<br></br>      </div>
+[1 point] Select ALL that apply: Which are American political parties?<br></br>      </div>
       <ol class="answers">
-        <input type="radio" id="qmc13-1" name="qmc13" class="select">
-True<br class=qmc13-1br>        </input>
-        <div id="qmc13-1r" class="quiz">
+        <input type="checkbox" id="qsm13-1" class="check">
+Democrats<br class=qsm13-1br>        </input>
+        <div id="qsm13-1r" class="quiz">
         </div>
-        <input type="radio" id="qmc13-2" name="qmc13" class="select">
-False<br class=qmc13-2br>        </input>
-        <div id="qmc13-2r" class="quiz">
+        <input type="checkbox" id="qsm13-2" class="check">
+Republicans<br class=qsm13-2br>        </input>
+        <div id="qsm13-2r" class="quiz">
+        </div>
+        <input type="checkbox" id="qsm13-3" class="check">
+Greens<br class=qsm13-3br>        </input>
+        <div id="qsm13-3r" class="quiz">
+        </div>
+        <input type="checkbox" id="qsm13-4" class="check">
+Tories<br class=qsm13-4br>        </input>
+        <div id="qsm13-4r" class="quiz">
+        </div>
+        <input type="checkbox" id="qsm13-5" class="check">
+Social Democrats<br class=qsm13-5br>        </input>
+        <div id="qsm13-5r" class="quiz">
         </div>
         <br/>
       </ol>
@@ -274,20 +262,16 @@ Mostrar respuesta    </button>
 Enviar    </button>
     <br>
     </br>
-    <li id="question-13" class="question multiplechoice ">
+    <li id="question-13" class="question truefalse ">
       <div class="quiz text">
-[1 point] What does the following code do:
-    <pre>
-    puts "Hello world!"
-    </pre>
-          </div>
+[1 point] True or False: The earth is flat.<br></br>      </div>
       <ol class="answers">
         <input type="radio" id="qmc14-1" name="qmc14" class="select">
-Throws an exception<br class=qmc14-1br>        </input>
+True<br class=qmc14-1br>        </input>
         <div id="qmc14-1r" class="quiz">
         </div>
         <input type="radio" id="qmc14-2" name="qmc14" class="select">
-Prints a friendly message<br class=qmc14-2br>        </input>
+False<br class=qmc14-2br>        </input>
         <div id="qmc14-2r" class="quiz">
         </div>
         <br/>
@@ -296,6 +280,31 @@ Prints a friendly message<br class=qmc14-2br>        </input>
     <button type="button" id="show-answer-q-13" class="btn btn-success btn-sm">
 Mostrar respuesta    </button>
     <button type="button" id="q-13" class="btn btn-primary btn-sm">
+Enviar    </button>
+    <br>
+    </br>
+    <li id="question-14" class="question multiplechoice ">
+      <div class="quiz text">
+[1 point] What does the following code do:
+    <pre>
+    puts "Hello world!"
+    </pre>
+          </div>
+      <ol class="answers">
+        <input type="radio" id="qmc15-1" name="qmc15" class="select">
+Throws an exception<br class=qmc15-1br>        </input>
+        <div id="qmc15-1r" class="quiz">
+        </div>
+        <input type="radio" id="qmc15-2" name="qmc15" class="select">
+Prints a friendly message<br class=qmc15-2br>        </input>
+        <div id="qmc15-2r" class="quiz">
+        </div>
+        <br/>
+      </ol>
+    </li>
+    <button type="button" id="show-answer-q-14" class="btn btn-success btn-sm">
+Mostrar respuesta    </button>
+    <button type="button" id="q-14" class="btn btn-primary btn-sm">
 Enviar    </button>
     <br>
     </br>
@@ -333,21 +342,39 @@ Borrar almacenamiento    </button>
     <!-- jQuery -->
     
         <script type=text/javascript src=http://code.jquery.com/jquery-2.1.0.min.js></script>
+        <script type='text/javascript' src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
         <!--[if lt IE 8]>
           <script type=text/javascript src=http://code.jquery.com/jquery-1.11.0.min.js></script>
         <![endif]-->
       
     <!-- Internationalization -->
-    <script>      i18n = {"es":{"quiz":{"title":"Cuestionario"},"questions":{"correct":"Correcto","incorrect":"Incorrecto","points":"puntos","score":"Puntuaci&oacute;n total"},"buttons":{"submit":"Enviar","reset":"Reset","delete":"Borrar respuestas","deleteAll":"Borrar almacenamiento","show":"Mostrar respuesta","hide":"Ocultar respuesta"},"alerts":{"answers":"Respuestas borradas","storage":"Almacenamiento borrado","noStorage":"El navegador no soporta almacenamiento de respuestas"},"exceptions":{"syntax":"Bloque incompleto en un método del fichero Ruby procesado."}}}
+    <script>      i18n = {"es":{"quiz":{"title":"Cuestionario"},"questions":{"correct":"Correcto","incorrect":"Incorrecto","points":"puntos","score":"Puntuaci&oacute;n total"},"answers":"Respuestas","buttons":{"submit":"Enviar","reset":"Reset","delete":"Borrar respuestas","deleteAll":"Borrar almacenamiento","show":"Mostrar respuesta","hide":"Ocultar respuesta"},"alerts":{"answers":"Respuestas borradas","storage":"Almacenamiento borrado","noStorage":"El navegador no soporta almacenamiento de respuestas"},"exceptions":{"syntax":"Bloque incompleto en un método del fichero Ruby procesado."}}}
+</script>
+    <!-- Drag and Drop -->
+    <script>      function allowDrop(ev) {
+        ev.preventDefault();
+      }
+      
+      function drag(ev) {
+        ev.dataTransfer.setData("Text",ev.target.id);
+      }
+      
+      function drop(ev, id) {
+        ev.preventDefault();
+        var data=ev.dataTransfer.getData("Text");
+        ev.target.appendChild(document.getElementById(data));
+        var val=document.getElementById(id);
+        val.value=document.getElementById(data).innerText;
+      }
 </script>
     <!-- XRegexp -->
     <script type=text/javascript src=http://cdnjs.cloudflare.com/ajax/libs/xregexp/2.0.0/xregexp-min.js></script>
     <!-- Form validation -->
-    <script>      data = {"question-0":{"question_text":"<i>Example of escaped HTML and three hyphens not evaluated:</i><br> &lt;a href=&quot;www.google.es&quot;&gt;&lt;/a&gt; <b>is</b> a \\-\\-\\- ---- \\-\\-\\-","answers":{"qfi1-1":{"answer_text":"/^link$/","correct":true,"explanation":null,"type":"Regexp"}},"points":1,"order":true,"question_comment":""},"question-1":{"question_text":"The visionary founder of Apple is --------","answers":{"qfi2-1":{"answer_text":"/^ste(ve|phen)\\s+jobs #comment $/ixm","correct":true,"explanation":null,"type":"Regexp"},"qfi2-2":{"answer_text":"/^steve\\s+wozniak/i","correct":false,"explanation":"Almost, but not quite.","type":"Regexp"}},"points":2,"order":true,"question_comment":"Question too easy"},"question-2":{"question_text":"The ---- brown fox jumped over the lazy ----","answers":{"qfi3-1":{"answer_text":"/fox/","correct":true,"explanation":"This sentence contains all of the letters of the English Alphabet","type":"Regexp"},"qfi3-2":{"answer_text":"/dog/","correct":true,"explanation":"This sentence contains all of the letters of the English Alphabet","type":"Regexp"}},"points":1,"order":true,"question_comment":""},"question-3":{"question_text":"The three stooges are -----, ----, and -----.","answers":{"qfi4-1":{"answer_text":"larry","correct":true,"explanation":null,"type":"String"},"qfi4-2":{"answer_text":"moe","correct":true,"explanation":null,"type":"String"},"qfi4-3":{"answer_text":"curly","correct":true,"explanation":null,"type":"String"}},"points":1,"order":true,"question_comment":""},"question-4":{"question_text":"The three stooges are -----, ----, and -----.","answers":{"qfi5-1":{"answer_text":"larry","correct":true,"explanation":null,"type":"String"},"qfi5-2":{"answer_text":"moe","correct":true,"explanation":null,"type":"String"},"qfi5-3":{"answer_text":"curly","correct":true,"explanation":null,"type":"String"}},"points":1,"order":false,"question_comment":""},"question-5":{"question_text":"The capital of Tenerife is ----- Cruz de --------","answers":{"qfi6-1":{"answer_text":"/Santa/i","correct":true,"explanation":null,"type":"Regexp"},"qfi6-2":{"answer_text":"/Tenerife/i","correct":true,"explanation":null,"type":"Regexp"}},"points":1,"order":true,"question_comment":""},"question-6":{"question_text":"\n      Diga dos números x = ---- e  y = ---- que multiplicados den 100\n    ","answers":{"qfi7-1":{"answer_text":"result = function(x,y) { return (x * y === 100); }","correct":true,"explanation":null,"type":"JS"}},"points":1,"order":true,"question_comment":""},"question-7":{"question_text":"\n      Calculate the determinant of this matrix:\n      $$\\mathbf{A} = \\begin{vmatrix} \n      1 & 3 \\\\ \n      2 & 4 \n      \\end{vmatrix}$$\n      <br/>\n      ----\n    ","answers":{"qfi8-1":{"answer_text":-1,"correct":true,"explanation":null,"type":"Fixnum"}},"points":1,"order":true,"question_comment":""},"question-8":{"question_text":"\n      Solve: \n      $$\\binom{n}{k} = \\frac{n!}{k!(n-k)!}$$\n      when n = 5 and k = 2:\n      ----\n    ","answers":{"qfi9-1":{"answer_text":10,"correct":true,"explanation":null,"type":"Fixnum"},"qfi9-2":{"answer_text":9,"correct":false,"explanation":"Not exactly","type":"Fixnum"}},"points":1,"order":true,"question_comment":""},"question-9":{"question_text":"\n      When x = 2, the solution of $\\sqrt{3x+3}+(1+x)^2$ is:\n      ----\n    ","answers":{"qfi10-1":{"answer_text":12,"correct":true,"explanation":null,"type":"Fixnum"},"qfi10-2":{"answer_text":11,"correct":false,"explanation":"Try again!","type":"Fixnum"}},"points":1,"order":true,"question_comment":""},"question-10":{"question_text":"What is the largest US state?","answers":{"qmc11-1":{"answer_text":"Hawaii","correct":false,"explanation":"Not big enough."},"qmc11-2":{"answer_text":"Texas","correct":false,"explanation":"That's pretty big, but think colder."},"qmc11-3":{"answer_text":"Alaska","correct":true,"explanation":null}},"points":1,"question_comment":""},"question-11":{"question_text":"Which are American political parties?","answers":{"qsm12-1":{"answer_text":"Democrats","correct":true,"explanation":null},"qsm12-2":{"answer_text":"Republicans","correct":true,"explanation":null},"qsm12-3":{"answer_text":"Greens","correct":true,"explanation":"Yes, they're a party!"},"qsm12-4":{"answer_text":"Tories","correct":false,"explanation":"They're British"},"qsm12-5":{"answer_text":"Social Democrats","correct":false,"explanation":""}},"points":1,"question_comment":""},"question-12":{"question_text":"True or False: The earth is flat.","answers":{"qmc13-1":{"answer_text":"True","correct":false,"explanation":"No, just looks that way"},"qmc13-2":{"answer_text":"False","correct":true,"explanation":null}},"points":1,"question_comment":""},"question-13":{"question_text":"What does the following code do:\n    <pre>\n    puts \"Hello world!\"\n    </pre>\n    ","answers":{"qmc14-1":{"answer_text":"Throws an exception","correct":false,"explanation":"Don't be an idiot."},"qmc14-2":{"answer_text":"Prints a friendly message","correct":true,"explanation":null}},"points":1,"question_comment":""}};
-      timestamp = 1397864919
+    <script>      data = {"question-0":{"question_text":"<i>Example of escaped HTML and three hyphens not evaluated:</i><br> &lt;a href=&quot;www.google.es&quot;&gt;&lt;/a&gt; <b>is</b> a \\-\\-\\- ---- \\-\\-\\-","answers":{"qfi1-1":{"answer_text":"/^link$/","correct":true,"explanation":null,"type":"Regexp"}},"points":1,"order":true,"question_comment":""},"question-1":{"question_text":"The visionary founder of Apple is --------","answers":{"qfi2-1":{"answer_text":"/^ste(ve|phen)\\s+jobs #comment $/ixm","correct":true,"explanation":null,"type":"Regexp"},"qfi2-2":{"answer_text":"/^steve\\s+wozniak/i","correct":false,"explanation":"Almost, but not quite.","type":"Regexp"}},"points":2,"order":true,"question_comment":"Question too easy"},"question-2":{"question_text":"The ---- brown fox jumped over the lazy ----","answers":{"qfi3-1":{"answer_text":"/fox/","correct":true,"explanation":"This sentence contains all of the letters of the English Alphabet","type":"Regexp"},"qfi3-2":{"answer_text":"/dog/","correct":true,"explanation":"This sentence contains all of the letters of the English Alphabet","type":"Regexp"}},"points":1,"order":true,"question_comment":""},"question-3":{"question_text":"The ---- brown fox jumped over the lazy ----","answers":{"qdd4-1":{"answer_text":"fox","correct":true,"explanation":"This sentence contains all of the letters of the English Alphabet","type":"String"},"qdd4-2":{"answer_text":"dog","correct":true,"explanation":"This sentence contains all of the letters of the English Alphabet","type":"String"}},"points":1,"order":true,"question_comment":""},"question-4":{"question_text":"The three stooges are -----, ----, and -----.","answers":{"qfi5-1":{"answer_text":"larry","correct":true,"explanation":null,"type":"String"},"qfi5-2":{"answer_text":"moe","correct":true,"explanation":null,"type":"String"},"qfi5-3":{"answer_text":"curly","correct":true,"explanation":null,"type":"String"}},"points":1,"order":true,"question_comment":""},"question-5":{"question_text":"The three stooges are -----, ----, and -----.","answers":{"qfi6-1":{"answer_text":"larry","correct":true,"explanation":null,"type":"String"},"qfi6-2":{"answer_text":"moe","correct":true,"explanation":null,"type":"String"},"qfi6-3":{"answer_text":"curly","correct":true,"explanation":null,"type":"String"}},"points":1,"order":false,"question_comment":""},"question-6":{"question_text":"The capital of Tenerife is ----- Cruz de --------","answers":{"qfi7-1":{"answer_text":"/Santa/i","correct":true,"explanation":null,"type":"Regexp"},"qfi7-2":{"answer_text":"/Tenerife/i","correct":true,"explanation":null,"type":"Regexp"}},"points":1,"order":true,"question_comment":""},"question-7":{"question_text":"\n      Diga dos números x = ---- e  y = ---- que multiplicados den 100\n    ","answers":{"qfi8-1":{"answer_text":"result = function(x,y) { return (x * y === 100); }","correct":true,"explanation":null,"type":"JS"}},"points":1,"order":true,"question_comment":""},"question-8":{"question_text":"\n      Calculate the determinant of this matrix:\n      $$\\mathbf{A} = \\begin{vmatrix} \n      1 & 3 \\\\ \n      2 & 4 \n      \\end{vmatrix}$$\n      <br/>\n      ----\n    ","answers":{"qfi9-1":{"answer_text":-1,"correct":true,"explanation":null,"type":"Fixnum"}},"points":1,"order":true,"question_comment":""},"question-9":{"question_text":"\n      Solve: \n      $$\\binom{n}{k} = \\frac{n!}{k!(n-k)!}$$\n      when n = 5 and k = 2:\n      ----\n    ","answers":{"qfi10-1":{"answer_text":10,"correct":true,"explanation":null,"type":"Fixnum"},"qfi10-2":{"answer_text":9,"correct":false,"explanation":"Not exactly","type":"Fixnum"}},"points":1,"order":true,"question_comment":""},"question-10":{"question_text":"\n      When x = 2, the solution of $\\sqrt{3x+3}+(1+x)^2$ is:\n      ----\n    ","answers":{"qfi11-1":{"answer_text":12,"correct":true,"explanation":null,"type":"Fixnum"},"qfi11-2":{"answer_text":11,"correct":false,"explanation":"Try again!","type":"Fixnum"}},"points":1,"order":true,"question_comment":""},"question-11":{"question_text":"What is the largest US state?","answers":{"qmc12-1":{"answer_text":"Alaska","correct":true,"explanation":null},"qmc12-2":{"answer_text":"Texas","correct":false,"explanation":"That's pretty big, but think colder."},"qmc12-3":{"answer_text":"Hawaii","correct":false,"explanation":"Not big enough."}},"points":1,"question_comment":""},"question-12":{"question_text":"Which are American political parties?","answers":{"qsm13-1":{"answer_text":"Democrats","correct":true,"explanation":null},"qsm13-2":{"answer_text":"Republicans","correct":true,"explanation":null},"qsm13-3":{"answer_text":"Greens","correct":true,"explanation":"Yes, they're a party!"},"qsm13-4":{"answer_text":"Tories","correct":false,"explanation":"They're British"},"qsm13-5":{"answer_text":"Social Democrats","correct":false,"explanation":""}},"points":1,"question_comment":""},"question-13":{"question_text":"True or False: The earth is flat.","answers":{"qmc14-1":{"answer_text":"True","correct":false,"explanation":"No, just looks that way"},"qmc14-2":{"answer_text":"False","correct":true,"explanation":null}},"points":1,"question_comment":""},"question-14":{"question_text":"What does the following code do:\n    <pre>\n    puts \"Hello world!\"\n    </pre>\n    ","answers":{"qmc15-1":{"answer_text":"Throws an exception","correct":false,"explanation":"Don't be an idiot."},"qmc15-2":{"answer_text":"Prints a friendly message","correct":true,"explanation":null}},"points":1,"question_comment":""}};
+      timestamp = 1398093253
       timestamp = timestamp.toString();
       language = 'es';
-      totalPoints = 15;
+      totalPoints = 16;
       userPoints = 0;
       
       function findCorrectAnswer(idQuestion, questionType) {
@@ -550,11 +577,12 @@ Borrar almacenamiento    </button>
       }
       
       function checkAnswer(x) {
+        
         if ($("#" + x.toString() + " strong").length == 0) {
           correct = false;
           answers = $("#" + x.toString() + " input");
           
-          if (answers.attr('class').match("fillin")) {
+          if ((answers.attr('class').match("fillin")) || (answers.attr('class').match("dragdrop"))) {
             correctAnswers = {};
             distractorAnswers = {};
             explanation = {};
@@ -718,7 +746,7 @@ Borrar almacenamiento    </button>
         if ((localStorage.length != 0) && (localStorage[timestamp] !== undefined)) {
           tmp = JSON.parse(localStorage[timestamp]);
           for (x in tmp) {
-            if (x.match(/qfi/))
+            if ((x.match(/qfi/)) || (x.match(/qdd/)))
               $("#" + x.toString()).val(tmp[x.toString()]);
             else
               $("#" + x.toString()).attr('checked', 'checked');
@@ -768,9 +796,9 @@ Borrar almacenamiento    </button>
           
           $.each(inputs, function(index, value) {
             if (flag == 1)
-              $("input[id=" + value.id).attr('value', answers[value.id]['answer_text']);
+              $("input[id=" + value.id).val(answers[value.id]['answer_text']);
             else
-              $("input[id=" + value.id).attr('value', '');
+              $("input[id=" + value.id).val('');
           });
         }
         else if (typeQuestion.match(/^qmc$/)){

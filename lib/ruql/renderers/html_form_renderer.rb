@@ -21,6 +21,7 @@ class HtmlFormRenderer
     @h = Builder::XmlMarkup.new(:target => @output, :indent => 2)
     @data = {}
     @size_inputs = []
+    @size_divs = []
     @language = (Locale.current[0].language || 'en').to_sym
   end
 
@@ -55,10 +56,13 @@ class HtmlFormRenderer
     @mathjax = insert_mathjax(true)
     @xregexp = insert_xregexp(true)
     @i18n = yml_to_json
+    @dragdrop = insert_drag_drop
    
     render_questions
     @validation_js = insert_defaultJS(@quiz.points)
-    @sass = insert_sass if !@size_inputs.empty?
+    @sass = ''
+    @sass = insert_sass('input') if !@size_inputs.empty?
+    @sass << insert_sass('div') if !@size_divs.empty?
     
     # the ERB template includes 'yield' where questions should go:
     output = ERB.new(IO.read(File.expand_path @template)).result(binding)
@@ -153,7 +157,7 @@ class HtmlFormRenderer
     self
   end
   
-  def type_answer_fill_in(answer, item, idx, id_answer) 
+  def type_answer_fill_in(answer, item, idx, id_answer, class_question) 
     if (item.class == Regexp)
       ans = item.source
       type = 'Regexp'
@@ -172,13 +176,21 @@ class HtmlFormRenderer
       ans = item.to_javascript
       type = 'JS'
     end
-    @data[:"question-#{idx}"][:answers]["qfi#{idx + 1}-#{id_answer}".to_sym] = {:answer_text => ans, :correct => answer.correct, 
-                                                                                :explanation => answer.explanation, :type => type}
+    @data[:"question-#{idx}"][:answers]["#{class_question}#{idx + 1}-#{id_answer}".to_sym] = {:answer_text => ans, :correct => answer.correct, 
+                                                                                              :explanation => answer.explanation, :type => type}
   end
   
   def render_fill_in(q, idx)
     render_question_text(q, idx) do
+      flag_js_qdd = false
+      
       question_comment(q)
+      if (q.class == FillIn)
+        class_question = "qfi"
+      elsif (q.class == DragDrop)
+        class_question = "qdd"
+        flag_js_qdd = true
+      end
       # Store answers for question-idx
       answer = q.answers[0]
       distractor = q.answers[1..-1]
@@ -193,21 +205,20 @@ class HtmlFormRenderer
       end
       
       id_answer = 1
-      flag_js = false
       answers.each do |a|
-        flag_js = true if (a.class == JS)
-        type_answer_fill_in(answer, a, idx, id_answer)
+        flag_js_qdd = true if (a.class == JS)
+        type_answer_fill_in(answer, a, idx, id_answer, class_question)
         id_answer += 1
       end
       
       id_distractor = 2
       if (!distractor.empty?)
         distractors.each_index do |i|
-          type_answer_fill_in(distractors[i], distractors[i].answer_text, idx, id_distractor)
+          type_answer_fill_in(distractors[i], distractors[i].answer_text, idx, id_distractor, class_question)
           id_distractor += 1
         end
       end
-      insert_buttons_each_question(idx, flag_js)
+      insert_buttons_each_question(idx, flag_js_qdd)
     end
   end
   
@@ -223,7 +234,6 @@ class HtmlFormRenderer
         qtext = "[#{question.points} point#{'s' if question.points>1}] " <<
           ('Select ALL that apply: ' if question.multiple).to_s <<
           if question.class == FillIn
-            
             hyphen = question.question_text.scan(/(?<!\\)---+/)
             hyphen.length.times { |i|
                                  nHyphen = hyphen[i].count('-')
@@ -232,6 +242,24 @@ class HtmlFormRenderer
                                 }
             question.question_text.gsub!(/\\-/, '-')
             question.question_text << "<div id=qfi#{index + 1}-#{hyphen.length}r class=quiz></div></br></br>"
+            
+          elsif question.class == DragDrop
+            hyphen = question.question_text.scan(/(?<!\\)---+/)
+            hyphen.length.times { |i|
+                                 nHyphen = hyphen[i].count('-')
+                                 @size_inputs << nHyphen
+                                 attr = "id=qdd#{index + 1}-#{i + 1} class='dragdrop size-#{nHyphen}' ondrop=drop(event,'qdd#{index + 1}-#{i + 1}') ondragover=allowDrop(event)"
+                                 question.question_text.sub!(/(?<!\\)---+/, "<input #{attr}></input>")
+                                }
+            question.question_text.gsub!(/\\-/, '-')
+            question.question_text << "<br/><br/>"
+            question.question_text << "<div> #{translate(:answers, '')}: "
+            question.answers[0].answer_text.each_with_index do |a, i|
+              @size_divs << a.length
+              question.question_text << "<button class='dragdrop size-#{a.length} btn btn-default btn-sm' id=qdda#{i + 1}-#{i + 1} draggable=true ondragstart=drag(event)>#{a}</button>&nbsp&nbsp"
+            end
+            question.question_text << "<div/>"
+            question.question_text << "</br></br>"
           else 
             if (question.raw?)
               question.question_text
@@ -241,7 +269,7 @@ class HtmlFormRenderer
           end
           
           # Hash with questions and all posibles answers
-          if (question.class == FillIn)
+          if ((question.class == FillIn) || (question.class == DragDrop))
             @data[html_args[:id].to_sym] = {:question_text => questionText, :answers => {}, :points => question.points, 
                                             :order => question.order, :question_comment => question.question_comment}
           else
@@ -298,6 +326,10 @@ class HtmlFormRenderer
     insert_js(false) if @js
     
     @h.script(:type => 'text/javascript') do |j|
+      j << insert_drag_drop
+    end
+    
+    @h.script(:type => 'text/javascript') do |j|
       j << yml_to_json
     end
     @h.script(:type => 'text/javascript') do |j|
@@ -337,9 +369,13 @@ class HtmlFormRenderer
     code if template
   end
   
-  def insert_sass
+  def insert_sass(tag)
     sass = ""
-    @size_inputs.uniq.sort.each { |sz| sass << "input.size-#{sz.to_s} { width: #{sz-(sz*0.3)}em}"}
+    if (tag == 'input')
+      @size_inputs.uniq.sort.each { |sz| sass << "input.size-#{sz.to_s} { width: #{sz-(sz*0.3)}em}"}
+    else
+      @size_divs.uniq.sort.each { |sz| sass << "div.size-#{sz.to_s} { width: #{sz-(sz*0.3)}em; display: inline;}"}
+    end
     engine = Sass::Engine.new(sass, :syntax => :scss)
     engine.options[:style] = :compact
     engine.render
@@ -349,6 +385,7 @@ class HtmlFormRenderer
     if (template)
       code = %q{
         <script type=text/javascript src=http://code.jquery.com/jquery-2.1.0.min.js></script>
+        <script type='text/javascript' src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
         <!--[if lt IE 8]>
           <script type=text/javascript src=http://code.jquery.com/jquery-1.11.0.min.js></script>
         <![endif]-->
@@ -389,6 +426,26 @@ class HtmlFormRenderer
         j << "MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\\\(','\\\\)']]}});"
       end
     end
+  end
+  
+  def insert_drag_drop
+    <<-DD
+      function allowDrop(ev) {
+        ev.preventDefault();
+      }
+      
+      function drag(ev) {
+        ev.dataTransfer.setData("Text",ev.target.id);
+      }
+      
+      function drop(ev, id) {
+        ev.preventDefault();
+        var data=ev.dataTransfer.getData("Text");
+        ev.target.appendChild(document.getElementById(data));
+        var val=document.getElementById(id);
+        val.value=document.getElementById(data).innerText;
+      }
+    DD
   end
   
   def insert_js(template)
@@ -657,11 +714,12 @@ class HtmlFormRenderer
       }
       
       function checkAnswer(x) {
+        
         if ($("#" + x.toString() + " strong").length == 0) {
           correct = false;
           answers = $("#" + x.toString() + " input");
           
-          if (answers.attr('class').match("fillin")) {
+          if ((answers.attr('class').match("fillin")) || (answers.attr('class').match("dragdrop"))) {
             correctAnswers = {};
             distractorAnswers = {};
             explanation = {};
@@ -825,7 +883,7 @@ class HtmlFormRenderer
         if ((localStorage.length != 0) && (localStorage[timestamp] !== undefined)) {
           tmp = JSON.parse(localStorage[timestamp]);
           for (x in tmp) {
-            if (x.match(/qfi/))
+            if ((x.match(/qfi/)) || (x.match(/qdd/)))
               $("#" + x.toString()).val(tmp[x.toString()]);
             else
               $("#" + x.toString()).attr('checked', 'checked');
@@ -875,9 +933,9 @@ class HtmlFormRenderer
           
           $.each(inputs, function(index, value) {
             if (flag == 1)
-              $("input[id=" + value.id).attr('value', answers[value.id]['answer_text']);
+              $("input[id=" + value.id).val(answers[value.id]['answer_text']);
             else
-              $("input[id=" + value.id).attr('value', '');
+              $("input[id=" + value.id).val('');
           });
         }
         else if (typeQuestion.match(/^qmc$/)){

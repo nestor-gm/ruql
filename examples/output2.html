@@ -51,6 +51,11 @@ input.size-8 { width: 5.6em; }
 input.size-9 { width: 6.300000000000001em; }
 
 input.size-10 { width: 7.0em; }
+div.size-5 { width: 3.5em; display: inline; }
+
+div.size-9 { width: 6.300000000000001em; display: inline; }
+
+div.size-10 { width: 7.0em; display: inline; }
 
     </style>
     <!-- Any CSS included by the user -->
@@ -86,7 +91,7 @@ ANÁLISIS SINTÁCTICO</h3>
           </div>
         </div>
       
-      <!-- Seed: 294938041480076301900771395685889885311 -->
+      <!-- Seed: 149745583888372573975331561658178793108 -->
 <form id="form">
   <ol class="questions">
     <li id="question-0" class="question fillin ">
@@ -223,25 +228,23 @@ Enviar      </button>
       <br>
       </br>
     </li>
-    <li id="question-4" class="question fillin ">
+    <li id="question-4" class="question dragdrop ">
       <div class="quiz text">
 [1 point] Rellene las partes que faltan del código CoffeeScript
 que reconoce el sublenguaje generado por <i>condition</i>:
   <pre>
   condition = ->
-    left = <input type=text id=qfi5-1 class='fillin size-10'></input>()
-    type = <input type=text id=qfi5-2 class='fillin size-9'></input>.<input type=text id=qfi5-3 class='fillin size-5'></input>
+    left = <input id=qdd5-1 class='dragdrop size-10' ondrop=drop(event,'qdd5-1') ondragover=allowDrop(event)></input>()
+    type = <input id=qdd5-2 class='dragdrop size-9' ondrop=drop(event,'qdd5-2') ondragover=allowDrop(event)></input>.<input id=qdd5-3 class='dragdrop size-5' ondrop=drop(event,'qdd5-3') ondragover=allowDrop(event)></input>
     match "COMPARISON"
-    right = <input type=text id=qfi5-4 class='fillin size-9'></input>()
+    right = <input id=qdd5-4 class='dragdrop size-10' ondrop=drop(event,'qdd5-4') ondragover=allowDrop(event)></input>()
     result =
       type: type
       left: left
       right: right
     result
   </pre>
-<div id=qfi5-4r class=quiz></div></br></br>      </div>
-      <button type="button" id="show-answer-q-4" class="btn btn-success btn-sm">
-Mostrar respuesta      </button>
+<br/><br/><div> Respuestas: <button class='dragdrop size-10 btn btn-default btn-sm' id=qdda1-1 draggable=true ondragstart=drag(event)>expression</button>&nbsp&nbsp<button class='dragdrop size-9 btn btn-default btn-sm' id=qdda2-2 draggable=true ondragstart=drag(event)>lookahead</button>&nbsp&nbsp<button class='dragdrop size-5 btn btn-default btn-sm' id=qdda3-3 draggable=true ondragstart=drag(event)>value</button>&nbsp&nbsp<button class='dragdrop size-10 btn btn-default btn-sm' id=qdda4-4 draggable=true ondragstart=drag(event)>expression</button>&nbsp&nbsp<div/></br></br>      </div>
       <button type="button" id="q-4" class="btn btn-primary btn-sm">
 Enviar      </button>
       <br>
@@ -296,18 +299,36 @@ Borrar almacenamiento    </button>
     <!-- jQuery -->
     
         <script type=text/javascript src=http://code.jquery.com/jquery-2.1.0.min.js></script>
+        <script type='text/javascript' src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
         <!--[if lt IE 8]>
           <script type=text/javascript src=http://code.jquery.com/jquery-1.11.0.min.js></script>
         <![endif]-->
       
     <!-- Internationalization -->
-    <script>      i18n = {"es":{"quiz":{"title":"Cuestionario"},"questions":{"correct":"Correcto","incorrect":"Incorrecto","points":"puntos","score":"Puntuaci&oacute;n total"},"buttons":{"submit":"Enviar","reset":"Reset","delete":"Borrar respuestas","deleteAll":"Borrar almacenamiento","show":"Mostrar respuesta","hide":"Ocultar respuesta"},"alerts":{"answers":"Respuestas borradas","storage":"Almacenamiento borrado","noStorage":"El navegador no soporta almacenamiento de respuestas"}}}
+    <script>      i18n = {"es":{"quiz":{"title":"Cuestionario"},"questions":{"correct":"Correcto","incorrect":"Incorrecto","points":"puntos","score":"Puntuaci&oacute;n total"},"answers":"Respuestas","buttons":{"submit":"Enviar","reset":"Reset","delete":"Borrar respuestas","deleteAll":"Borrar almacenamiento","show":"Mostrar respuesta","hide":"Ocultar respuesta"},"alerts":{"answers":"Respuestas borradas","storage":"Almacenamiento borrado","noStorage":"El navegador no soporta almacenamiento de respuestas"},"exceptions":{"syntax":"Bloque incompleto en un método del fichero Ruby procesado."}}}
+</script>
+    <!-- Drag and Drop -->
+    <script>      function allowDrop(ev) {
+        ev.preventDefault();
+      }
+      
+      function drag(ev) {
+        ev.dataTransfer.setData("Text",ev.target.id);
+      }
+      
+      function drop(ev, id) {
+        ev.preventDefault();
+        var data=ev.dataTransfer.getData("Text");
+        ev.target.appendChild(document.getElementById(data));
+        var val=document.getElementById(id);
+        val.value=document.getElementById(data).innerText;
+      }
 </script>
     <!-- XRegexp -->
     <script type=text/javascript src=http://cdnjs.cloudflare.com/ajax/libs/xregexp/2.0.0/xregexp-min.js></script>
     <!-- Form validation -->
-    <script>      data = {"question-0":{"question_text":"\nDado un conjunto $A$, se define $A^*$ el cierre de Kleene de $A$ como:\n\\( A^* = \\cup_{n=1}^{\\infty} A^n \\)\nSe admite que $A^0 = { \\epsilon }$, donde $\\epsilon$ denota la\n------ ------, esto es\nla palabra que tiene longitud cero, formada por cero símbolos del conjunto base $A$.","answers":{"qfi1-1":{"answer_text":"/palabra/i","correct":true,"explanation":null,"type":"Regexp"},"qfi1-2":{"answer_text":"/vac[ií]a/i","correct":true,"explanation":null,"type":"Regexp"}},"points":1,"order":true,"question_comment":""},"question-1":{"question_text":"\nUna producción de la forma $A \\rightarrow A \\alpha$.\nse dice que es ------- por la --------\n","answers":{"qfi2-1":{"answer_text":"/recursiva/i","correct":true,"explanation":null,"type":"Regexp"},"qfi2-2":{"answer_text":"/izquierda/i","correct":true,"explanation":null,"type":"Regexp"}},"points":1,"order":true,"question_comment":""},"question-2":{"question_text":"\nRecuerde el <b>analizador sintáctico descendente predictivo recursivo</b> \npara la <a id=\"grammar\">gramática</a>:<br/>\n<ul>\n  <li> $\\Sigma = { ; =, ID, P, ADDOP, MULOP, COMPARISON, (, ), NUM }$, \n  <li> $V = { statements, statement, condition, expression, term, factor }$\n  <li> Productions:\n  <ol>\n    <li>\n    statements  $ \\rightarrow$ statement ';' statements  $\\vert$ statement\n    <li>\n    statement  $ \\rightarrow$ ID '=' expression  $\\vert$ P expression\n $ \\vert$ IF condition THEN statement·\n    <li> condition $ \\rightarrow$ expression COMPARISON expression\n    <li>\n    expression  $ \\rightarrow$ term ADDOP expression  $\\vert$ term\n    <li>\n    term  $ \\rightarrow$ factor MULOP term  $\\vert$ factor\n    <li>\n    factor  $ \\rightarrow$ '(' expression ')' $\\vert$ ID $ \\vert$ NUM\n  </ol>\n  <li> Start symbol: $statements$\n</ul>\nRellene las partes que faltan de código CoffeeScript del \nmétodo que se encarga de reconocer el lenguaje generado\npor <tt>expression</tt>:\n<pre>\n  expression = ->\n    result = term()\n    while ------ and --------- is \"ADDOP\"\n      type = lookahead.value\n      match \"ADDOP\"\n      right = ----\n      result =\n        type: ----\n        left: result\n        right: right\n    result\n</pre>\n","answers":{"qfi3-1":{"answer_text":"lookahead","correct":true,"explanation":null,"type":"String"},"qfi3-2":{"answer_text":"lookahead.type","correct":true,"explanation":null,"type":"String"},"qfi3-3":{"answer_text":"term()","correct":true,"explanation":null,"type":"String"},"qfi3-4":{"answer_text":"type","correct":true,"explanation":null,"type":"String"}},"points":1,"order":true,"question_comment":""},"question-3":{"question_text":"\nRellene las partes que faltan de código CoffeeScript del \nmétodo que se encarga de reconocer el lenguaje generado\npor <tt>statement</tt> para la <a href=\"#grammar\">gramática\ndefinida anteriormente</a>:\n<pre>\n    statement = function() {\n      var left, result, right;\n      result = null;\n      if (------ && ------ === \"ID\") {\n        left = {\n          type: \"---\",\n          value: ------.value\n        };\n        match(\"ID\");\n        match(\"=\");\n        right = ------();\n        result = {\n          type: \"=\",\n          left: left,\n          right: right\n        };\n      } else if (------ && ------.------ === \"P\") {\n        match(\"P\");\n        right = expression();\n        result = {\n          type: \"P\",\n          value: ------\n        };\n      } else if (------ && ------.------ === \"IF\") {\n        match(\"---\");\n        left = ------;\n        match(\"THEN\");\n        right = ------;\n        result = {\n          type: \"IF\",\n          left: ----,\n          right: ----\n        };\n      } else {\n        throw \"Syntax Error. Expected identifier but found \" + \n         (lookahead ? lookahead.value : \"end of input\") + \n         (\" near '\" + (input.substr(lookahead.from)) + \"'\");\n      }\n      return result;\n    };\n</pre>\n","answers":{"qfi4-1":{"answer_text":"lookahead","correct":true,"explanation":null,"type":"String"},"qfi4-2":{"answer_text":"lookahead.type","correct":true,"explanation":null,"type":"String"},"qfi4-3":{"answer_text":"id","correct":true,"explanation":null,"type":"String"},"qfi4-4":{"answer_text":"lookahead","correct":true,"explanation":null,"type":"String"},"qfi4-5":{"answer_text":"expression","correct":true,"explanation":null,"type":"String"},"qfi4-6":{"answer_text":"lookahead","correct":true,"explanation":null,"type":"String"},"qfi4-7":{"answer_text":"lookahead","correct":true,"explanation":null,"type":"String"},"qfi4-8":{"answer_text":"type","correct":true,"explanation":null,"type":"String"},"qfi4-9":{"answer_text":"right","correct":true,"explanation":null,"type":"String"},"qfi4-10":{"answer_text":"lookahead","correct":true,"explanation":null,"type":"String"},"qfi4-11":{"answer_text":"lookahead","correct":true,"explanation":null,"type":"String"},"qfi4-12":{"answer_text":"type","correct":true,"explanation":null,"type":"String"},"qfi4-13":{"answer_text":"if","correct":true,"explanation":null,"type":"String"},"qfi4-14":{"answer_text":"/expression|condition/","correct":true,"explanation":null,"type":"Regexp"},"qfi4-15":{"answer_text":"/statement/","correct":true,"explanation":null,"type":"Regexp"},"qfi4-16":{"answer_text":"/left/","correct":true,"explanation":null,"type":"Regexp"},"qfi4-17":{"answer_text":"/right/","correct":true,"explanation":null,"type":"Regexp"}},"points":1,"order":true,"question_comment":""},"question-4":{"question_text":"Rellene las partes que faltan del código CoffeeScript\nque reconoce el sublenguaje generado por <i>condition</i>:\n  <pre>\n  condition = ->\n    left = ----------()\n    type = ---------.-----\n    match \"COMPARISON\"\n    right = ---------()\n    result =\n      type: type\n      left: left\n      right: right\n    result\n  </pre>\n","answers":{"qfi5-1":{"answer_text":"expression","correct":true,"explanation":null,"type":"String"},"qfi5-2":{"answer_text":"lookahead","correct":true,"explanation":null,"type":"String"},"qfi5-3":{"answer_text":"value","correct":true,"explanation":null,"type":"String"},"qfi5-4":{"answer_text":"expression","correct":true,"explanation":null,"type":"String"}},"points":1,"order":true,"question_comment":""},"question-5":{"question_text":"\nComplete este fragmento de <tt>slim</tt> que establece el favicon de \nla página HTML:\n<pre>\n    link rel=\"------\" type=\"image/jpg\" href=\"images/favicon.jpg\"\n</pre>","answers":{"qfi6-1":{"answer_text":"/(shortcut\\s+)?icon/i","correct":true,"explanation":null,"type":"Regexp"}},"points":1,"order":true,"question_comment":""}};
-      timestamp = 1397698897
+    <script>      data = {"question-0":{"question_text":"\nDado un conjunto $A$, se define $A^*$ el cierre de Kleene de $A$ como:\n\\( A^* = \\cup_{n=1}^{\\infty} A^n \\)\nSe admite que $A^0 = { \\epsilon }$, donde $\\epsilon$ denota la\n------ ------, esto es\nla palabra que tiene longitud cero, formada por cero símbolos del conjunto base $A$.","answers":{"qfi1-1":{"answer_text":"/palabra/i","correct":true,"explanation":null,"type":"Regexp"},"qfi1-2":{"answer_text":"/vac[ií]a/i","correct":true,"explanation":null,"type":"Regexp"}},"points":1,"order":true,"question_comment":""},"question-1":{"question_text":"\nUna producción de la forma $A \\rightarrow A \\alpha$.\nse dice que es ------- por la --------\n","answers":{"qfi2-1":{"answer_text":"/recursiva/i","correct":true,"explanation":null,"type":"Regexp"},"qfi2-2":{"answer_text":"/izquierda/i","correct":true,"explanation":null,"type":"Regexp"}},"points":1,"order":true,"question_comment":""},"question-2":{"question_text":"\nRecuerde el <b>analizador sintáctico descendente predictivo recursivo</b> \npara la <a id=\"grammar\">gramática</a>:<br/>\n<ul>\n  <li> $\\Sigma = { ; =, ID, P, ADDOP, MULOP, COMPARISON, (, ), NUM }$, \n  <li> $V = { statements, statement, condition, expression, term, factor }$\n  <li> Productions:\n  <ol>\n    <li>\n    statements  $ \\rightarrow$ statement ';' statements  $\\vert$ statement\n    <li>\n    statement  $ \\rightarrow$ ID '=' expression  $\\vert$ P expression\n $ \\vert$ IF condition THEN statement·\n    <li> condition $ \\rightarrow$ expression COMPARISON expression\n    <li>\n    expression  $ \\rightarrow$ term ADDOP expression  $\\vert$ term\n    <li>\n    term  $ \\rightarrow$ factor MULOP term  $\\vert$ factor\n    <li>\n    factor  $ \\rightarrow$ '(' expression ')' $\\vert$ ID $ \\vert$ NUM\n  </ol>\n  <li> Start symbol: $statements$\n</ul>\nRellene las partes que faltan de código CoffeeScript del \nmétodo que se encarga de reconocer el lenguaje generado\npor <tt>expression</tt>:\n<pre>\n  expression = ->\n    result = term()\n    while ------ and --------- is \"ADDOP\"\n      type = lookahead.value\n      match \"ADDOP\"\n      right = ----\n      result =\n        type: ----\n        left: result\n        right: right\n    result\n</pre>\n","answers":{"qfi3-1":{"answer_text":"lookahead","correct":true,"explanation":null,"type":"String"},"qfi3-2":{"answer_text":"lookahead.type","correct":true,"explanation":null,"type":"String"},"qfi3-3":{"answer_text":"term()","correct":true,"explanation":null,"type":"String"},"qfi3-4":{"answer_text":"type","correct":true,"explanation":null,"type":"String"}},"points":1,"order":true,"question_comment":""},"question-3":{"question_text":"\nRellene las partes que faltan de código CoffeeScript del \nmétodo que se encarga de reconocer el lenguaje generado\npor <tt>statement</tt> para la <a href=\"#grammar\">gramática\ndefinida anteriormente</a>:\n<pre>\n    statement = function() {\n      var left, result, right;\n      result = null;\n      if (------ && ------ === \"ID\") {\n        left = {\n          type: \"---\",\n          value: ------.value\n        };\n        match(\"ID\");\n        match(\"=\");\n        right = ------();\n        result = {\n          type: \"=\",\n          left: left,\n          right: right\n        };\n      } else if (------ && ------.------ === \"P\") {\n        match(\"P\");\n        right = expression();\n        result = {\n          type: \"P\",\n          value: ------\n        };\n      } else if (------ && ------.------ === \"IF\") {\n        match(\"---\");\n        left = ------;\n        match(\"THEN\");\n        right = ------;\n        result = {\n          type: \"IF\",\n          left: ----,\n          right: ----\n        };\n      } else {\n        throw \"Syntax Error. Expected identifier but found \" + \n         (lookahead ? lookahead.value : \"end of input\") + \n         (\" near '\" + (input.substr(lookahead.from)) + \"'\");\n      }\n      return result;\n    };\n</pre>\n","answers":{"qfi4-1":{"answer_text":"lookahead","correct":true,"explanation":null,"type":"String"},"qfi4-2":{"answer_text":"lookahead.type","correct":true,"explanation":null,"type":"String"},"qfi4-3":{"answer_text":"id","correct":true,"explanation":null,"type":"String"},"qfi4-4":{"answer_text":"lookahead","correct":true,"explanation":null,"type":"String"},"qfi4-5":{"answer_text":"expression","correct":true,"explanation":null,"type":"String"},"qfi4-6":{"answer_text":"lookahead","correct":true,"explanation":null,"type":"String"},"qfi4-7":{"answer_text":"lookahead","correct":true,"explanation":null,"type":"String"},"qfi4-8":{"answer_text":"type","correct":true,"explanation":null,"type":"String"},"qfi4-9":{"answer_text":"right","correct":true,"explanation":null,"type":"String"},"qfi4-10":{"answer_text":"lookahead","correct":true,"explanation":null,"type":"String"},"qfi4-11":{"answer_text":"lookahead","correct":true,"explanation":null,"type":"String"},"qfi4-12":{"answer_text":"type","correct":true,"explanation":null,"type":"String"},"qfi4-13":{"answer_text":"if","correct":true,"explanation":null,"type":"String"},"qfi4-14":{"answer_text":"/expression|condition/","correct":true,"explanation":null,"type":"Regexp"},"qfi4-15":{"answer_text":"/statement/","correct":true,"explanation":null,"type":"Regexp"},"qfi4-16":{"answer_text":"/left/","correct":true,"explanation":null,"type":"Regexp"},"qfi4-17":{"answer_text":"/right/","correct":true,"explanation":null,"type":"Regexp"}},"points":1,"order":true,"question_comment":""},"question-4":{"question_text":"Rellene las partes que faltan del código CoffeeScript\nque reconoce el sublenguaje generado por <i>condition</i>:\n  <pre>\n  condition = ->\n    left = ----------()\n    type = ---------.-----\n    match \"COMPARISON\"\n    right = ----------()\n    result =\n      type: type\n      left: left\n      right: right\n    result\n  </pre>\n","answers":{"qdd5-1":{"answer_text":"expression","correct":true,"explanation":null,"type":"String"},"qdd5-2":{"answer_text":"lookahead","correct":true,"explanation":null,"type":"String"},"qdd5-3":{"answer_text":"value","correct":true,"explanation":null,"type":"String"},"qdd5-4":{"answer_text":"expression","correct":true,"explanation":null,"type":"String"}},"points":1,"order":true,"question_comment":""},"question-5":{"question_text":"\nComplete este fragmento de <tt>slim</tt> que establece el favicon de \nla página HTML:\n<pre>\n    link rel=\"------\" type=\"image/jpg\" href=\"images/favicon.jpg\"\n</pre>","answers":{"qfi6-1":{"answer_text":"/(shortcut\\s+)?icon/i","correct":true,"explanation":null,"type":"Regexp"}},"points":1,"order":true,"question_comment":""}};
+      timestamp = 1398093349
       timestamp = timestamp.toString();
       language = 'es';
       totalPoints = 6;
@@ -513,15 +534,17 @@ Borrar almacenamiento    </button>
       }
       
       function checkAnswer(x) {
+        
         if ($("#" + x.toString() + " strong").length == 0) {
           correct = false;
           answers = $("#" + x.toString() + " input");
           
-          if (answers.attr('class').match("fillin")) {
+          if ((answers.attr('class').match("fillin")) || (answers.attr('class').match("dragdrop"))) {
             correctAnswers = {};
             distractorAnswers = {};
             explanation = {};
             stringAnswer = false;
+            flag_js = false;
             
             for (ans in data[x.toString()]['answers']) {
               if (data[x.toString()]['answers'][ans]['correct'] == true) {
@@ -531,8 +554,8 @@ Borrar almacenamiento    </button>
                   options = string[2];
                   correctAnswers[ans.toString()] = XRegExp(regexp, options);
                 }
-                else if (data[x.toString()]['answers'][ans]['type'] == "Proc") {
-                
+                else if (data[x.toString()]['answers'][ans]['type'] == "JS") {
+                  flag_js = true;
                 }
                 else { // String or Number
                   correctAnswers[ans.toString()] = data[x.toString()]['answers'][ans]['answer_text'];
@@ -546,8 +569,8 @@ Borrar almacenamiento    </button>
                   options = string[2];
                   distractorAnswers[ans.toString()] = XRegExp(regexp, options);
                 }
-                else if (data[x.toString()]['answers'][ans]['type'] == "Proc") {
-                
+                else if (data[x.toString()]['answers'][ans]['type'] == "JS") {
+                  //
                 }
                 else {// String or Number
                   distractorAnswers[ans.toString()] = data[x.toString()]['answers'][ans]['answer_text'];
@@ -568,24 +591,49 @@ Borrar almacenamiento    </button>
                   userAnswers[answers[i].id.toString()] = answers[i].value;
             }
             
-            if (data[x.toString()]['order'] == false)
-              results = checkFillin(correctAnswers, userAnswers, distractorAnswers, 0);
-            else
-              results = checkFillin(correctAnswers, userAnswers, distractorAnswers, 1);
+            if (flag_js == false) {
+              if (data[x.toString()]['order'] == false)
+                results = checkFillin(correctAnswers, userAnswers, distractorAnswers, 0);
+              else
+                results = checkFillin(correctAnswers, userAnswers, distractorAnswers, 1);
               
-            allEmpty = true;
-            nCorrects = 0;
-            
-            for (r in results) {
-              if (results[r] == true)
-                nCorrects += 1;
-              if (results[r] != "n/a")
-                allEmpty = false;
+              allEmpty = true;
+              nCorrects = 0;
+              
+              for (r in results) {
+                if (results[r] == true)
+                  nCorrects += 1;
+                if (results[r] != "n/a")
+                  allEmpty = false;
+              }
+              
+              if (!allEmpty) {
+                printResults(results, null, explanation, 1);
+                userPoints += calculateMark(data[x.toString()], x.toString(), null, 1, nCorrects, null);
+              }
             }
-            
-            if (!allEmpty) {
-              printResults(results, null, explanation, 1);
-              userPoints += calculateMark(data[x.toString()], x.toString(), null, 1, nCorrects, null);
+            else {
+              nQuestion = parseInt(x.toString().split('-')[1]) + 1;
+              id_answer_js = 'qfi' + nQuestion.toString() + '-1';
+              result_function = eval(data[x.toString()]['answers'][id_answer_js]['answer_text']);
+              
+              values = [];
+              ids = {};
+              $.each(userAnswers, function(k,v) {
+                ids[k] = false;
+                values.push(eval(v));
+              });
+              
+              result = result_function.apply(this, values);     // Execution of the function
+              
+              if (result) {
+                $.each(ids, function(k,v) {
+                  ids[k] = true;
+                });
+              }
+              
+              printResults(ids, null, explanation, 1);
+              userPoints += calculateMark(data[x.toString()], x.toString(), result, 2, null, null);
             }
           }
           
@@ -655,7 +703,7 @@ Borrar almacenamiento    </button>
         if ((localStorage.length != 0) && (localStorage[timestamp] !== undefined)) {
           tmp = JSON.parse(localStorage[timestamp]);
           for (x in tmp) {
-            if (x.match(/qfi/))
+            if ((x.match(/qfi/)) || (x.match(/qdd/)))
               $("#" + x.toString()).val(tmp[x.toString()]);
             else
               $("#" + x.toString()).attr('checked', 'checked');
@@ -705,9 +753,9 @@ Borrar almacenamiento    </button>
           
           $.each(inputs, function(index, value) {
             if (flag == 1)
-              $("input[id=" + value.id).attr('value', answers[value.id]['answer_text']);
+              $("input[id=" + value.id).val(answers[value.id]['answer_text']);
             else
-              $("input[id=" + value.id).attr('value', '');
+              $("input[id=" + value.id).val('');
           });
         }
         else if (typeQuestion.match(/^qmc$/)){
@@ -720,9 +768,9 @@ Borrar almacenamiento    </button>
           })
           
           if (flag == 1)
-            $("input[id=" + correct).attr('checked', true);
+            $("input[id=" + correct).prop('checked', true);
           else
-            $("input[id=" + correct).attr('checked', false);
+            $("input[id=" + correct).prop('checked', false);
         }
         else {
           inputs = $("input[id^=qsm" + numQuestion + "-");
@@ -786,8 +834,6 @@ Borrar almacenamiento    </button>
         loadAnswers();
       });
 </script>
-    <!-- Opal -->
-    <!-- <script></script> -->
     <!-- Any JavaScript included by the user -->
     
     <!-- Latest compiled and minified JavaScript for Bootstrap -->

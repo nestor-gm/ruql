@@ -96,6 +96,17 @@ class Quiz
     q.instance_eval(&block)
     @questions << q
   end
+  
+  def drag_drop(*args, &block)
+    if args.first.is_a?(Hash) # no question text
+      q = DragDrop.new('', *args)
+    else
+      text = args.shift
+      q = DragDrop.new(text, *args)
+    end
+    q.instance_eval(&block)
+    @questions << q
+  end
 
   def head(arg)
     if (arg.class == String)

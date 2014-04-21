@@ -135,7 +135,7 @@ definida anteriormente</a>:
   ]
   end
 
-  fill_in do
+  drag_drop do
     text <<-'CONDITION'
 Rellene las partes que faltan del código CoffeeScript
 que reconoce el sublenguaje generado por <i>condition</i>:
@@ -144,7 +144,7 @@ que reconoce el sublenguaje generado por <i>condition</i>:
     left = ----------()
     type = ---------.-----
     match "COMPARISON"
-    right = ---------()
+    right = ----------()
     result =
       type: type
       left: left

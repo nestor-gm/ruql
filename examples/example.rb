@@ -1,5 +1,5 @@
 quiz 'Example quiz' do
-
+ 
   #head :'examples/header.html'
   
   tag = '<a href="www.google.es"></a> '
@@ -18,6 +18,11 @@ quiz 'Example quiz' do
   fill_in do
     text 'The ---- brown fox jumped over the lazy ----'
     answer [/fox/, /dog/], :explanation => 'This sentence contains all of the letters of the English Alphabet'
+  end
+  
+  drag_drop do
+    text 'The ---- brown fox jumped over the lazy ----'
+    answer ['fox', 'dog'], :explanation => 'This sentence contains all of the letters of the English Alphabet'
   end
   
   fill_in do
