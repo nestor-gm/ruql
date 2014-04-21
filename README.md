@@ -49,6 +49,17 @@ fill_in :points => 2 do
 end
 ```
 
+The HTML Form renderer allows Fixnum answer too and the number of hyphens
+indicates the size of the answer input. It's possible to escape three or more 
+hyphens using the slash ('\') for each hyphen if you use single quotes or
+double slashes ("\\") for double quotes. 
+
+To escape any HTML tag use the escape method:
+
+```ruby
+  escape('<a href="www.google.es"></a>')
+```
+
 Optional distractors can capture common incorrect answers.  As with all
 question types, an optional `:explanation` can accompany a correct
 answer or a distractor; its usage varies with the LMS, but a typical use
@@ -65,8 +76,8 @@ end
 
 You can have multiple blanks per question and pass an array of regexps
 or strings to check them.  Passing `:order => false` means that the
-order in which blanks are filled doesn't matter.  The number of elements
-in the array must exactly match the number of blanks.
+order in which blanks are filled doesn't matter.  By default, the order is
+set to true. The number of elements in the array must exactly match the number of blanks.
 
 ```ruby
 fill_in do
@@ -77,6 +88,39 @@ end
 fill_in do
   text 'The three stooges are ---, ---, and ---.'
   answer %w(larry moe curly), :order => false
+end
+```
+
+Another notation is allowed to fill_in questions:
+
+```ruby
+fill_in do
+  text 'The three stooges are -----{larry}, ----{moe}, and -----{curly}.', :order => false
+end
+```
+
+The HTML Form renderer allows a JavaScript object as an answer of a fillin question that return true or false:
+
+```ruby
+fill_in do
+  text %q{
+    Write two numbers x = ---- e  y = ---- which multiplication's result would be equal to 100
+  }
+  answer JS.new(%q{result = function(x,y) { return (x * y === 100); }})
+end
+```
+
+Drag-and-Drop questions
+------------------------------------------------------
+
+This type of questions is only supported in the HTML Form renderer. The syntax is similar to the fillin
+questions. It's compatible with his optional arguments. The only restriction is that all the answers must be
+strings or numbers:
+
+```ruby
+drag_drop do
+  text 'The ---- brown fox jumped over the lazy ----'
+  answer ['fox', 'dog'], :explanation => 'This sentence contains all of the letters of the English Alphabet'
 end
 ```
 
@@ -213,6 +257,38 @@ an HTML5 version that includes identification of the correct answer.
 NOTE that if you do this, the HTML5 tags will clearly identify the correct
 answer--this format is meant for printing, not for online use, since a
 simple "view page source" would show the correct answers!
+
+Creating an HTML Form Version of a Quiz
+-------------------------------------------------
+
+Run `ruql questionfile.rb HtmlForm --template=template.html.erb > output.html`
+
+The optional template should be an `.html.erb` template in which `yield` 
+is rendered where the questions should go.  If you omit the `template`
+argument, you'll get the `htmlform.html.erb` file template that comes in
+the `templates` directory of the gem. This template uses some elements of Twitter Bootstrap.
+
+NOTE: the -c, -j and -h options can be used with the default template too.
+
+It's possible to add a custom header/footer to the template. It can be a symbol with the path
+of the file or a string with the HTML code. This header/footer will replace
+the default header/footer:
+
+```ruby
+  head :'examples/header.html'
+  foot '<footer>Custom footer</footer>'
+```
+
+Besides, this renderer has the following features:
++ JavaScript validation of answers.
++ Local Storage for answers.
++ English and Spanish languages supported.
+NOTE: In Ruby 1.9.3p194, the method 'enforce_available_locales' in the i18n module doesn't exist. This cause
+an error when the gem is executed.
++ The options of Ruby Regexps support -s option. (Using XRegExp)  - http://xregexp.com/
++ Used the MathJax library to use LaTeX expressions - http://www.mathjax.org/
+Use a slash for the braces if you use a single quote ('\{\}') or two slashes for double quotes ("\{\}").
+
 
 Creating an AutoQCM quiz
 ------------------------

@@ -6,6 +6,7 @@ class HtmlFormRenderer
   require 'yaml'
   require 'i18n'
   require 'locale'
+  ENV['environment'] ||= 'production'
   
   attr_reader :output
 
@@ -15,7 +16,12 @@ class HtmlFormRenderer
     @html = options.delete('h') || options.delete('html')
     @show_solutions = options.delete('s') || options.delete('solutions')
     @template = options.delete('t') ||
-      options.delete('template')
+      options.delete('template') ||
+      if (ENV['test'] == 'production')
+        File.join(Gem.loaded_specs['ruql'].full_gem_path, 'templates/htmlform.html.erb')
+      else
+        'templates/htmlform.html.erb'
+      end
     @output = ''
     @quiz = quiz
     @h = Builder::XmlMarkup.new(:target => @output, :indent => 2)
