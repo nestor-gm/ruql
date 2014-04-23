@@ -479,7 +479,7 @@ class HtmlFormRenderer
   end
   
   def load_yml
-    I18n.enforce_available_locales = false
+    I18n.enforce_available_locales = false if I18n.respond_to?('enforce_available_locales')
     I18n.load_path = Dir['config/locales/*.yml']
   end
   
