@@ -103,10 +103,10 @@ def main
     ['-l', '--log', Getopt::REQUIRED],
     )
   begin
-    Quiz.instance_eval "#{IO.read(filename)}"
+    Quiz.instance_eval "#{IO.read(filename)}", filename, 1
     Quiz.quizzes.each { |quiz| puts quiz.render_with(renderer, opts)  }
   rescue Exception => e
-    $stderr.puts "*** #{e.class} *** #{e.message}"
+    $stderr.puts "#{e.message}"
   end
 end
 

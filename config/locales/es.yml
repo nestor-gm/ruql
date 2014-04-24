@@ -20,4 +20,6 @@ es:
     storage: Almacenamiento borrado
     noStorage: El navegador no soporta almacenamiento de respuestas
   exceptions:
-    syntax: Bloque incompleto en un método del fichero Ruby procesado.
+    question: Pregunta
+    text: No se ha especificado el texto de la pregunta
+    answer: No se ha especificado ninguna respuesta
