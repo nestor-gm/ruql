@@ -6,6 +6,7 @@
     <title><%= quiz.title %></title>
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../vendor/assets/codemirror-4.1/codemirror.css">
     <!-- -->
     <style type="text/css" media="all">
       div.quiz, p.comment, div.explanation {display:inline;}
@@ -44,6 +45,8 @@
     <!-- Mathjax -->
     <%= @mathjax %>
     <!--         -->
+    <script type="text/javascript" src="../vendor/assets/codemirror-4.1/codemirror.js"></script>
+    <script src="../vendor/assets/codemirror-4.1/mode/javascript/javascript.js"></script>
   </head>
   <body>
     <div class="container">
@@ -107,5 +110,10 @@
     <!-- Latest compiled and minified JavaScript for Bootstrap -->
     <script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
     <!-- -->
+    <script>
+      /*var myCodeMirror = CodeMirror.fromTextArea(document.getElementById('qp1-1'), {
+        lineNumbers: true
+      });*/
+    </script>
   </body>
 </html>
