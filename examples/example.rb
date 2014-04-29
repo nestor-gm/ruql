@@ -1,5 +1,11 @@
 quiz 'Example quiz' do
  
+  programming  :language => :javascript, :lines => 5, :width => 80  do
+    text %q{Escriba una función JavaScript llamada `suma` que recibe dos números 
+    y devuelve la suma}
+    answer JS.new(:'examples/suma.js')
+  end
+  
   #head :'examples/header.html'
   
   tag = '<a href="www.google.es"></a> '
@@ -7,7 +13,7 @@ quiz 'Example quiz' do
     text "<i>Example of escaped HTML and three hyphens not evaluated:</i><br> #{escape(tag)}" + "<b>is</b> a \\-\\-\\- ---- " + '\-\-\-'
     answer /^link$/
   end
-  
+ 
   fill_in :points => 2 do
     text 'The visionary founder of Apple is --------'
     comment 'Question too easy'

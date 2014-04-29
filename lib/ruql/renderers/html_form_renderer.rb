@@ -63,6 +63,8 @@ class HtmlFormRenderer
     @xregexp = insert_xregexp(true)
     @i18n = yml_to_json
     @dragdrop = insert_drag_drop
+    @context_menu = insert_contextMenu(true)
+    @context_menu_css = insert_contextMenu_css
    
     render_questions
     @validation_js = insert_defaultJS(@quiz.points)
@@ -86,6 +88,7 @@ class HtmlFormRenderer
           when SelectMultiple then render_select_multiple(q,i)
           when MultipleChoice, TrueFalse then render_multiple_choice(q,i)
           when FillIn then render_fill_in(q, i)
+          when Programming then render_programming(q, i)
           else
             raise "Unknown question type: #{q}"
           end
@@ -128,7 +131,7 @@ class HtmlFormRenderer
       end
     end
     question_comment(q)
-    insert_buttons_each_question(index)
+    insert_buttons_each_question(index, true)
     self
   end
 
@@ -157,7 +160,7 @@ class HtmlFormRenderer
       end
     end
     question_comment(q)
-    insert_buttons_each_question(index)
+    insert_buttons_each_question(index, true)
     self
   end
   
@@ -186,14 +189,12 @@ class HtmlFormRenderer
   
   def render_fill_in(q, idx)
     render_question_text(q, idx) do
-      flag_js_qdd = false
       
       question_comment(q)
       if (q.class == FillIn)
         class_question = "qfi"
       elsif (q.class == DragDrop)
         class_question = "qdd"
-        flag_js_qdd = true
       end
       # Store answers for question-idx
       answer = q.answers[0]
@@ -210,7 +211,6 @@ class HtmlFormRenderer
       
       id_answer = 1
       answers.each do |a|
-        flag_js_qdd = true if (a.class == JS)
         type_answer_fill_in(answer, a, idx, id_answer, class_question)
         id_answer += 1
       end
@@ -222,8 +222,26 @@ class HtmlFormRenderer
           id_distractor += 1
         end
       end
-      insert_buttons_each_question(idx, flag_js_qdd)
+      insert_buttons_each_question(idx)
     end
+  end
+  
+  def render_programming(q, index)
+    render_question_text(q, index) do
+      answer = q.answers[0]
+      @h.ol :class => 'answers' do
+        # Store answers for question-index
+        @data[:"question-#{index}"][:answers]["qp#{index + 1}-1".to_sym] = {:answer_text => answer.answer_text.to_javascript, :correct => answer.correct, 
+                                                                            :explanation => answer.explanation}
+        @h.textarea(:id => "qp#{index + 1}-1", :class => 'programming', :rows => q.lines,  :cols => q.width, :placeholder => "#{translate(:placeholder, 'questions')}...") do
+        end
+        @h.br
+        @h.br
+      end
+    end
+    question_comment(q)
+    insert_buttons_each_question(index)
+    self
   end
   
   def render_question_text(question,index)
@@ -276,6 +294,10 @@ class HtmlFormRenderer
           if ((question.class == FillIn) || (question.class == DragDrop))
             @data[html_args[:id].to_sym] = {:question_text => questionText, :answers => {}, :points => question.points, 
                                             :order => question.order, :question_comment => question.question_comment}
+          elsif (question.class == Programming)
+            @data[html_args[:id].to_sym] = {:question_text => questionText, :answers => {}, :points => question.points, 
+                                            :question_comment => question.question_comment, :language => question.language,
+                                            :lines => question.lines, :width => question.width}
           else
             @data[html_args[:id].to_sym] = {:question_text => questionText, :answers => {}, :points => question.points,
                                             :question_comment => question.question_comment}
@@ -311,7 +333,7 @@ class HtmlFormRenderer
   end
   
   def insert_buttons_each_question(index, flag=false)
-    insert_button("show-answer-q-#{index}", translate(:show, 'buttons'), 'btn btn-success btn-sm') unless flag
+    insert_button("show-answer-q-#{index}", translate(:show, 'buttons'), 'btn btn-success btn-sm') if flag
     insert_button("q-#{index}", translate(:submit, 'buttons'), 'btn btn-primary btn-sm')
     @h.br do
     end
@@ -320,8 +342,12 @@ class HtmlFormRenderer
   def insert_resources_head(h)
     insert_defaultCSS
     insert_html(h) if @html
+    @h.link(:rel => 'stylesheet', :type =>'text/css') do |c|
+      c << insert_contextMenu_css
+    end
     insert_css(false) if @css
     insert_mathjax(false)
+    insert_contextMenu(false)
   end
   
   def insert_resources_body(b)
@@ -430,6 +456,162 @@ class HtmlFormRenderer
         j << "MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\\\(','\\\\)']]}});"
       end
     end
+  end
+  
+  def insert_contextMenu(template)
+    function = %Q{
+      $(document).on("contextmenu", "input.fillin", function(e){
+        id_answer = $(this).attr('id');
+        numQuestion = parseInt(id_answer.split('-')[0].slice(3)) - 1;
+        
+        if (data["question-" + numQuestion.toString()]['answers'][id_answer]['type'] != "JS") {
+          answer = data["question-" + numQuestion.toString()]['answers'][id_answer]['answer_text'];
+          $.contextMenu({
+            selector: "#" + id_answer,
+            items: {
+              "fold1": {
+                "name": "#{translate(:show, 'buttons')}", 
+                "items": {
+                  "fold1-key1": {"name": answer}
+                }
+              }
+            }
+          });
+        }
+      });
+    }
+    if (template)
+      code = "<script type=text/javascript src=http://medialize.github.com/jQuery-contextMenu/src/jquery.ui.position.js></script>"
+      code << "<script type=text/javascript src=http://medialize.github.com/jQuery-contextMenu/src/jquery.contextMenu.js></script>"
+      code << %Q{
+        <script type=text/javascript>
+          #{function}
+        </script>
+      }
+    else
+      @h.script(:type => 'text/javascript', :src => "http://medialize.github.com/jQuery-contextMenu/src/jquery.ui.position.js") do
+      end
+      @h.script(:type => 'text/javascript', :src => "http://medialize.github.com/jQuery-contextMenu/src/jquery.contextMenu.js") do
+      end
+      @h.script(:type => 'text/javascript') do |j|
+        j << function
+      end
+    end
+  end
+  
+  def insert_contextMenu_css
+    <<-CSS
+    .context-menu-list {
+      margin:0; 
+      padding:0;
+      
+      min-width: 160px;
+      max-width: 250px;
+      display: inline-block;
+      position: absolute;
+      list-style-type: none;
+      
+      border: 1px solid #DDD;
+      background: #EEE;
+      
+      -webkit-box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+        -moz-box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+          -ms-box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+          -o-box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+              box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+      
+      font-family: Verdana, Arial, Helvetica, sans-serif;
+      font-size: 15px;
+    }
+
+    .context-menu-item {
+        padding: 2px 2px 2px 24px;
+        background-color: #EEE;
+        color: #000;
+        position: relative;
+        -webkit-user-select: none;
+          -moz-user-select: -moz-none;
+            -ms-user-select: none;
+                user-select: none;
+    }
+
+    .context-menu-separator {
+        padding-bottom:0;
+        border-bottom: 1px solid #DDD;
+    }
+
+    .context-menu-item > label > input,
+    .context-menu-item > label > textarea {
+        -webkit-user-select: text;
+          -moz-user-select: text;
+            -ms-user-select: text;
+                user-select: text;
+    }
+
+    .context-menu-item.hover {
+        cursor: pointer;
+        background-color: #428bca;
+        color: #FFF;
+    }
+
+    .context-menu-item.disabled {
+        color: #666;
+    }
+
+    .context-menu-input.hover,
+    .context-menu-item.disabled.hover {
+        cursor: default;
+        background-color: #EEE;
+    }
+
+    .context-menu-submenu:after {
+        content: ">";
+        color: #666;
+        position: absolute;
+        top: 2;
+        right: 3px;
+        z-index: 1;
+    }
+
+    /* vertically align inside labels */
+    .context-menu-input > label > * { vertical-align: top; }
+
+    .context-menu-input > label > span {
+        margin-left: 5px;
+    }
+
+    .context-menu-input > label,
+    .context-menu-input > label > input[type="text"],
+    .context-menu-input > label > textarea,
+    .context-menu-input > label > select {
+        display: block;
+        width: 100%;
+        
+        -webkit-box-sizing: border-box;
+          -moz-box-sizing: border-box;
+            -ms-box-sizing: border-box;
+            -o-box-sizing: border-box;
+                box-sizing: border-box;
+    }
+
+    .context-menu-input > label > textarea {
+        height: 100px;
+    }
+    .context-menu-item > .context-menu-list {
+        display: none;
+        /* re-positioned by js */
+        right: -5px;
+        top: 5px;
+    }
+
+    .context-menu-item.hover > .context-menu-list {
+        display: block;
+    }
+
+    .context-menu-accesskey {
+        text-decoration: underline;
+    }
+    CSS
   end
   
   def insert_drag_drop
@@ -723,133 +905,139 @@ class HtmlFormRenderer
           correct = false;
           answers = $("#" + x.toString() + " input");
           
-          if ((answers.attr('class').match("fillin")) || (answers.attr('class').match("dragdrop"))) {
-            correctAnswers = {};
-            distractorAnswers = {};
-            explanation = {};
-            stringAnswer = false;
-            flag_js = false;
-            
-            for (ans in data[x.toString()]['answers']) {
-              if (data[x.toString()]['answers'][ans]['correct'] == true) {
-                if (data[x.toString()]['answers'][ans]['type'] == "Regexp") {
-                  string = data[x.toString()]['answers'][ans]['answer_text'].split('/');
-                  regexp = string[1];
-                  options = string[2];
-                  correctAnswers[ans.toString()] = XRegExp(regexp, options);
+          if (answers.length != 0) {
+            if ((answers.attr('class').match("fillin")) || (answers.attr('class').match("dragdrop"))) {
+              correctAnswers = {};
+              distractorAnswers = {};
+              explanation = {};
+              stringAnswer = false;
+              flag_js = false;
+              
+              for (ans in data[x.toString()]['answers']) {
+                if (data[x.toString()]['answers'][ans]['correct'] == true) {
+                  if (data[x.toString()]['answers'][ans]['type'] == "Regexp") {
+                    string = data[x.toString()]['answers'][ans]['answer_text'].split('/');
+                    regexp = string[1];
+                    options = string[2];
+                    correctAnswers[ans.toString()] = XRegExp(regexp, options);
+                  }
+                  else if (data[x.toString()]['answers'][ans]['type'] == "JS") {
+                    flag_js = true;
+                  }
+                  else { // String or Number
+                    correctAnswers[ans.toString()] = data[x.toString()]['answers'][ans]['answer_text'];
+                    stringAnswer = true;
+                  }
                 }
-                else if (data[x.toString()]['answers'][ans]['type'] == "JS") {
-                  flag_js = true;
+                else {
+                  if (data[x.toString()]['answers'][ans]['type'] == "Regexp") {
+                    string = data[x.toString()]['answers'][ans]['answer_text'].split('/');
+                    regexp = string[1];
+                    options = string[2];
+                    distractorAnswers[ans.toString()] = XRegExp(regexp, options);
+                  }
+                  else if (data[x.toString()]['answers'][ans]['type'] == "JS") {
+                    //
+                  }
+                  else {// String or Number
+                    distractorAnswers[ans.toString()] = data[x.toString()]['answers'][ans]['answer_text'];
+                    stringAnswer = true;
+                  }
                 }
-                else { // String or Number
-                  correctAnswers[ans.toString()] = data[x.toString()]['answers'][ans]['answer_text'];
-                  stringAnswer = true;
-                }
+                explanation[ans] = data[x.toString()]['answers'][ans]['explanation'];
               }
-              else {
-                if (data[x.toString()]['answers'][ans]['type'] == "Regexp") {
-                  string = data[x.toString()]['answers'][ans]['answer_text'].split('/');
-                  regexp = string[1];
-                  options = string[2];
-                  distractorAnswers[ans.toString()] = XRegExp(regexp, options);
-                }
-                else if (data[x.toString()]['answers'][ans]['type'] == "JS") {
-                  //
-                }
-                else {// String or Number
-                  distractorAnswers[ans.toString()] = data[x.toString()]['answers'][ans]['answer_text'];
-                  stringAnswer = true;
-                }
-              }
-              explanation[ans] = data[x.toString()]['answers'][ans]['explanation'];
-            }
-            
-            userAnswers = {};
-            for (i = 0; i < answers.length; i++) {
-              if (answers[i].value == '')
-                userAnswers[answers[i].id.toString()] = undefined;
-              else
-                if (stringAnswer)
-                  userAnswers[answers[i].id.toString()] = answers[i].value.toLowerCase();
+              
+              userAnswers = {};
+              for (i = 0; i < answers.length; i++) {
+                if (answers[i].value == '')
+                  userAnswers[answers[i].id.toString()] = undefined;
                 else
-                  userAnswers[answers[i].id.toString()] = answers[i].value;
-            }
-            
-            if (flag_js == false) {
-              if (data[x.toString()]['order'] == false)
-                results = checkFillin(correctAnswers, userAnswers, distractorAnswers, 0);
-              else
-                results = checkFillin(correctAnswers, userAnswers, distractorAnswers, 1);
-              
-              allEmpty = true;
-              nCorrects = 0;
-              
-              for (r in results) {
-                if (results[r] == true)
-                  nCorrects += 1;
-                if (results[r] != "n/a")
-                  allEmpty = false;
+                  if (stringAnswer)
+                    userAnswers[answers[i].id.toString()] = answers[i].value.toLowerCase();
+                  else
+                    userAnswers[answers[i].id.toString()] = answers[i].value;
               }
               
-              if (!allEmpty) {
-                printResults(results, null, explanation, 1);
-                userPoints += calculateMark(data[x.toString()], x.toString(), null, 1, nCorrects, null);
-              }
-            }
-            else {
-              nQuestion = parseInt(x.toString().split('-')[1]) + 1;
-              id_answer_js = 'qfi' + nQuestion.toString() + '-1';
-              result_function = eval(data[x.toString()]['answers'][id_answer_js]['answer_text']);
-              
-              values = [];
-              ids = {};
-              $.each(userAnswers, function(k,v) {
-                ids[k] = false;
-                values.push(eval(v));
-              });
-              
-              result = result_function.apply(this, values);     // Execution of the function
-              
-              if (result) {
-                $.each(ids, function(k,v) {
-                  ids[k] = true;
-                });
-              }
-              
-              printResults(ids, null, explanation, 1);
-              userPoints += calculateMark(data[x.toString()], x.toString(), result, 2, null, null);
-            }
-          }
-          
-          else if (answers.attr('class') == "select") {
-            idCorrectAnswer = findCorrectAnswer(x.toString(), 0);
-            
-            if ($("#" + x.toString() + " :checked").size() != 0) {
-              if ($("#" + x.toString() + " :checked").attr('id') == idCorrectAnswer) {
-                printResults($("#" + x.toString() + " :checked").attr('id'), 1, "", 0);
-                correct = true;
+              if (flag_js == false) {
+                if (data[x.toString()]['order'] == false)
+                  results = checkFillin(correctAnswers, userAnswers, distractorAnswers, 0);
+                else
+                  results = checkFillin(correctAnswers, userAnswers, distractorAnswers, 1);
+                
+                allEmpty = true;
+                nCorrects = 0;
+                
+                for (r in results) {
+                  if (results[r] == true)
+                    nCorrects += 1;
+                  if (results[r] != "n/a")
+                    allEmpty = false;
+                }
+                
+                if (!allEmpty) {
+                  printResults(results, null, explanation, 1);
+                  userPoints += calculateMark(data[x.toString()], x.toString(), null, 1, nCorrects, null);
+                }
               }
               else {
-                id = $("#" + x.toString() + " :checked").attr('id');
-                printResults(id, 0, data[x.toString()]['answers'][id]['explanation'], 0);
+                nQuestion = parseInt(x.toString().split('-')[1]) + 1;
+                id_answer_js = 'qfi' + nQuestion.toString() + '-1';
+                result_function = eval(data[x.toString()]['answers'][id_answer_js]['answer_text']);
+                
+                values = [];
+                ids = {};
+                $.each(userAnswers, function(k,v) {
+                  ids[k] = false;
+                  values.push(eval(v));
+                });
+                
+                result = result_function.apply(this, values);     // Execution of the function
+                
+                if (result) {
+                  $.each(ids, function(k,v) {
+                    ids[k] = true;
+                  });
+                }
+                
+                printResults(ids, null, explanation, 1);
+                userPoints += calculateMark(data[x.toString()], x.toString(), result, 2, null, null);
               }
-              userPoints += calculateMark(data[x.toString()], x.toString(), correct, 2, null, null);
+            }
+            
+            else if (answers.attr('class') == "select") {
+              idCorrectAnswer = findCorrectAnswer(x.toString(), 0);
+              
+              if ($("#" + x.toString() + " :checked").size() != 0) {
+                if ($("#" + x.toString() + " :checked").attr('id') == idCorrectAnswer) {
+                  printResults($("#" + x.toString() + " :checked").attr('id'), 1, "", 0);
+                  correct = true;
+                }
+                else {
+                  id = $("#" + x.toString() + " :checked").attr('id');
+                  printResults(id, 0, data[x.toString()]['answers'][id]['explanation'], 0);
+                }
+                userPoints += calculateMark(data[x.toString()], x.toString(), correct, 2, null, null);
+              }
+            }
+            
+            else if (answers.attr('class') == "check"){
+              if ($("#" + x.toString() + " :checked").size() != 0) {
+                answers = $("#" + x.toString() + " :checked");
+                checkedIds = [];
+                
+                $.each(answers, function(index, value){
+                  checkedIds.push(value['id']);
+                });
+                
+                correctIds = [];
+                correctIds = findCorrectAnswer(x.toString(), 1);
+                checkSelectMultiple(x, checkedIds, correctIds);
+              }
             }
           }
-          
-          else {
-            if ($("#" + x.toString() + " :checked").size() != 0) {
-              answers = $("#" + x.toString() + " :checked");
-              checkedIds = [];
-              
-              $.each(answers, function(index, value){
-                checkedIds.push(value['id']);
-              });
-              
-              correctIds = [];
-              correctIds = findCorrectAnswer(x.toString(), 1);
-              checkSelectMultiple(x, checkedIds, correctIds);
-            }
+          else {  // Textarea
+            textarea = $("#" + x.toString() + " textarea");
+            answer = textarea.val();
           }
         }
       }
@@ -925,6 +1113,14 @@ class HtmlFormRenderer
           button.html(i18n[language]['buttons']['show']);
           showOrHideAnswer(numQuestion, 0);
         }
+      }
+      
+      function clearTextarea() {
+        areas = $('textarea');
+        $.each(areas, function(i, v) {
+          if (v.value.match(/^\s+$/))
+            v.value = '';
+        });
       }
       
       function showOrHideAnswer(numQuestion, flag) {
@@ -1016,6 +1212,7 @@ class HtmlFormRenderer
       
       $(document).ready(function() {
         loadAnswers();
+        clearTextarea();
       });
       JS
   end
