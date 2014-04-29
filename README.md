@@ -99,7 +99,8 @@ fill_in do
 end
 ```
 
-The HTML Form renderer allows a JavaScript object as an answer of a fillin question that return true or false:
+The HTML Form renderer allows a JavaScript object in a fillin answer. The JavaScript code is
+a parameter of the constructor. It must be written like a string and it must return true or false.
 
 ```ruby
 fill_in do
