@@ -56,7 +56,7 @@ task :test do
 end
 
 desc "Install Ruql using RVM"
-task :rvm do
+task :install do
   sh "gem build ruql.gemspec"
   sh "gem install ./ruql-0.0.3.gem"
 end
