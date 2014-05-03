@@ -260,17 +260,18 @@ class HtmlFormRenderer
             hyphen.length.times { |i|
                                  nHyphen = hyphen[i].count('-')
                                  @size_inputs << nHyphen
-                                 question.question_text.sub!(/(?<!\\)---+/, "<input type=text id=qfi#{index + 1}-#{i + 1} class='fillin size-#{nHyphen}'></input>")
+                                 input = %Q{<input type="text" id="qfi#{index + 1}-#{i + 1}" class="fillin size-#{nHyphen}"></input>}
+                                 question.question_text.sub!(/(?<!\\)---+/, input)
                                 }
             question.question_text.gsub!(/\\-/, '-')
-            question.question_text << "<div id=qfi#{index + 1}-#{hyphen.length}r class=quiz></div></br></br>"
+            question.question_text << %Q{<div id="qfi#{index + 1}-#{hyphen.length}r" class="quiz"></div></br></br>}
             
           elsif question.class == DragDrop
             hyphen = question.question_text.scan(/(?<!\\)---+/)
             hyphen.length.times { |i|
                                  nHyphen = hyphen[i].count('-')
                                  @size_inputs << nHyphen
-                                 attr = "id=qdd#{index + 1}-#{i + 1} class='dragdrop size-#{nHyphen}' ondrop=drop(event,'qdd#{index + 1}-#{i + 1}') ondragover=allowDrop(event)"
+                                 attr = %Q{id="qdd#{index + 1}-#{i + 1}" class="dragdrop size-#{nHyphen}" ondrop="drop(event,'qdd#{index + 1}-#{i + 1}')" ondragover="allowDrop(event)"}
                                  question.question_text.sub!(/(?<!\\)---+/, "<input #{attr}></input>")
                                 }
             question.question_text.gsub!(/\\-/, '-')
@@ -278,7 +279,7 @@ class HtmlFormRenderer
             question.question_text << "<div> #{translate(:answers, '')}: "
             question.answers[0].answer_text.each_with_index do |a, i|
               @size_divs << a.to_s.length
-              question.question_text << "<button class='dragdrop size-#{a.to_s.length} btn btn-default btn-sm' id=qdda#{i + 1}-#{i + 1} draggable=true ondragstart=drag(event)>#{a}</button>&nbsp&nbsp"
+              question.question_text << %Q{<button class="dragdrop size-#{a.to_s.length} btn btn-default btn-sm" id="qdda#{i + 1}-#{i + 1}" draggable="true" ondragstart="drag(event)">#{a}</button>&nbsp&nbsp}
             end
             question.question_text << "<div/>"
             question.question_text << "</br></br>"
@@ -382,7 +383,7 @@ class HtmlFormRenderer
     if (@css.class == Array)
       if (template)
         @css.each do |file|
-          code << "<link rel=stylesheet type=text/css href=#{File.expand_path(file)} />\n"
+          code << %Q{<link rel="stylesheet" type="text/css" href="#{File.expand_path(file)}" />\n}
         end
       else
         @css.each do |file|
@@ -391,7 +392,7 @@ class HtmlFormRenderer
       end
     else
       if (template)
-        code << "<link rel=stylesheet type=text/css href=#{File.expand_path(@css)} />"
+        code << %Q{<link rel="stylesheet" type="text/css" href="#{File.expand_path(@css)}" />}
       else
         @h.link(:rel => 'stylesheet', :type =>'text/css', :href => File.expand_path(@css))
       end
@@ -414,10 +415,10 @@ class HtmlFormRenderer
   def insert_jQuery(h, template)
     if (template)
       code = %q{
-        <script type=text/javascript src=http://code.jquery.com/jquery-2.1.0.min.js></script>
-        <script type='text/javascript' src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+        <script type="text/javascript" src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
+        <script type="text/javascript" src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
         <!--[if lt IE 8]>
-          <script type=text/javascript src=http://code.jquery.com/jquery-1.11.0.min.js></script>
+          <script type="text/javascript" src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
         <![endif]-->
       }
       code
@@ -433,7 +434,7 @@ class HtmlFormRenderer
   
   def insert_xregexp(template)
     if (template)
-      code = "<script type=text/javascript src=http://cdnjs.cloudflare.com/ajax/libs/xregexp/2.0.0/xregexp-min.js></script>"
+      code = %Q{<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/xregexp/2.0.0/xregexp-min.js"></script>}
       code
     else
       @h.script(:type => 'text/javascript', :src => "http://cdnjs.cloudflare.com/ajax/libs/xregexp/2.0.0/xregexp-min.js") do
@@ -444,8 +445,8 @@ class HtmlFormRenderer
   def insert_mathjax(template)
     if (template)
       code = %q{
-        <script type=text/javascript src=http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML></script>
-        <script type=text/javascript>
+        <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/javascript">
           MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\\(','\\\)']]}});
         </script>
       }
@@ -481,10 +482,10 @@ class HtmlFormRenderer
       });
     }
     if (template)
-      code = "<script type=text/javascript src=http://medialize.github.com/jQuery-contextMenu/src/jquery.ui.position.js></script>"
-      code << "<script type=text/javascript src=http://medialize.github.com/jQuery-contextMenu/src/jquery.contextMenu.js></script>"
+      code = %Q{<script type="text/javascript" src="http://medialize.github.com/jQuery-contextMenu/src/jquery.ui.position.js"></script>}
+      code << %Q{<script type="text/javascript" src="http://medialize.github.com/jQuery-contextMenu/src/jquery.contextMenu.js"></script>}
       code << %Q{
-        <script type=text/javascript>
+        <script type="text/javascript">
           #{function}
         </script>
       }
@@ -639,7 +640,7 @@ class HtmlFormRenderer
     if (@js.class == Array)
       if (template)
         @js.each do |file|
-          code << "<script type=text/javascript src=#{File.expand_path(file)}></script>\n"
+          code << %Q{<script type="text/javascript" src="#{File.expand_path(file)}"></script>\n}
         end
       else
         @js.each do |file|
@@ -649,7 +650,7 @@ class HtmlFormRenderer
       end
     else
       if (template)
-        code << "<script type=text/javascript src=#{File.expand_path(@js)}></script>\n"
+        code << %Q{<script type="text/javascript" src="#{File.expand_path(@js)}"></script>\n}
       else
         @h.script(:type => 'text/javascript', :src => File.expand_path(@js)) do
         end
