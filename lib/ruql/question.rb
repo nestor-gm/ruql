@@ -18,15 +18,14 @@ class Question
   def raw? ; !!@raw ; end
   
   def text(s, opts={})
-    regexp = /{:?.*}/ 
-    if (s[/---+{:?.*}/] == nil)
+    regexp = /{:?\w+}/ 
+    if (s[/---+{:?\w+}/] == nil)
       @question_text = s
     else
       @question_text = s.split(regexp).join()
       answers = s.scan(regexp)
       answers.each do |a|
-        [0,-1].each { |i| a.delete!(a[i])}
-        ans = a[/:?.*/]
+        ans = a[/:?\w+/]
         if (ans[0] == ':')
           @keys << ans.delete(':').to_sym
         else

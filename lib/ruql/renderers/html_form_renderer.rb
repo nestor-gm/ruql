@@ -25,6 +25,7 @@ class HtmlFormRenderer
     @output = ''
     @quiz = quiz
     @h = Builder::XmlMarkup.new(:target => @output, :indent => 2)
+    #@h = Builder::XmlMarkup.new(:target => @output)
     @data = {}
     @size_inputs = []
     @size_divs = []
@@ -60,6 +61,8 @@ class HtmlFormRenderer
     @js_custom = insert_js(true) if @js
     @jQuery = insert_jQuery('', true)
     @mathjax = insert_mathjax(true)
+    @codemirror = insert_codemirror(true)
+    @codemirror_object = insert_codemirror_object(true)
     @xregexp = insert_xregexp(true)
     @i18n = yml_to_json
     @dragdrop = insert_drag_drop
@@ -349,12 +352,14 @@ class HtmlFormRenderer
     insert_css(false) if @css
     insert_mathjax(false)
     insert_contextMenu(false)
+    insert_codemirror(false)
   end
   
   def insert_resources_body(b)
     insert_jQuery(b, false)
     insert_xregexp(false)
     insert_js(false) if @js
+    insert_codemirror_object(false)
     
     @h.script(:type => 'text/javascript') do |j|
       j << insert_drag_drop
@@ -455,6 +460,49 @@ class HtmlFormRenderer
       end
       @h.script(:type => 'text/javascript') do |j|
         j << "MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\\\(','\\\\)']]}});"
+      end
+    end
+  end
+  
+  def insert_codemirror(template)
+    if (template)
+      code = %q{
+        <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/codemirror/4.1.0/codemirror.css">
+        <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/codemirror/4.1.0/codemirror.min.js"></script>
+        <script src="http://cdnjs.cloudflare.com/ajax/libs/codemirror/4.1.0/package/mode/javascript/javascript.js"></script>
+      }
+    else
+      @h.link(:rel => 'stylesheet', :type =>'text/css', :href => "http://cdnjs.cloudflare.com/ajax/libs/codemirror/4.1.0/codemirror.css")
+      @h.script(:type => 'text/javascript', :src => "http://cdnjs.cloudflare.com/ajax/libs/codemirror/4.1.0/codemirror.min.js") do
+      end
+      @h.script(:type => 'text/javascript', :src => "http://cdnjs.cloudflare.com/ajax/libs/codemirror/4.1.0/package/mode/javascript/javascript.js") do
+      end
+    end
+  end
+  
+  def insert_codemirror_object(template)
+    partial = %q{
+      id_textareas = {};
+      $("textarea").each(function(){ id_textareas[this.id] = '' });
+      
+      $.each(id_textareas, function(k,v) {
+        id_textareas[k] = CodeMirror.fromTextArea(document.getElementById(k), {
+          lineNumbers: true,
+          viewportMargin: Infinity
+        });
+        id_textareas[k].setSize(800, 150);
+        id_textareas[k].setValue('');
+      });
+    }
+    if (template)
+      code = %Q{
+        <script type="text/javascript">
+          #{partial}
+        </script>
+      }
+    else
+      @h.script(:type => 'text/javascript') do |j|
+        j << partial
       end
     end
   end
@@ -1037,8 +1085,20 @@ class HtmlFormRenderer
             }
           }
           else {  // Textarea
-            textarea = $("#" + x.toString() + " textarea");
-            answer = textarea.val();
+            numAnswer = parseInt(x.split('-')[1]) + 1;
+            idAnswer = 'qp' + numAnswer.toString() + '-1';
+            
+            answer = eval("fn = " + data[x.toString()]['answers'][idAnswer]['answer_text']);
+            userAnswer = eval("userFunction = " + id_textareas[idAnswer].getValue());
+            
+            try {
+              result = answer.call();
+            }
+            catch(err) {
+              result = false;
+            }
+            
+            userPoints += calculateMark(data[x.toString()], x.toString(), result, 2, null, null);
           }
         }
       }
@@ -1065,6 +1125,11 @@ class HtmlFormRenderer
             nquestion = parseInt(idAnswer.split('-')[0].substr(3)) - 1;
             tmp[idAnswer] = data["question-" + nquestion.toString()]['answers'][idAnswer]['answer_text'];
           }
+          
+          $.each(id_textareas, function(k,v) {
+            tmp[k] = id_textareas[k].getValue();
+          });
+          
           localStorage.setItem(timestamp, JSON.stringify(tmp));
         }
         else {
@@ -1078,6 +1143,8 @@ class HtmlFormRenderer
           for (x in tmp) {
             if ((x.match(/qfi/)) || (x.match(/qdd/)))
               $("#" + x.toString()).val(tmp[x.toString()]);
+            else if (x.match(/qp/))
+              id_textareas[x].setValue(tmp[x]);
             else
               $("#" + x.toString()).attr('checked', 'checked');
           }

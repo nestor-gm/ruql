@@ -1,1 +1,6 @@
-function suma(x, y) { return x + y; }
+function () { 
+  if (userFunction(3,4) == 7) 
+    return true;
+  else
+    return false;
+}

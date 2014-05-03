@@ -1,11 +1,5 @@
 quiz 'Example quiz' do
  
-  programming  :language => :javascript, :lines => 5, :width => 80  do
-    text %q{Escriba una función JavaScript llamada `suma` que recibe dos números 
-    y devuelve la suma}
-    answer JS.new(:'examples/suma.js')
-  end
-  
   #head :'examples/header.html'
   
   tag = '<a href="www.google.es"></a> '
@@ -52,6 +46,12 @@ quiz 'Example quiz' do
     answer JS.new(%q{result = function(x,y) { return (x * y === 100); }})
   end
 
+  programming  :language => :javascript, :lines => 5, :width => 80  do
+    text %q{Escriba una función JavaScript llamada `suma` que recibe dos números 
+    y devuelve la suma}
+    answer JS.new(:'examples/suma.js')
+  end
+  
   fill_in do
     text %q{
       Calculate the determinant of this matrix:
@@ -116,5 +116,5 @@ quiz 'Example quiz' do
   end
   
   #foot :'examples/footer.html'
-  
+
 end
