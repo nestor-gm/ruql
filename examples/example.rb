@@ -49,7 +49,7 @@ quiz 'Example quiz' do
   programming  :language => :javascript, :height => 800, :width => 150  do
     text %q{Escriba una función JavaScript llamada `suma` que recibe dos números 
     y devuelve la suma}
-    answer JS.new(:'examples/suma.js')
+    answer JS.new(:'examples/test_suma.js')
   end
   
   fill_in do
