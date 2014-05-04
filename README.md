@@ -99,7 +99,7 @@ fill_in do
 end
 ```
 
-The HTML Form renderer allows a JavaScript object in a fillin answer. The JavaScript code is
+The HTML Form renderer allows a JavaScript object in a fill_in answer. The JavaScript code is
 a parameter of the constructor. It must be written like a string and it must return true or false.
 
 ```ruby
@@ -114,7 +114,7 @@ end
 Drag-and-Drop questions
 ------------------------------------------------------
 
-This type of questions is only supported in the HTML Form renderer. The syntax is similar to the fillin
+This type of questions is only supported in the HTML Form renderer. The syntax is similar to the fill_in
 questions. It's compatible with his optional arguments. The only restriction is that all the answers must be
 strings or numbers:
 
@@ -288,6 +288,7 @@ Besides, this renderer has the following features:
 + Used the MathJax library to use LaTeX expressions - http://www.mathjax.org/. 
 Use a slash for the braces if you use a single quote ('\\{\\}') or two slashes for double quotes ("\\\\{\\\\}").
 
+In the [examples' directory](http://github.com/jjlabrador/ruql/blob/develop/examples/example.rb) there's an example quiz that contains all the features of this renderer.
 
 Creating an AutoQCM quiz
 ------------------------
