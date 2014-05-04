@@ -46,7 +46,7 @@ quiz 'Example quiz' do
     answer JS.new(%q{result = function(x,y) { return (x * y === 100); }})
   end
 
-  programming  :language => :javascript, :lines => 5, :width => 80  do
+  programming  :language => :javascript, :height => 800, :width => 150  do
     text %q{Escriba una función JavaScript llamada `suma` que recibe dos números 
     y devuelve la suma}
     answer JS.new(:'examples/suma.js')

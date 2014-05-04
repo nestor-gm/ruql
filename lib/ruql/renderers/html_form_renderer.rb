@@ -236,7 +236,7 @@ class HtmlFormRenderer
         # Store answers for question-index
         @data[:"question-#{index}"][:answers]["qp#{index + 1}-1".to_sym] = {:answer_text => answer.answer_text.to_javascript, :correct => answer.correct, 
                                                                             :explanation => answer.explanation}
-        @h.textarea(:id => "qp#{index + 1}-1", :class => 'programming', :rows => q.lines,  :cols => q.width, :placeholder => "#{translate(:placeholder, 'questions')}...") do
+        @h.textarea(:id => "qp#{index + 1}-1", :class =>'programming', :rows => 5, :cols => 80, :height => q.height, :width => q.width, :placeholder => "#{translate(:placeholder, 'questions')}...") do
         end
         @h.br
         @h.br
@@ -301,7 +301,7 @@ class HtmlFormRenderer
           elsif (question.class == Programming)
             @data[html_args[:id].to_sym] = {:question_text => questionText, :answers => {}, :points => question.points, 
                                             :question_comment => question.question_comment, :language => question.language,
-                                            :lines => question.lines, :width => question.width}
+                                            :height => question.height, :width => question.width}
           else
             @data[html_args[:id].to_sym] = {:question_text => questionText, :answers => {}, :points => question.points,
                                             :question_comment => question.question_comment}
@@ -483,15 +483,20 @@ class HtmlFormRenderer
   def insert_codemirror_object(template)
     partial = %q{
       id_textareas = {};
-      $("textarea").each(function(){ id_textareas[this.id] = '' });
+      $("textarea").each(function() { 
+        id_textareas[this.id] = {};
+        id_textareas[this.id]['id'] = this.id;
+        id_textareas[this.id]['height'] = parseInt(this.attributes['4'].value);
+        id_textareas[this.id]['width'] = parseInt(this.attributes['5'].value);
+      });
       
       $.each(id_textareas, function(k,v) {
-        id_textareas[k] = CodeMirror.fromTextArea(document.getElementById(k), {
+        id_textareas[k]['editor'] = CodeMirror.fromTextArea(document.getElementById(k), {
           lineNumbers: true,
           viewportMargin: Infinity
         });
-        id_textareas[k].setSize(800, 150);
-        id_textareas[k].setValue('');
+        id_textareas[k]['editor'].setSize(id_textareas[k]['height'], id_textareas[k]['width']);
+        id_textareas[k]['editor'].setValue('');
       });
     }
     if (template)
@@ -1089,7 +1094,7 @@ class HtmlFormRenderer
             idAnswer = 'qp' + numAnswer.toString() + '-1';
             
             answer = eval("fn = " + data[x.toString()]['answers'][idAnswer]['answer_text']);
-            userAnswer = eval("userFunction = " + id_textareas[idAnswer].getValue());
+            userAnswer = eval("userFunction = " + id_textareas[idAnswer]['editor'].getValue());
             
             try {
               result = answer.call();
@@ -1127,7 +1132,7 @@ class HtmlFormRenderer
           }
           
           $.each(id_textareas, function(k,v) {
-            tmp[k] = id_textareas[k].getValue();
+            tmp[k] = id_textareas[k]['editor'].getValue();
           });
           
           localStorage.setItem(timestamp, JSON.stringify(tmp));
@@ -1144,7 +1149,7 @@ class HtmlFormRenderer
             if ((x.match(/qfi/)) || (x.match(/qdd/)))
               $("#" + x.toString()).val(tmp[x.toString()]);
             else if (x.match(/qp/))
-              id_textareas[x].setValue(tmp[x]);
+              id_textareas[x]['editor'].setValue(tmp[x]);
             else
               $("#" + x.toString()).attr('checked', 'checked');
           }
