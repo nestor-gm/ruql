@@ -532,7 +532,7 @@ class HtmlFormRenderer
                       }
                     }
                   }
-                });
+                }, null, { 'sizeStyle': 'auto' });
               }
             }
             catch(err) {}
