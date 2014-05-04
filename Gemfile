@@ -9,5 +9,5 @@ gem 'locale'
 gem 'htmlentities'
 
 group :development, :test do
-  #gem 'ruby-debug19' # No support for Ruby 2.x.x
+  gem 'ruby-debug19' if RUBY_VERSION <= '1.9.3'
 end
