@@ -514,24 +514,30 @@ class HtmlFormRenderer
   
   def insert_contextMenu(template)
     function = %Q{
-      $(document).on("contextmenu", "input.fillin", function(e){
-        id_answer = $(this).attr('id');
-        numQuestion = parseInt(id_answer.split('-')[0].slice(3)) - 1;
-        
-        if (data["question-" + numQuestion.toString()]['answers'][id_answer]['type'] != "JS") {
-          answer = data["question-" + numQuestion.toString()]['answers'][id_answer]['answer_text'];
-          $.contextMenu({
-            selector: "#" + id_answer,
-            items: {
-              "fold1": {
-                "name": "#{translate(:show, 'buttons')}", 
-                "items": {
-                  "fold1-key1": {"name": answer}
-                }
+      $(document).mousedown(function(e){ 
+        if( e.button == 2 ) {
+          id_answer = e.toElement.id;
+          if (id_answer.match(/^qfi/)) {
+            numQuestion = parseInt(id_answer.split('-')[0].slice(3)) - 1;
+            try {
+              if (data["question-" + numQuestion.toString()]['answers'][id_answer]['type'] != "JS") {
+                answer = data["question-" + numQuestion.toString()]['answers'][id_answer]['answer_text'];
+                $.contextMenu({
+                  selector: "#" + id_answer,
+                  items: {
+                    "fold1": {
+                      "name": "#{translate(:show, 'buttons')}", 
+                      "items": {
+                        "fold1-key1": {"name": answer}
+                      }
+                    }
+                  }
+                });
               }
             }
-          });
-        }
+            catch(err) {}
+          }
+        };
       });
     }
     if (template)
