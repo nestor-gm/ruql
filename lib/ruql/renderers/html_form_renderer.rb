@@ -1093,8 +1093,8 @@ class HtmlFormRenderer
             numAnswer = parseInt(x.split('-')[1]) + 1;
             idAnswer = 'qp' + numAnswer.toString() + '-1';
             
-            answer = eval("fn = " + data[x.toString()]['answers'][idAnswer]['answer_text']);
-            userAnswer = eval("userFunction = " + id_textareas[idAnswer]['editor'].getValue());
+            answer = eval("fn = " + data[x.toString()]['answers'][idAnswer]['answer_text']);    // Teacher's code
+            eval(id_textareas[idAnswer]['editor'].getValue());                                  // Student's code
             
             try {
               result = answer.call();
