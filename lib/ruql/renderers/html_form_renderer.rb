@@ -392,7 +392,7 @@ class HtmlFormRenderer
   def insert_resources_head(h)
     insert_defaultCSS
     insert_html(h) if @html
-    @h.link(:rel => 'stylesheet', :type =>'text/css') do |c|
+    @h.style(:type =>'text/css') do |c|
       c << insert_contextMenu_css
     end
     insert_css(false) if @css
@@ -793,6 +793,27 @@ class HtmlFormRenderer
       input.incorrect {color:rgb(255,0,0); font-weight: bold;}
       div.btn-footer {text-align: center;}
       div.explanation {font-style: italic;}
+      div.col1 {
+        float: left;
+        margin-right: 50px;
+      }
+      div.col2 {
+        float: left;
+      }
+      div.col3 {
+        float: left;
+        margin-left: 50px;
+      }
+      div.clear-qddmc {
+        clear: left;
+      }
+      input.input-qddmc {
+        line-height: 1.7;
+        margin-bottom: 3;
+      }
+      button.button-qddmc {
+        margin-bottom: 3px;
+      }
       CSS
     end
   end

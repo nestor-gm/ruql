@@ -1,53 +1,43 @@
 <html>
   <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Example quiz</title>
-    <!-- Latest compiled and minified CSS -->
-    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
-    <!-- -->
-    <style type="text/css" media="all">
+    <style>
       div.quiz, p.comment, div.explanation {display:inline;}
       strong.correct {color:#14B63F;}
       strong.incorrect {color:rgb(255,0,0);}
       strong.mark {color:rgb(255,128,0);}
-      div.score {font-weight: bold; font-size: 20px;}
       input.correct {color:#14B63F; font-weight: bold;}
       input.incorrect {color:rgb(255,0,0); font-weight: bold;}
-      div.custom-header {background-color:#7a3b7a; color:#FFFFFF; font-weight: bold;}
-      body {padding-top: 20px; padding-bottom: 20px; margin-bottom: 20px;}
-      html {position: relative; min-height: 100%;}
-      .navbar {margin-bottom: 20px;}
-      .btn-footer {text-align: center;}
-      #footer {
-        position: absolute;
-        bottom: 0;
-        height: 30px;
-        width: inherit;
-      }
-      div.container {background-color:#EAEAEA;}
+      div.btn-footer {text-align: center;}
       div.explanation {font-style: italic;}
-      .nav>li>a.links {
-        display: inline; 
-        padding: 0; 
-        color: #FFFFFF;
+      div.col1 {
+        float: left;
+        margin-right: 50px;
       }
-      .nav>li>a.links:hover {color: #FFCCFF;}
-      /* Inputs size */
-      input.size-4 { width: 2.8em; }
-
-input.size-5 { width: 3.5em; }
-
-input.size-8 { width: 5.6em; }
-div.size-3 { width: 2.1em; display: inline; }
-
-      /* jQuery ContextMenu */
-          .context-menu-list {
+      div.col2 {
+        float: left;
+      }
+      div.col3 {
+        float: left;
+        margin-left: 50px;
+      }
+      div.clear-qddmc {
+        clear: left;
+      }
+      input.input-qddmc {
+        line-height: 1.7;
+        margin-bottom: 3;
+      }
+      button.button-qddmc {
+        margin-bottom: 3px;
+      }
+    </style>
+    <style type="text/css">
+    .context-menu-list {
       margin:0; 
       padding:0;
       
-      min-width: 150px;
+      min-width: 160px;
       max-width: 250px;
       display: inline-block;
       position: absolute;
@@ -153,142 +143,138 @@ div.size-3 { width: 2.1em; display: inline; }
     .context-menu-accesskey {
         text-decoration: underline;
     }
-
     </style>
-    <!-- Any CSS included by the user -->
-    
-    <!-- Mathjax -->
-    
-        <script type=text/javascript src=http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML></script>
-        <script type=text/javascript>
-          MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+    </script>
+    <script type="text/javascript">
+MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});    </script>
+    <script type="text/javascript" src="http://medialize.github.com/jQuery-contextMenu/src/jquery.ui.position.js">
+    </script>
+    <script type="text/javascript" src="http://medialize.github.com/jQuery-contextMenu/src/jquery.contextMenu.js">
+    </script>
+    <script type="text/javascript">
+
+      $(document).mousedown(function(e){ 
+        if( e.button == 2 ) {
+          id_answer = e.toElement.id;
+          if (id_answer.match(/^qfi/)) {
+            numQuestion = parseInt(id_answer.split('-')[0].slice(3)) - 1;
+            try {
+              if (data["question-" + numQuestion.toString()]['answers'][id_answer]['type'] != "JS") {
+                answer = data["question-" + numQuestion.toString()]['answers'][id_answer]['answer_text'];
+                $.contextMenu({
+                  selector: "#" + id_answer,
+                  items: {
+                    "fold1": {
+                      "name": "Mostrar respuesta", 
+                      "items": {
+                        "fold1-key1": {"name": answer}
+                      }
+                    }
+                  }
+                }, null, { 'sizeStyle': 'auto' });
+              }
+            }
+            catch(err) {}
+          }
+        };
+      });
         </script>
-      
-    <!--         -->
+    <link rel="stylesheet" type="text/css" href="http://cdnjs.cloudflare.com/ajax/libs/codemirror/4.1.0/codemirror.css"/>
+    <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/codemirror/4.1.0/codemirror.min.js">
+    </script>
+    <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/codemirror/4.1.0/package/mode/javascript/javascript.js">
+    </script>
   </head>
   <body>
-    <div class="container">
-      
-        <div class="navbar navbar-default custom-header">
-          <div class="navbar-header">
-            <h3>Example quiz</h3>
-          </div>
-          <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-            <ul class="nav navbar-nav navbar-right">
-              <li>Asignatura: TFG</li><br/>
-              <li>Curso: 4º</li><br/>
-              <li>
-                <a href="http://www.ull.es/view/centros/etsii/Inicio/es" class="links">
-                  Escuela T&eacute;cnica Superior de Ingenier&iacute;a Inform&aacute;tica</a>
-                |
-                <a href="http://www.ull.es/" class="links">Universidad de la Laguna</a>
-              </li>
-            </ul>
-          </div>
-        </div>
-      
-      <!-- Seed: 92962066689980404074357784396217208687 -->
-<form id="form">
-  <ol class="questions">
-    <li id="question-0" class="question programming ">
-      <div class="quiz text">
-[1 point] Escriba una función JavaScript llamada `suma` que recibe dos números 
-    y devuelve la suma<br></br>      </div>
-      <ol class="answers">
-        <textarea id="qp1-1" class="programming" rows="5" cols="80" placeholder="Escribe tu código aquí...">
-        </textarea>
-        <br/>
-        <br/>
-      </ol>
-    </li>
-    <button type="button" id="show-answer-q-0" class="btn btn-success btn-sm">
-Mostrar respuesta    </button>
-    <button type="button" id="q-0" class="btn btn-primary btn-sm">
-Enviar    </button>
-    <br>
-    </br>
-    <li id="question-1" class="question fillin ">
-      <div class="quiz text">
-[1 point] <i>Example of escaped HTML and three hyphens not evaluated:</i><br> &lt;a href=&quot;www.google.es&quot;&gt;&lt;/a&gt; <b>is</b> a --- <input type=text id=qfi2-1 class='fillin size-4'></input> ---<div id=qfi2-1r class=quiz></div></br></br>      </div>
-      <button type="button" id="show-answer-q-1" class="btn btn-success btn-sm">
-Mostrar respuesta      </button>
-      <button type="button" id="q-1" class="btn btn-primary btn-sm">
-Enviar      </button>
-      <br>
-      </br>
-    </li>
-    <li id="question-2" class="question fillin ">
-      <div class="quiz text">
-[2 points] The visionary founder of Apple is <input type=text id=qfi3-1 class='fillin size-8'></input><div id=qfi3-1r class=quiz></div></br></br>      </div>
-      <p class="comment">
-Question too easy<br></br>      </p>
-      <button type="button" id="show-answer-q-2" class="btn btn-success btn-sm">
-Mostrar respuesta      </button>
-      <button type="button" id="q-2" class="btn btn-primary btn-sm">
-Enviar      </button>
-      <br>
-      </br>
-    </li>
-    <li id="question-3" class="question fillin ">
-      <div class="quiz text">
-[1 point] The <input type=text id=qfi4-1 class='fillin size-4'></input> brown fox jumped over the lazy <input type=text id=qfi4-2 class='fillin size-4'></input><div id=qfi4-2r class=quiz></div></br></br>      </div>
-      <button type="button" id="show-answer-q-3" class="btn btn-success btn-sm">
-Mostrar respuesta      </button>
-      <button type="button" id="q-3" class="btn btn-primary btn-sm">
-Enviar      </button>
-      <br>
-      </br>
-    </li>
-    <li id="question-4" class="question dragdrop ">
-      <div class="quiz text">
-[1 point] The <input id=qdd5-1 class='dragdrop size-4' ondrop=drop(event,'qdd5-1') ondragover=allowDrop(event)></input> brown fox jumped over the lazy <input id=qdd5-2 class='dragdrop size-4' ondrop=drop(event,'qdd5-2') ondragover=allowDrop(event)></input><br/><br/><div> Respuestas: <button class='dragdrop size-3 btn btn-default btn-sm' id=qdda1-1 draggable=true ondragstart=drag(event)>fox</button>&nbsp&nbsp<button class='dragdrop size-3 btn btn-default btn-sm' id=qdda2-2 draggable=true ondragstart=drag(event)>dog</button>&nbsp&nbsp<div/></br></br>      </div>
-      <button type="button" id="q-4" class="btn btn-primary btn-sm">
-Enviar      </button>
-      <br>
-      </br>
-    </li>
-    <li id="question-5" class="question fillin ">
-      <div class="quiz text">
-[1 point] The three stooges are <input type=text id=qfi6-1 class='fillin size-5'></input>, <input type=text id=qfi6-2 class='fillin size-4'></input>, and <input type=text id=qfi6-3 class='fillin size-5'></input>.<div id=qfi6-3r class=quiz></div></br></br>      </div>
-      <button type="button" id="show-answer-q-5" class="btn btn-success btn-sm">
-Mostrar respuesta      </button>
-      <button type="button" id="q-5" class="btn btn-primary btn-sm">
-Enviar      </button>
-      <br>
-      </br>
-    </li>
-    <li id="question-6" class="question fillin ">
-      <div class="quiz text">
-[1 point] The three stooges are <input type=text id=qfi7-1 class='fillin size-5'></input>, <input type=text id=qfi7-2 class='fillin size-4'></input>, and <input type=text id=qfi7-3 class='fillin size-5'></input>.<div id=qfi7-3r class=quiz></div></br></br>      </div>
-      <button type="button" id="show-answer-q-6" class="btn btn-success btn-sm">
-Mostrar respuesta      </button>
-      <button type="button" id="q-6" class="btn btn-primary btn-sm">
-Enviar      </button>
-      <br>
-      </br>
-    </li>
-    <li id="question-7" class="question fillin ">
-      <div class="quiz text">
-[1 point] The capital of Tenerife is <input type=text id=qfi8-1 class='fillin size-5'></input> Cruz de <input type=text id=qfi8-2 class='fillin size-8'></input><div id=qfi8-2r class=quiz></div></br></br>      </div>
-      <button type="button" id="show-answer-q-7" class="btn btn-success btn-sm">
-Mostrar respuesta      </button>
-      <button type="button" id="q-7" class="btn btn-primary btn-sm">
-Enviar      </button>
-      <br>
-      </br>
-    </li>
-    <li id="question-8" class="question fillin ">
-      <div class="quiz text">
+    <!-- Seed: 334930985985913914800154122749774272316 -->
+    <form id="form">
+      <ol class="questions">
+        <li id="question-0" class="question fillin ">
+          <div class="quiz text">
+[1 point] <i>Example of escaped HTML and three hyphens not evaluated:</i><br> &lt;a href=&quot;www.google.es&quot;&gt;&lt;/a&gt; <b>is</b> a --- <input type="text" id="qfi1-1" class="fillin size-4"></input> ---<div id="qfi1-1r" class="quiz"></div></br></br>          </div>
+          <button type="button" id="q-0" class="btn btn-primary btn-sm">
+Enviar          </button>
+          <br>
+          </br>
+        </li>
+        <li id="question-1" class="question fillin ">
+          <div class="quiz text">
+[2 points] The visionary founder of Apple is <input type="text" id="qfi2-1" class="fillin size-8"></input><div id="qfi2-1r" class="quiz"></div></br></br>          </div>
+          <p class="comment">
+Question too easy<br></br>          </p>
+          <button type="button" id="q-1" class="btn btn-primary btn-sm">
+Enviar          </button>
+          <br>
+          </br>
+        </li>
+        <li id="question-2" class="question fillin ">
+          <div class="quiz text">
+[1 point] The <input type="text" id="qfi3-1" class="fillin size-4"></input> brown fox jumped over the lazy <input type="text" id="qfi3-2" class="fillin size-4"></input><div id="qfi3-2r" class="quiz"></div></br></br>          </div>
+          <button type="button" id="q-2" class="btn btn-primary btn-sm">
+Enviar          </button>
+          <br>
+          </br>
+        </li>
+        <li id="question-3" class="question dragdrop_fi ">
+          <div class="quiz text">
+[1 point] The <input id="qddfi4-1" class="dragdropfi size-4" ondrop="drop(event,'qddfi4-1')" ondragover="allowDrop(event)"></input> brown fox jumped over the lazy <input id="qddfi4-2" class="dragdropfi size-4" ondrop="drop(event,'qddfi4-2')" ondragover="allowDrop(event)"></input><br/><br/><div> Respuestas: <button class="dragdropfi size-3 btn btn-default btn-sm" id="qddfia1-1" draggable="true" ondragstart="drag(event)">fox</button>&nbsp&nbsp<button class="dragdropfi size-3 btn btn-default btn-sm" id="qddfia2-2" draggable="true" ondragstart="drag(event)">dog</button>&nbsp&nbsp<div/></br></br>          </div>
+          <button type="button" id="q-3" class="btn btn-primary btn-sm">
+Enviar          </button>
+          <br>
+          </br>
+        </li>
+        <li id="question-4" class="question fillin ">
+          <div class="quiz text">
+[1 point] The three stooges are <input type="text" id="qfi5-1" class="fillin size-5"></input>, <input type="text" id="qfi5-2" class="fillin size-4"></input>, and <input type="text" id="qfi5-3" class="fillin size-5"></input>.<div id="qfi5-3r" class="quiz"></div></br></br>          </div>
+          <button type="button" id="q-4" class="btn btn-primary btn-sm">
+Enviar          </button>
+          <br>
+          </br>
+        </li>
+        <li id="question-5" class="question fillin ">
+          <div class="quiz text">
+[1 point] The three stooges are <input type="text" id="qfi6-1" class="fillin size-5"></input>, <input type="text" id="qfi6-2" class="fillin size-4"></input>, and <input type="text" id="qfi6-3" class="fillin size-5"></input>.<div id="qfi6-3r" class="quiz"></div></br></br>          </div>
+          <button type="button" id="q-5" class="btn btn-primary btn-sm">
+Enviar          </button>
+          <br>
+          </br>
+        </li>
+        <li id="question-6" class="question fillin ">
+          <div class="quiz text">
+[1 point] The capital of Tenerife is <input type="text" id="qfi7-1" class="fillin size-5"></input> Cruz de <input type="text" id="qfi7-2" class="fillin size-8"></input><div id="qfi7-2r" class="quiz"></div></br></br>          </div>
+          <button type="button" id="q-6" class="btn btn-primary btn-sm">
+Enviar          </button>
+          <br>
+          </br>
+        </li>
+        <li id="question-7" class="question fillin ">
+          <div class="quiz text">
 [1 point] 
-      Diga dos números x = <input type=text id=qfi9-1 class='fillin size-4'></input> e  y = <input type=text id=qfi9-2 class='fillin size-4'></input> que multiplicados den 100
-    <div id=qfi9-2r class=quiz></div></br></br>      </div>
-      <button type="button" id="q-8" class="btn btn-primary btn-sm">
-Enviar      </button>
-      <br>
-      </br>
-    </li>
-    <li id="question-9" class="question fillin ">
-      <div class="quiz text">
+      Diga dos números x = <input type="text" id="qfi8-1" class="fillin size-4"></input> e  y = <input type="text" id="qfi8-2" class="fillin size-4"></input> que multiplicados den 100
+    <div id="qfi8-2r" class="quiz"></div></br></br>          </div>
+          <button type="button" id="q-7" class="btn btn-primary btn-sm">
+Enviar          </button>
+          <br>
+          </br>
+        </li>
+        <li id="question-8" class="question programming ">
+          <div class="quiz text">
+[1 point] Escriba una función JavaScript llamada `suma` que recibe dos números 
+    y devuelve la suma<br></br>          </div>
+          <ol class="answers">
+            <textarea id="qp9-1" class="programming" rows="5" cols="80" height="800" width="150" placeholder="Escribe tu código aquí...">
+            </textarea>
+            <br/>
+            <br/>
+          </ol>
+        </li>
+        <button type="button" id="q-8" class="btn btn-primary btn-sm">
+Enviar        </button>
+        <br>
+        </br>
+        <li id="question-9" class="question fillin ">
+          <div class="quiz text">
 [1 point] 
       Calculate the determinant of this matrix:
       $$\mathbf{A} = \begin{vmatrix} 
@@ -296,191 +282,208 @@ Enviar      </button>
       2 & 4 
       \end{vmatrix}$$
       <br/>
-      <input type=text id=qfi10-1 class='fillin size-4'></input>
-    <div id=qfi10-1r class=quiz></div></br></br>      </div>
-      <button type="button" id="show-answer-q-9" class="btn btn-success btn-sm">
-Mostrar respuesta      </button>
-      <button type="button" id="q-9" class="btn btn-primary btn-sm">
-Enviar      </button>
-      <br>
-      </br>
-    </li>
-    <li id="question-10" class="question fillin ">
-      <div class="quiz text">
+      <input type="text" id="qfi10-1" class="fillin size-4"></input>
+    <div id="qfi10-1r" class="quiz"></div></br></br>          </div>
+          <button type="button" id="q-9" class="btn btn-primary btn-sm">
+Enviar          </button>
+          <br>
+          </br>
+        </li>
+        <li id="question-10" class="question fillin ">
+          <div class="quiz text">
 [1 point] 
       Solve: 
       $$\binom{n}{k} = \frac{n!}{k!(n-k)!}$$
       when n = 5 and k = 2:
-      <input type=text id=qfi11-1 class='fillin size-4'></input>
-    <div id=qfi11-1r class=quiz></div></br></br>      </div>
-      <button type="button" id="show-answer-q-10" class="btn btn-success btn-sm">
-Mostrar respuesta      </button>
-      <button type="button" id="q-10" class="btn btn-primary btn-sm">
-Enviar      </button>
-      <br>
-      </br>
-    </li>
-    <li id="question-11" class="question fillin ">
-      <div class="quiz text">
+      <input type="text" id="qfi11-1" class="fillin size-4"></input>
+    <div id="qfi11-1r" class="quiz"></div></br></br>          </div>
+          <button type="button" id="q-10" class="btn btn-primary btn-sm">
+Enviar          </button>
+          <br>
+          </br>
+        </li>
+        <li id="question-11" class="question fillin ">
+          <div class="quiz text">
 [1 point] 
       When x = 2, the solution of $\sqrt{3x+3}+(1+x)^2$ is:
-      <input type=text id=qfi12-1 class='fillin size-4'></input>
-    <div id=qfi12-1r class=quiz></div></br></br>      </div>
-      <button type="button" id="show-answer-q-11" class="btn btn-success btn-sm">
-Mostrar respuesta      </button>
-      <button type="button" id="q-11" class="btn btn-primary btn-sm">
-Enviar      </button>
-      <br>
-      </br>
-    </li>
-    <li id="question-12" class="question multiplechoice ">
-      <div class="quiz text">
-[1 point] What is the largest US state?<br></br>      </div>
-      <ol class="answers">
-        <input type="radio" id="qmc13-1" name="qmc13" class="select">
-Texas<br class=qmc13-1br>        </input>
-        <div id="qmc13-1r" class="quiz">
-        </div>
-        <input type="radio" id="qmc13-2" name="qmc13" class="select">
-Hawaii<br class=qmc13-2br>        </input>
-        <div id="qmc13-2r" class="quiz">
-        </div>
-        <input type="radio" id="qmc13-3" name="qmc13" class="select">
-Alaska<br class=qmc13-3br>        </input>
-        <div id="qmc13-3r" class="quiz">
-        </div>
-        <br/>
-      </ol>
-    </li>
-    <button type="button" id="show-answer-q-12" class="btn btn-success btn-sm">
-Mostrar respuesta    </button>
-    <button type="button" id="q-12" class="btn btn-primary btn-sm">
-Enviar    </button>
-    <br>
-    </br>
-    <li id="question-13" class="question selectmultiple multiple">
-      <div class="quiz text">
-[1 point] Select ALL that apply: Which are American political parties?<br></br>      </div>
-      <ol class="answers">
-        <input type="checkbox" id="qsm14-1" class="check">
-Democrats<br class=qsm14-1br>        </input>
-        <div id="qsm14-1r" class="quiz">
-        </div>
-        <input type="checkbox" id="qsm14-2" class="check">
-Republicans<br class=qsm14-2br>        </input>
-        <div id="qsm14-2r" class="quiz">
-        </div>
-        <input type="checkbox" id="qsm14-3" class="check">
-Greens<br class=qsm14-3br>        </input>
-        <div id="qsm14-3r" class="quiz">
-        </div>
-        <input type="checkbox" id="qsm14-4" class="check">
-Tories<br class=qsm14-4br>        </input>
-        <div id="qsm14-4r" class="quiz">
-        </div>
-        <input type="checkbox" id="qsm14-5" class="check">
-Social Democrats<br class=qsm14-5br>        </input>
-        <div id="qsm14-5r" class="quiz">
-        </div>
-        <br/>
-      </ol>
-    </li>
-    <button type="button" id="show-answer-q-13" class="btn btn-success btn-sm">
-Mostrar respuesta    </button>
-    <button type="button" id="q-13" class="btn btn-primary btn-sm">
-Enviar    </button>
-    <br>
-    </br>
-    <li id="question-14" class="question truefalse ">
-      <div class="quiz text">
-[1 point] True or False: The earth is flat.<br></br>      </div>
-      <ol class="answers">
-        <input type="radio" id="qmc15-1" name="qmc15" class="select">
-True<br class=qmc15-1br>        </input>
-        <div id="qmc15-1r" class="quiz">
-        </div>
-        <input type="radio" id="qmc15-2" name="qmc15" class="select">
-False<br class=qmc15-2br>        </input>
-        <div id="qmc15-2r" class="quiz">
-        </div>
-        <br/>
-      </ol>
-    </li>
-    <button type="button" id="show-answer-q-14" class="btn btn-success btn-sm">
-Mostrar respuesta    </button>
-    <button type="button" id="q-14" class="btn btn-primary btn-sm">
-Enviar    </button>
-    <br>
-    </br>
-    <li id="question-15" class="question multiplechoice ">
-      <div class="quiz text">
+      <input type="text" id="qfi12-1" class="fillin size-4"></input>
+    <div id="qfi12-1r" class="quiz"></div></br></br>          </div>
+          <button type="button" id="q-11" class="btn btn-primary btn-sm">
+Enviar          </button>
+          <br>
+          </br>
+        </li>
+        <li id="question-12" class="question multiplechoice ">
+          <div class="quiz text">
+[1 point] What is the largest US state?<br></br>          </div>
+          <ol class="answers">
+            <input type="radio" id="qmc13-1" name="qmc13" class="select">
+Alaska<br class=qmc13-1br>            </input>
+            <div id="qmc13-1r" class="quiz">
+            </div>
+            <input type="radio" id="qmc13-2" name="qmc13" class="select">
+Hawaii<br class=qmc13-2br>            </input>
+            <div id="qmc13-2r" class="quiz">
+            </div>
+            <input type="radio" id="qmc13-3" name="qmc13" class="select">
+Texas<br class=qmc13-3br>            </input>
+            <div id="qmc13-3r" class="quiz">
+            </div>
+            <br/>
+          </ol>
+        </li>
+        <button type="button" id="show-answer-q-12" class="btn btn-success btn-sm">
+Mostrar respuesta        </button>
+        <button type="button" id="q-12" class="btn btn-primary btn-sm">
+Enviar        </button>
+        <br>
+        </br>
+        <li id="question-13" class="question dragdrop_mc ">
+          <div class="quiz text">
+[1 point] Relate these concepts<br></br>          </div>
+          <ol class="answers">
+            <div>
+              <div id="col1" class="col1">
+                <button class="btn btn-default btn-sm disabled button-qddmc" draggable="false">
+Facebook                </button>
+                <br/>
+                <button class="btn btn-default btn-sm disabled button-qddmc" draggable="false">
+Twitter                </button>
+                <br/>
+              </div>
+              <div id="col2" class="col2">
+                <input id="qddmc14-1" type="text" class="dragdropmc input-qddmc" ondrop="drop(event, 'qddmc14-1')" ondragover="allowDrop(event)"/>
+                <br/>
+                <input id="qddmc14-2" type="text" class="dragdropmc input-qddmc" ondrop="drop(event, 'qddmc14-2')" ondragover="allowDrop(event)"/>
+                <br/>
+              </div>
+              <div id="col3" class="col3">
+                <button id="qddmca14-1" class="btn btn-default btn-sm button-qddmc" draggable="true" ondragstart="drag(event)">
+Jack Dorsey                </button>
+                <br/>
+                <button id="qddmca14-2" class="btn btn-default btn-sm button-qddmc" draggable="true" ondragstart="drag(event)">
+Mark Zuckerberg                </button>
+                <br/>
+              </div>
+            </div>
+            <div class="clear-qddmc"/>
+            <br/>
+          </ol>
+        </li>
+        <button type="button" id="q-13" class="btn btn-primary btn-sm">
+Enviar        </button>
+        <br>
+        </br>
+        <li id="question-14" class="question selectmultiple multiple">
+          <div class="quiz text">
+[1 point] Select ALL that apply: Which are American political parties?<br></br>          </div>
+          <ol class="answers">
+            <input type="checkbox" id="qsm15-1" class="check">
+Democrats<br class=qsm15-1br>            </input>
+            <div id="qsm15-1r" class="quiz">
+            </div>
+            <input type="checkbox" id="qsm15-2" class="check">
+Republicans<br class=qsm15-2br>            </input>
+            <div id="qsm15-2r" class="quiz">
+            </div>
+            <input type="checkbox" id="qsm15-3" class="check">
+Greens<br class=qsm15-3br>            </input>
+            <div id="qsm15-3r" class="quiz">
+            </div>
+            <input type="checkbox" id="qsm15-4" class="check">
+Tories<br class=qsm15-4br>            </input>
+            <div id="qsm15-4r" class="quiz">
+            </div>
+            <input type="checkbox" id="qsm15-5" class="check">
+Social Democrats<br class=qsm15-5br>            </input>
+            <div id="qsm15-5r" class="quiz">
+            </div>
+            <br/>
+          </ol>
+        </li>
+        <button type="button" id="show-answer-q-14" class="btn btn-success btn-sm">
+Mostrar respuesta        </button>
+        <button type="button" id="q-14" class="btn btn-primary btn-sm">
+Enviar        </button>
+        <br>
+        </br>
+        <li id="question-15" class="question truefalse ">
+          <div class="quiz text">
+[1 point] True or False: The earth is flat.<br></br>          </div>
+          <ol class="answers">
+            <br/>
+          </ol>
+        </li>
+        <button type="button" id="q-15" class="btn btn-primary btn-sm">
+Enviar        </button>
+        <br>
+        </br>
+        <li id="question-16" class="question multiplechoice ">
+          <div class="quiz text">
 [1 point] What does the following code do:
     <pre>
     puts "Hello world!"
     </pre>
-          </div>
-      <ol class="answers">
-        <input type="radio" id="qmc16-1" name="qmc16" class="select">
-Throws an exception<br class=qmc16-1br>        </input>
-        <div id="qmc16-1r" class="quiz">
-        </div>
-        <input type="radio" id="qmc16-2" name="qmc16" class="select">
-Prints a friendly message<br class=qmc16-2br>        </input>
-        <div id="qmc16-2r" class="quiz">
-        </div>
-        <br/>
+              </div>
+          <ol class="answers">
+            <input type="radio" id="qmc17-1" name="qmc17" class="select">
+Throws an exception<br class=qmc17-1br>            </input>
+            <div id="qmc17-1r" class="quiz">
+            </div>
+            <input type="radio" id="qmc17-2" name="qmc17" class="select">
+Prints a friendly message<br class=qmc17-2br>            </input>
+            <div id="qmc17-2r" class="quiz">
+            </div>
+            <br/>
+          </ol>
+        </li>
+        <button type="button" id="show-answer-q-16" class="btn btn-success btn-sm">
+Mostrar respuesta        </button>
+        <button type="button" id="q-16" class="btn btn-primary btn-sm">
+Enviar        </button>
+        <br>
+        </br>
       </ol>
-    </li>
-    <button type="button" id="show-answer-q-15" class="btn btn-success btn-sm">
-Mostrar respuesta    </button>
-    <button type="button" id="q-15" class="btn btn-primary btn-sm">
-Enviar    </button>
-    <br>
-    </br>
-  </ol>
-  <div id="score" class="score">
-  </div>
-  <div class="btn-footer">
-    <button type="button" id="submit" class="btn btn-primary">
-Enviar    </button>
-    <button type="button" id="reset" class="btn btn-info">
-Reset    </button>
-    <button type="button" id="deleteAnswers" class="btn btn-warning">
-Borrar respuestas    </button>
-    <button type="button" id="deleteStorage" class="btn btn-danger">
-Borrar almacenamiento    </button>
-  </div>
-</form>
+      <div id="score" class="score">
+      </div>
+      <div class="btn-footer">
+        <button type="button" id="submit" class="btn btn-primary">
+Enviar        </button>
+        <button type="button" id="reset" class="btn btn-info">
+Reset        </button>
+        <button type="button" id="deleteAnswers" class="btn btn-warning">
+Borrar respuestas        </button>
+        <button type="button" id="deleteStorage" class="btn btn-danger">
+Borrar almacenamiento        </button>
+      </div>
+    </form>
+    <script type="text/javascript" src="http://code.jquery.com/jquery-2.1.0.min.js">
+    </script>
+<!--[if lt IE 8]>    <script type="text/javascript" src="http://code.jquery.com/jquery-1.11.0.min.js">
+    </script>
+<![endif]-->    <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/xregexp/2.0.0/xregexp-min.js">
+    </script>
+    <script type="text/javascript">
 
+      id_textareas = {};
+      $("textarea").each(function() { 
+        id_textareas[this.id] = {};
+        id_textareas[this.id]['id'] = this.id;
+        id_textareas[this.id]['height'] = parseInt(this.attributes['4'].value);
+        id_textareas[this.id]['width'] = parseInt(this.attributes['5'].value);
+      });
       
-        <div id="footer">
-          <div class="row text-muted">
-            <div class="col-md-6">
-              Quiz generated using the RuQL Gem. For more information, visit <a href="https://github.com/jjlabrador/ruql">GitHub
-              <span class="glyphicon glyphicon-link"></span></a>
-            </div>
-            <div class="col-md-3"></div>
-            <div class="col-md-3">
-              Universidad de La Laguna 2014
-            </div>
-          </div>
-        </div>
-      
-    </div>
-    <!-- JavaScripts -->
-    <!-- jQuery -->
-    
-        <script type=text/javascript src=http://code.jquery.com/jquery-2.1.0.min.js></script>
-        <script type='text/javascript' src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
-        <!--[if lt IE 8]>
-          <script type=text/javascript src=http://code.jquery.com/jquery-1.11.0.min.js></script>
-        <![endif]-->
-      
-    <!-- Internationalization -->
-    <script>      i18n = {"es":{"quiz":{"title":"Cuestionario"},"questions":{"correct":"Correcto","incorrect":"Incorrecto","points":"puntos","score":"Puntuaci&oacute;n total","placeholder":"Escribe tu código aquí"},"answers":"Respuestas","buttons":{"submit":"Enviar","reset":"Reset","delete":"Borrar respuestas","deleteAll":"Borrar almacenamiento","show":"Mostrar respuesta","hide":"Ocultar respuesta"},"alerts":{"answers":"Respuestas borradas","storage":"Almacenamiento borrado","noStorage":"El navegador no soporta almacenamiento de respuestas"},"exceptions":{"question":"Pregunta","text":"No se ha especificado el texto de la pregunta","answer":"No se ha especificado ninguna respuesta"}}}
-</script>
-    <!-- Drag and Drop -->
-    <script>      function allowDrop(ev) {
+      $.each(id_textareas, function(k,v) {
+        id_textareas[k]['editor'] = CodeMirror.fromTextArea(document.getElementById(k), {
+          lineNumbers: true,
+          viewportMargin: Infinity
+        });
+        id_textareas[k]['editor'].setSize(id_textareas[k]['height'], id_textareas[k]['width']);
+        id_textareas[k]['editor'].setValue('');
+      });
+        </script>
+    <script type="text/javascript">
+      function allowDrop(ev) {
         ev.preventDefault();
       }
       
@@ -495,15 +498,16 @@ Borrar almacenamiento    </button>
         var val=document.getElementById(id);
         val.value=document.getElementById(data).innerText;
       }
-</script>
-    <!-- XRegexp -->
-    <script type=text/javascript src=http://cdnjs.cloudflare.com/ajax/libs/xregexp/2.0.0/xregexp-min.js></script>
-    <!-- Form validation -->
-    <script>      data = {"question-0":{"question_text":"Escriba una función JavaScript llamada `suma` que recibe dos números \n    y devuelve la suma","answers":{"qp1-1":{"answer_text":"function suma(x, y) { return x + y; }","correct":true,"explanation":null}},"points":1,"question_comment":"","language":"javascript","lines":5,"width":80},"question-1":{"question_text":"<i>Example of escaped HTML and three hyphens not evaluated:</i><br> &lt;a href=&quot;www.google.es&quot;&gt;&lt;/a&gt; <b>is</b> a \\-\\-\\- ---- \\-\\-\\-","answers":{"qfi2-1":{"answer_text":"/^link$/","correct":true,"explanation":null,"type":"Regexp"}},"points":1,"order":true,"question_comment":""},"question-2":{"question_text":"The visionary founder of Apple is --------","answers":{"qfi3-1":{"answer_text":"/^ste(ve|phen)\\s+jobs #comment $/ixm","correct":true,"explanation":null,"type":"Regexp"},"qfi3-2":{"answer_text":"/^steve\\s+wozniak/i","correct":false,"explanation":"Almost, but not quite.","type":"Regexp"}},"points":2,"order":true,"question_comment":"Question too easy"},"question-3":{"question_text":"The ---- brown fox jumped over the lazy ----","answers":{"qfi4-1":{"answer_text":"/fox/","correct":true,"explanation":"This sentence contains all of the letters of the English Alphabet","type":"Regexp"},"qfi4-2":{"answer_text":"/dog/","correct":true,"explanation":"This sentence contains all of the letters of the English Alphabet","type":"Regexp"}},"points":1,"order":true,"question_comment":""},"question-4":{"question_text":"The ---- brown fox jumped over the lazy ----","answers":{"qdd5-1":{"answer_text":"fox","correct":true,"explanation":"This sentence contains all of the letters of the English Alphabet","type":"String"},"qdd5-2":{"answer_text":"dog","correct":true,"explanation":"This sentence contains all of the letters of the English Alphabet","type":"String"}},"points":1,"order":true,"question_comment":""},"question-5":{"question_text":"The three stooges are -----, ----, and -----.","answers":{"qfi6-1":{"answer_text":"larry","correct":true,"explanation":null,"type":"String"},"qfi6-2":{"answer_text":"moe","correct":true,"explanation":null,"type":"String"},"qfi6-3":{"answer_text":"curly","correct":true,"explanation":null,"type":"String"}},"points":1,"order":true,"question_comment":""},"question-6":{"question_text":"The three stooges are -----, ----, and -----.","answers":{"qfi7-1":{"answer_text":"larry","correct":true,"explanation":null,"type":"String"},"qfi7-2":{"answer_text":"moe","correct":true,"explanation":null,"type":"String"},"qfi7-3":{"answer_text":"curly","correct":true,"explanation":null,"type":"String"}},"points":1,"order":false,"question_comment":""},"question-7":{"question_text":"The capital of Tenerife is ----- Cruz de --------","answers":{"qfi8-1":{"answer_text":"/Santa/i","correct":true,"explanation":null,"type":"Regexp"},"qfi8-2":{"answer_text":"/Tenerife/i","correct":true,"explanation":null,"type":"Regexp"}},"points":1,"order":true,"question_comment":""},"question-8":{"question_text":"\n      Diga dos números x = ---- e  y = ---- que multiplicados den 100\n    ","answers":{"qfi9-1":{"answer_text":"result = function(x,y) { return (x * y === 100); }","correct":true,"explanation":null,"type":"JS"}},"points":1,"order":true,"question_comment":""},"question-9":{"question_text":"\n      Calculate the determinant of this matrix:\n      $$\\mathbf{A} = \\begin{vmatrix} \n      1 & 3 \\\\ \n      2 & 4 \n      \\end{vmatrix}$$\n      <br/>\n      ----\n    ","answers":{"qfi10-1":{"answer_text":-1,"correct":true,"explanation":null,"type":"Fixnum"}},"points":1,"order":true,"question_comment":""},"question-10":{"question_text":"\n      Solve: \n      $$\\binom{n}{k} = \\frac{n!}{k!(n-k)!}$$\n      when n = 5 and k = 2:\n      ----\n    ","answers":{"qfi11-1":{"answer_text":10,"correct":true,"explanation":null,"type":"Fixnum"},"qfi11-2":{"answer_text":9,"correct":false,"explanation":"Not exactly","type":"Fixnum"}},"points":1,"order":true,"question_comment":""},"question-11":{"question_text":"\n      When x = 2, the solution of $\\sqrt{3x+3}+(1+x)^2$ is:\n      ----\n    ","answers":{"qfi12-1":{"answer_text":12,"correct":true,"explanation":null,"type":"Fixnum"},"qfi12-2":{"answer_text":11,"correct":false,"explanation":"Try again!","type":"Fixnum"}},"points":1,"order":true,"question_comment":""},"question-12":{"question_text":"What is the largest US state?","answers":{"qmc13-1":{"answer_text":"Texas","correct":false,"explanation":"That's pretty big, but think colder."},"qmc13-2":{"answer_text":"Hawaii","correct":false,"explanation":"Not big enough."},"qmc13-3":{"answer_text":"Alaska","correct":true,"explanation":null}},"points":1,"question_comment":""},"question-13":{"question_text":"Which are American political parties?","answers":{"qsm14-1":{"answer_text":"Democrats","correct":true,"explanation":null},"qsm14-2":{"answer_text":"Republicans","correct":true,"explanation":null},"qsm14-3":{"answer_text":"Greens","correct":true,"explanation":"Yes, they're a party!"},"qsm14-4":{"answer_text":"Tories","correct":false,"explanation":"They're British"},"qsm14-5":{"answer_text":"Social Democrats","correct":false,"explanation":""}},"points":1,"question_comment":""},"question-14":{"question_text":"True or False: The earth is flat.","answers":{"qmc15-1":{"answer_text":"True","correct":false,"explanation":"No, just looks that way"},"qmc15-2":{"answer_text":"False","correct":true,"explanation":null}},"points":1,"question_comment":""},"question-15":{"question_text":"What does the following code do:\n    <pre>\n    puts \"Hello world!\"\n    </pre>\n    ","answers":{"qmc16-1":{"answer_text":"Throws an exception","correct":false,"explanation":"Don't be an idiot."},"qmc16-2":{"answer_text":"Prints a friendly message","correct":true,"explanation":null}},"points":1,"question_comment":""}};
-      timestamp = 1398790961
+    </script>
+    <script type="text/javascript">
+      i18n = {"es":{"quiz":{"title":"Cuestionario"},"questions":{"correct":"Correcto","incorrect":"Incorrecto","points":"puntos","score":"Puntuaci&oacute;n total","placeholder":"Escribe tu código aquí"},"answers":"Respuestas","buttons":{"submit":"Enviar","reset":"Reset","delete":"Borrar respuestas","deleteAll":"Borrar almacenamiento","show":"Mostrar respuesta","hide":"Ocultar respuesta"},"alerts":{"answers":"Respuestas borradas","storage":"Almacenamiento borrado","noStorage":"El navegador no soporta almacenamiento de respuestas"},"exceptions":{"question":"Pregunta","text":"No se ha especificado el texto de la pregunta","answer":"No se ha especificado ninguna respuesta"}}}
+    </script>
+    <script type="text/javascript">
+      data = {"question-0":{"question_text":"<i>Example of escaped HTML and three hyphens not evaluated:</i><br> &lt;a href=&quot;www.google.es&quot;&gt;&lt;/a&gt; <b>is</b> a \\-\\-\\- ---- \\-\\-\\-","answers":{"qfi1-1":{"answer_text":"/^link$/","correct":true,"explanation":null,"type":"Regexp"}},"points":1,"order":true,"question_comment":""},"question-1":{"question_text":"The visionary founder of Apple is --------","answers":{"qfi2-1":{"answer_text":"/^ste(ve|phen)\\s+jobs #comment $/ixm","correct":true,"explanation":null,"type":"Regexp"},"qfi2-2":{"answer_text":"/^steve\\s+wozniak/i","correct":false,"explanation":"Almost, but not quite.","type":"Regexp"}},"points":2,"order":true,"question_comment":"Question too easy"},"question-2":{"question_text":"The ---- brown fox jumped over the lazy ----","answers":{"qfi3-1":{"answer_text":"/fox/","correct":true,"explanation":"This sentence contains all of the letters of the English Alphabet","type":"Regexp"},"qfi3-2":{"answer_text":"/dog/","correct":true,"explanation":"This sentence contains all of the letters of the English Alphabet","type":"Regexp"}},"points":1,"order":true,"question_comment":""},"question-3":{"question_text":"The ---- brown fox jumped over the lazy ----","answers":{"qddfi4-1":{"answer_text":"fox","correct":true,"explanation":"This sentence contains all of the letters of the English Alphabet","type":"String"},"qddfi4-2":{"answer_text":"dog","correct":true,"explanation":"This sentence contains all of the letters of the English Alphabet","type":"String"}},"points":1,"order":true,"question_comment":""},"question-4":{"question_text":"The three stooges are -----, ----, and -----.","answers":{"qfi5-1":{"answer_text":"larry","correct":true,"explanation":null,"type":"String"},"qfi5-2":{"answer_text":"moe","correct":true,"explanation":null,"type":"String"},"qfi5-3":{"answer_text":"curly","correct":true,"explanation":null,"type":"String"}},"points":1,"order":true,"question_comment":""},"question-5":{"question_text":"The three stooges are -----, ----, and -----.","answers":{"qfi6-1":{"answer_text":"larry","correct":true,"explanation":null,"type":"String"},"qfi6-2":{"answer_text":"moe","correct":true,"explanation":null,"type":"String"},"qfi6-3":{"answer_text":"curly","correct":true,"explanation":null,"type":"String"}},"points":1,"order":false,"question_comment":""},"question-6":{"question_text":"The capital of Tenerife is ----- Cruz de --------","answers":{"qfi7-1":{"answer_text":"/Santa/i","correct":true,"explanation":null,"type":"Regexp"},"qfi7-2":{"answer_text":"/Tenerife/i","correct":true,"explanation":null,"type":"Regexp"}},"points":1,"order":true,"question_comment":""},"question-7":{"question_text":"\n      Diga dos números x = ---- e  y = ---- que multiplicados den 100\n    ","answers":{"qfi8-1":{"answer_text":"result = function(x,y) { return (x * y === 100); }","correct":true,"explanation":null,"type":"JS"}},"points":1,"order":true,"question_comment":""},"question-8":{"question_text":"Escriba una función JavaScript llamada `suma` que recibe dos números \n    y devuelve la suma","answers":{"qp9-1":{"answer_text":"function () { \n  if (suma(3,4) == 7) \n    return true;\n  else\n    return false;\n}","correct":true,"explanation":null}},"points":1,"question_comment":"","language":"javascript","height":800,"width":150},"question-9":{"question_text":"\n      Calculate the determinant of this matrix:\n      $$\\mathbf{A} = \\begin{vmatrix} \n      1 & 3 \\\\ \n      2 & 4 \n      \\end{vmatrix}$$\n      <br/>\n      ----\n    ","answers":{"qfi10-1":{"answer_text":-1,"correct":true,"explanation":null,"type":"Fixnum"}},"points":1,"order":true,"question_comment":""},"question-10":{"question_text":"\n      Solve: \n      $$\\binom{n}{k} = \\frac{n!}{k!(n-k)!}$$\n      when n = 5 and k = 2:\n      ----\n    ","answers":{"qfi11-1":{"answer_text":10,"correct":true,"explanation":null,"type":"Fixnum"},"qfi11-2":{"answer_text":9,"correct":false,"explanation":"Not exactly","type":"Fixnum"}},"points":1,"order":true,"question_comment":""},"question-11":{"question_text":"\n      When x = 2, the solution of $\\sqrt{3x+3}+(1+x)^2$ is:\n      ----\n    ","answers":{"qfi12-1":{"answer_text":12,"correct":true,"explanation":null,"type":"Fixnum"},"qfi12-2":{"answer_text":11,"correct":false,"explanation":"Try again!","type":"Fixnum"}},"points":1,"order":true,"question_comment":""},"question-12":{"question_text":"What is the largest US state?","answers":{"qmc13-1":{"answer_text":"Alaska","correct":true,"explanation":null},"qmc13-2":{"answer_text":"Hawaii","correct":false,"explanation":"Not big enough."},"qmc13-3":{"answer_text":"Texas","correct":false,"explanation":"That's pretty big, but think colder."}},"points":1,"question_comment":""},"question-13":{"question_text":"Relate these concepts","answers":{"qddmc14-1":{"answer_text":{"Facebook":"Mark Zuckerberg"},"correct":true,"explanation":null,"type":"Hash"},"qddmc14-2":{"answer_text":{"Twitter":"Jack Dorsey"},"correct":true,"explanation":null,"type":"Hash"}},"points":1,"question_comment":""},"question-14":{"question_text":"Which are American political parties?","answers":{"qsm15-1":{"answer_text":"Democrats","correct":true,"explanation":null},"qsm15-2":{"answer_text":"Republicans","correct":true,"explanation":null},"qsm15-3":{"answer_text":"Greens","correct":true,"explanation":"Yes, they're a party!"},"qsm15-4":{"answer_text":"Tories","correct":false,"explanation":"They're British"},"qsm15-5":{"answer_text":"Social Democrats","correct":false,"explanation":""}},"points":1,"question_comment":""},"question-15":{"question_text":"True or False: The earth is flat.","answers":{"qddmc16-1":{"answer_text":"True","correct":false,"explanation":"No, just looks that way","type":"Hash"},"qddmc16-2":{"answer_text":"False","correct":true,"explanation":null,"type":"Hash"}},"points":1,"question_comment":""},"question-16":{"question_text":"What does the following code do:\n    <pre>\n    puts \"Hello world!\"\n    </pre>\n    ","answers":{"qmc17-1":{"answer_text":"Throws an exception","correct":false,"explanation":"Don't be an idiot."},"qmc17-2":{"answer_text":"Prints a friendly message","correct":true,"explanation":null}},"points":1,"question_comment":""}};
+      timestamp = 1399311351
       timestamp = timestamp.toString();
       language = 'es';
-      totalPoints = 17;
+      totalPoints = 18;
       userPoints = 0;
       
       function findCorrectAnswer(idQuestion, questionType) {
@@ -712,7 +716,7 @@ Borrar almacenamiento    </button>
           answers = $("#" + x.toString() + " input");
           
           if (answers.length != 0) {
-            if ((answers.attr('class').match("fillin")) || (answers.attr('class').match("dragdrop"))) {
+          if ((answers.attr('class').match("fillin")) || (answers.attr('class').match("dragdropfi")) || (answers.attr('class').match("dragdropmc"))) {
               correctAnswers = {};
               distractorAnswers = {};
               explanation = {};
@@ -729,6 +733,10 @@ Borrar almacenamiento    </button>
                   }
                   else if (data[x.toString()]['answers'][ans]['type'] == "JS") {
                     flag_js = true;
+                  }
+                  else if (data[x.toString()]['answers'][ans]['type'] == "Hash") {
+                    key = (Object.keys(data[x.toString()]['answers'][ans]['answer_text'])).join();
+                    correctAnswers[ans.toString()] = data[x.toString()]['answers'][ans]['answer_text'][key];
                   }
                   else { // String or Number
                     correctAnswers[ans.toString()] = data[x.toString()]['answers'][ans]['answer_text'];
@@ -842,8 +850,20 @@ Borrar almacenamiento    </button>
             }
           }
           else {  // Textarea
-            textarea = $("#" + x.toString() + " textarea");
-            answer = textarea.val();
+            numAnswer = parseInt(x.split('-')[1]) + 1;
+            idAnswer = 'qp' + numAnswer.toString() + '-1';
+            
+            answer = eval("fn = " + data[x.toString()]['answers'][idAnswer]['answer_text']);    // Teacher's code
+            eval(id_textareas[idAnswer]['editor'].getValue());                                  // Student's code
+            
+            try {
+              result = answer.call();
+            }
+            catch(err) {
+              result = false;
+            }
+            
+            userPoints += calculateMark(data[x.toString()], x.toString(), result, 2, null, null);
           }
         }
       }
@@ -870,6 +890,11 @@ Borrar almacenamiento    </button>
             nquestion = parseInt(idAnswer.split('-')[0].substr(3)) - 1;
             tmp[idAnswer] = data["question-" + nquestion.toString()]['answers'][idAnswer]['answer_text'];
           }
+          
+          $.each(id_textareas, function(k,v) {
+            tmp[k] = id_textareas[k]['editor'].getValue();
+          });
+          
           localStorage.setItem(timestamp, JSON.stringify(tmp));
         }
         else {
@@ -881,8 +906,10 @@ Borrar almacenamiento    </button>
         if ((localStorage.length != 0) && (localStorage[timestamp] !== undefined)) {
           tmp = JSON.parse(localStorage[timestamp]);
           for (x in tmp) {
-            if ((x.match(/qfi/)) || (x.match(/qdd/)))
+            if ((x.match(/qfi/)) || (x.match(/qddfi/)) || (x.match(/qddmc/)))
               $("#" + x.toString()).val(tmp[x.toString()]);
+            else if (x.match(/qp/))
+              id_textareas[x]['editor'].setValue(tmp[x]);
             else
               $("#" + x.toString()).attr('checked', 'checked');
           }
@@ -926,6 +953,13 @@ Borrar almacenamiento    </button>
         $.each(areas, function(i, v) {
           if (v.value.match(/^ +$/))
             v.value = '';
+        });
+      }
+      
+      function trimButtons() {
+        buttons = $('button');
+        $.each(buttons, function(i, v) {
+          v.textContent = v.textContent.trim();
         });
       }
       
@@ -1019,38 +1053,8 @@ Borrar almacenamiento    </button>
       $(document).ready(function() {
         loadAnswers();
         clearTextarea();
+        trimButtons();
       });
-</script>
-    <!-- jQuery ContextMenu -->
-    <script type=text/javascript src=http://medialize.github.com/jQuery-contextMenu/src/jquery.ui.position.js></script><script type=text/javascript src=http://medialize.github.com/jQuery-contextMenu/src/jquery.contextMenu.js></script>
-        <script type=text/javascript>
-          
-      $(document).on("contextmenu", "input.fillin", function(e){
-        id_answer = $(this).attr('id');
-        numQuestion = parseInt(id_answer.split('-')[0].slice(3)) - 1;
-        
-        if (data["question-" + numQuestion.toString()]['answers'][id_answer]['type'] != "JS") {
-          answer = data["question-" + numQuestion.toString()]['answers'][id_answer]['answer_text'];
-          $.contextMenu({
-            selector: "#" + id_answer,
-            items: {
-              "fold1": {
-                "name": "Ver respuestas", 
-                "items": {
-                  "fold1-key1": {"name": answer}
-                }
-              }
-            }
-          });
-        }
-      });
-    
-        </script>
-      
-    <!-- Any JavaScript included by the user -->
-    
-    <!-- Latest compiled and minified JavaScript for Bootstrap -->
-    <script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
-    <!-- -->
+    </script>
   </body>
 </html>
