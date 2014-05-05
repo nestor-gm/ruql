@@ -25,7 +25,6 @@ class HtmlFormRenderer
     @output = ''
     @quiz = quiz
     @h = Builder::XmlMarkup.new(:target => @output, :indent => 2)
-    #@h = Builder::XmlMarkup.new(:target => @output)
     @data = {}
     @size_inputs = []
     @size_divs = []
@@ -117,24 +116,71 @@ class HtmlFormRenderer
         end
       @h.ol :class => 'answers' do
         id_answer = 1
+        
+        if (q.class == DragDrop_MC)
+          keys, values = [], []
+          answers.each do |a|
+            keys << a.answer_text.keys[0].to_s
+            values << a.answer_text.values[0].to_s
+          end
+          values.sort_by! { rand }
+        end
+        
         answers.each do |answer|
           # Store answers for question-index
-          @data[:"question-#{index}"][:answers]["qmc#{index + 1}-#{id_answer}".to_sym] = {:answer_text => answer.answer_text, :correct => answer.correct, 
-                                                                                          :explanation => answer.explanation} 
-                  
-          @h.input(:type => 'radio', :id => "qmc#{index + 1}-#{id_answer}", :name => "qmc#{index + 1}", :class => 'select') { |p| 
-            p << answer.answer_text
-            p << "<br class=qmc#{index + 1}-#{id_answer}br>"
-          }
-          @h.div(:id => "qmc#{index + 1}-#{id_answer}r", :class => 'quiz') do
+          if (q.class == MultipleChoice)
+            @data[:"question-#{index}"][:answers]["qmc#{index + 1}-#{id_answer}".to_sym] = {:answer_text => answer.answer_text, :correct => answer.correct, 
+                                                                                            :explanation => answer.explanation} 
+          else # DragDrop_MC
+            @data[:"question-#{index}"][:answers]["qddmc#{index + 1}-#{id_answer}".to_sym] = {:answer_text => answer.answer_text, :correct => answer.correct, 
+                                                                                              :explanation => answer.explanation, :type => "Hash"}
+          end
+          
+          if (q.class == MultipleChoice)
+            @h.input(:type => 'radio', :id => "qmc#{index + 1}-#{id_answer}", :name => "qmc#{index + 1}", :class => 'select') { |p| 
+              p << answer.answer_text
+              p << "<br class=qmc#{index + 1}-#{id_answer}br>"
+            }
+            @h.div(:id => "qmc#{index + 1}-#{id_answer}r", :class => 'quiz') do
+            end
           end
           id_answer += 1
+        end
+        
+        if (q.class == DragDrop_MC)
+          @h.div do
+            @h.div(:id => 'col1', :class => 'col1') do |d|
+              keys.each do |k|
+                @h.button(:class => 'btn btn-default btn-sm disabled button-qddmc', :draggable => 'false') do |b|
+                  b << k
+                end
+                @h.br
+              end
+            end
+            @h.div(:id => 'col2', :class => 'col2') do 
+              keys.length.times do |i|
+                @h.input(:id => "qddmc#{index + 1}-#{i + 1}", :type => 'text', :class => "dragdropmc input-qddmc", :ondrop => "drop(event, 'qddmc#{index + 1}-#{i + 1}')", :ondragover => "allowDrop(event)")
+                @h.br
+              end
+            end
+            @h.div(:id => 'col3', :class => 'col3') do |d|
+              counter = 1
+              values.each do |v|
+                @h.button(:id => "qddmca#{index + 1}-#{counter}", :class => 'btn btn-default btn-sm button-qddmc', :draggable => 'true', :ondragstart => 'drag(event)') { |b|
+                  b << v                                                                                                                                                                      }
+                counter += 1
+                @h.br
+              end
+            end
+          end
+          @h.div(:class => 'clear-qddmc')
         end
         @h.br
       end
     end
     question_comment(q)
-    insert_buttons_each_question(index, true)
+    q.class == MultipleChoice ? flag = true : flag = false
+    insert_buttons_each_question(index, flag)
     self
   end
 
@@ -196,8 +242,8 @@ class HtmlFormRenderer
       question_comment(q)
       if (q.class == FillIn)
         class_question = "qfi"
-      elsif (q.class == DragDrop)
-        class_question = "qdd"
+      elsif (q.class == DragDrop_FI)
+        class_question = "qddfi"
       end
       # Store answers for question-idx
       answer = q.answers[0]
@@ -269,12 +315,12 @@ class HtmlFormRenderer
             question.question_text.gsub!(/\\-/, '-')
             question.question_text << %Q{<div id="qfi#{index + 1}-#{hyphen.length}r" class="quiz"></div></br></br>}
             
-          elsif question.class == DragDrop
+          elsif question.class == DragDrop_FI
             hyphen = question.question_text.scan(/(?<!\\)---+/)
             hyphen.length.times { |i|
                                  nHyphen = hyphen[i].count('-')
                                  @size_inputs << nHyphen
-                                 attr = %Q{id="qdd#{index + 1}-#{i + 1}" class="dragdrop size-#{nHyphen}" ondrop="drop(event,'qdd#{index + 1}-#{i + 1}')" ondragover="allowDrop(event)"}
+                                 attr = %Q{id="qddfi#{index + 1}-#{i + 1}" class="dragdropfi size-#{nHyphen}" ondrop="drop(event,'qddfi#{index + 1}-#{i + 1}')" ondragover="allowDrop(event)"}
                                  question.question_text.sub!(/(?<!\\)---+/, "<input #{attr}></input>")
                                 }
             question.question_text.gsub!(/\\-/, '-')
@@ -282,7 +328,7 @@ class HtmlFormRenderer
             question.question_text << "<div> #{translate(:answers, '')}: "
             question.answers[0].answer_text.each_with_index do |a, i|
               @size_divs << a.to_s.length
-              question.question_text << %Q{<button class="dragdrop size-#{a.to_s.length} btn btn-default btn-sm" id="qdda#{i + 1}-#{i + 1}" draggable="true" ondragstart="drag(event)">#{a}</button>&nbsp&nbsp}
+              question.question_text << %Q{<button class="dragdropfi size-#{a.to_s.length} btn btn-default btn-sm" id="qddfia#{i + 1}-#{i + 1}" draggable="true" ondragstart="drag(event)">#{a}</button>&nbsp&nbsp}
             end
             question.question_text << "<div/>"
             question.question_text << "</br></br>"
@@ -295,7 +341,7 @@ class HtmlFormRenderer
           end
           
           # Hash with questions and all posibles answers
-          if ((question.class == FillIn) || (question.class == DragDrop))
+          if ((question.class == FillIn) || (question.class == DragDrop_FI))
             @data[html_args[:id].to_sym] = {:question_text => questionText, :answers => {}, :points => question.points, 
                                             :order => question.order, :question_comment => question.question_comment}
           elsif (question.class == Programming)
@@ -966,7 +1012,7 @@ class HtmlFormRenderer
           answers = $("#" + x.toString() + " input");
           
           if (answers.length != 0) {
-            if ((answers.attr('class').match("fillin")) || (answers.attr('class').match("dragdrop"))) {
+          if ((answers.attr('class').match("fillin")) || (answers.attr('class').match("dragdropfi")) || (answers.attr('class').match("dragdropmc"))) {
               correctAnswers = {};
               distractorAnswers = {};
               explanation = {};
@@ -983,6 +1029,10 @@ class HtmlFormRenderer
                   }
                   else if (data[x.toString()]['answers'][ans]['type'] == "JS") {
                     flag_js = true;
+                  }
+                  else if (data[x.toString()]['answers'][ans]['type'] == "Hash") {
+                    key = (Object.keys(data[x.toString()]['answers'][ans]['answer_text'])).join();
+                    correctAnswers[ans.toString()] = data[x.toString()]['answers'][ans]['answer_text'][key];
                   }
                   else { // String or Number
                     correctAnswers[ans.toString()] = data[x.toString()]['answers'][ans]['answer_text'];
@@ -1152,7 +1202,7 @@ class HtmlFormRenderer
         if ((localStorage.length != 0) && (localStorage[timestamp] !== undefined)) {
           tmp = JSON.parse(localStorage[timestamp]);
           for (x in tmp) {
-            if ((x.match(/qfi/)) || (x.match(/qdd/)))
+            if ((x.match(/qfi/)) || (x.match(/qddfi/)) || (x.match(/qddmc/)))
               $("#" + x.toString()).val(tmp[x.toString()]);
             else if (x.match(/qp/))
               id_textareas[x]['editor'].setValue(tmp[x]);
@@ -1199,6 +1249,13 @@ class HtmlFormRenderer
         $.each(areas, function(i, v) {
           if (v.value.match(/^\s+$/))
             v.value = '';
+        });
+      }
+      
+      function trimButtons() {
+        buttons = $('button');
+        $.each(buttons, function(i, v) {
+          v.textContent = v.textContent.trim();
         });
       }
       
@@ -1292,6 +1349,7 @@ class HtmlFormRenderer
       $(document).ready(function() {
         loadAnswers();
         clearTextarea();
+        trimButtons();
       });
       JS
   end

@@ -55,7 +55,13 @@ class Question
   def distractor(text, opts={})
     @answers << Answer.new(text, correct=false, opts[:explanation] || @default_explanation)
   end
-
+  
+  def relation(hash)
+    hash.each_pair do |pair|
+      @answers << Answer.new(Hash[*pair], correct=true)
+    end
+  end
+  
   # these are ignored but legal for now:
   def tags(*args) # string or array of strings 
     if args.length > 1

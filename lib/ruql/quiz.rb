@@ -91,8 +91,14 @@ class Quiz
     @questions << q
   end
   
-  def drag_drop(*args, &block)
-    q = constructor(DragDrop, args)
+  def drag_drop_fill_in(*args, &block)
+    q = constructor(DragDrop_FI, args)
+    q.instance_eval(&block)
+    @questions << q
+  end
+  
+  def drag_drop_choice_answer(*args, &block)
+    q = constructor(DragDrop_MC, args)
     q.instance_eval(&block)
     @questions << q
   end

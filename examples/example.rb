@@ -1,5 +1,5 @@
 quiz 'Example quiz' do
- 
+
   #head :'examples/header.html'
   
   tag = '<a href="www.google.es"></a> '
@@ -20,7 +20,7 @@ quiz 'Example quiz' do
     answer [/fox/, /dog/], :explanation => 'This sentence contains all of the letters of the English Alphabet'
   end
   
-  drag_drop do
+  drag_drop_fill_in do
     text 'The ---- brown fox jumped over the lazy ----'
     answer ['fox', 'dog'], :explanation => 'This sentence contains all of the letters of the English Alphabet'
   end
@@ -85,13 +85,18 @@ quiz 'Example quiz' do
     answer 12
     distractor 11, :explanation => "Try again!"
   end
-  
+
   choice_answer :randomize => true do
     text  "What is the largest US state?"
     explanation "Not big enough." # for distractors without their own explanation
     answer 'Alaska'
     distractor 'Hawaii'
     distractor 'Texas', :explanation => "That's pretty big, but think colder."
+  end
+ 
+  drag_drop_choice_answer do
+    text  "Relate these concepts"
+    relation :Facebook => 'Mark Zuckerberg', :Twitter => 'Jack Dorsey'
   end
   
   select_multiple do
