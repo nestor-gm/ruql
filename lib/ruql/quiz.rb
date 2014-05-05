@@ -102,7 +102,13 @@ class Quiz
     q.instance_eval(&block)
     @questions << q
   end
-
+  
+  def drag_drop_select_multiple(*args, &block)
+    q = constructor(DragDrop_SM, args)
+    q.instance_eval(&block)
+    @questions << q
+  end
+  
   def programming(*args, &block)
     q = constructor(Programming, args)
     q.instance_eval(&block)

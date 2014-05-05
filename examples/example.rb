@@ -108,6 +108,11 @@ quiz 'Example quiz' do
     distractor "Social Democrats"
   end
   
+  drag_drop_select_multiple do
+    text  "Relate these concepts"
+    relation :Ruby => ['Sinatra', 'Rails'], :JavaScript => 'jQuery'
+  end
+  
   truefalse 'The earth is flat.', false, :explanation => 'No, just looks that way'
   
   choice_answer :raw => true do

@@ -159,7 +159,7 @@ class HtmlFormRenderer
             end
             @h.div(:id => 'col2', :class => 'col2') do 
               keys.length.times do |i|
-                @h.input(:id => "qddmc#{index + 1}-#{i + 1}", :type => 'text', :class => "dragdropmc input-qddmc", :ondrop => "drop(event, 'qddmc#{index + 1}-#{i + 1}')", :ondragover => "allowDrop(event)")
+                @h.input(:id => "qddmc#{index + 1}-#{i + 1}", :type => 'text', :class => "dragdropmc input-qddmc", :ondrop => "drop(event, 'qddmc#{index + 1}-#{i + 1}', true)", :ondragover => "allowDrop(event)")
                 @h.br
               end
             end
@@ -173,7 +173,7 @@ class HtmlFormRenderer
               end
             end
           end
-          @h.div(:class => 'clear-qddmc')
+          @h.div(:class => 'clear-qdd')
         end
         @h.br
       end
@@ -192,24 +192,75 @@ class HtmlFormRenderer
       end
       @h.ol :class => 'answers' do
         id_answer = 1
+        
+        if (q.class == DragDrop_SM)
+          keys, values = [], []
+          answers.each do |a|
+            keys << a.answer_text.keys[0].to_s
+            a.answer_text.each_value do |v|
+              values << v
+            end
+          end
+          values.flatten!.sort_by! { rand }
+        end
+        
         answers.each do |answer|
           # Store answers for question-index
-          @data[:"question-#{index}"][:answers]["qsm#{index + 1}-#{id_answer}".to_sym] = {:answer_text => answer.answer_text, :correct => answer.correct, 
-                                                                                          :explanation => answer.explanation}
-        
-          @h.input(:type => 'checkbox', :id => "qsm#{index + 1}-#{id_answer}", :class => 'check') { |p| 
-            p << answer.answer_text
-            p << "<br class=qsm#{index + 1}-#{id_answer}br>"
-          }
-          @h.div(:id => "qsm#{index + 1}-#{id_answer}r", :class => 'quiz') do
+          if (q.class == SelectMultiple)
+            @data[:"question-#{index}"][:answers]["qsm#{index + 1}-#{id_answer}".to_sym] = {:answer_text => answer.answer_text, :correct => answer.correct, 
+                                                                                            :explanation => answer.explanation}
+          else # DragDrop_SM
+            @data[:"question-#{index}"][:answers]["qddsm#{index + 1}-#{id_answer}".to_sym] = {:answer_text => answer.answer_text, :correct => answer.correct, 
+                                                                                            :explanation => answer.explanation, :type => "Hash"}
+          end
+          
+          if (q.class == SelectMultiple)
+            @h.input(:type => 'checkbox', :id => "qsm#{index + 1}-#{id_answer}", :class => 'check') { |p| 
+              p << answer.answer_text
+              p << "<br class=qsm#{index + 1}-#{id_answer}br>"
+            }
+            @h.div(:id => "qsm#{index + 1}-#{id_answer}r", :class => 'quiz') do
+            end
           end
           id_answer += 1
+        end
+        
+        if (q.class == DragDrop_SM)
+          @h.div do
+            @h.div(:id => 'col1', :class => 'col1') do |d|
+              keys.each do |k|
+                @h.button(:class => 'btn btn-default btn-sm disabled button-qddsm', :draggable => 'false') do |b|
+                  b << k
+                end
+                @h.br
+              end
+            end
+            @h.div(:id => 'col2', :class => 'col2sm') do 
+              keys.length.times do |i|
+                @h.div(:id => "qddsm#{index + 1}-#{i + 1}", :type => 'text', :class => "dragdropsm", :ondrop => "drop(event, 'qddsm#{index + 1}-#{i + 1}', false)", :ondragover => "allowDrop(event)") do end
+              end
+            end
+            @h.div(:class => 'clear-qdd')
+            @h.br
+            @h.div(:id => "answers_qddsm", :ondrop => "drop(event, 'answers_qddsm', false)", :ondragover => "allowDrop(event)") do |d|
+              counter = 1
+              d << translate(:answers, '') + ": " 
+              values.each do |v|
+                @h.button(:id => "qddsma#{index + 1}-#{counter}", :class => 'btn btn-default btn-sm button-qddsm', :draggable => 'true', :ondragstart => 'drag(event)') do |b|
+                  b << v
+                end
+                counter += 1
+              end
+            end
+          end
+          
         end
         @h.br
       end
     end
     question_comment(q)
-    insert_buttons_each_question(index, true)
+    q.class == SelectMultiple ? flag = true : flag = false
+    insert_buttons_each_question(index, flag)
     self
   end
   
@@ -320,7 +371,7 @@ class HtmlFormRenderer
             hyphen.length.times { |i|
                                  nHyphen = hyphen[i].count('-')
                                  @size_inputs << nHyphen
-                                 attr = %Q{id="qddfi#{index + 1}-#{i + 1}" class="dragdropfi size-#{nHyphen}" ondrop="drop(event,'qddfi#{index + 1}-#{i + 1}')" ondragover="allowDrop(event)"}
+                                 attr = %Q{id="qddfi#{index + 1}-#{i + 1}" class="dragdropfi size-#{nHyphen}" ondrop="drop(event,'qddfi#{index + 1}-#{i + 1}', true)" ondragover="allowDrop(event)"}
                                  question.question_text.sub!(/(?<!\\)---+/, "<input #{attr}></input>")
                                 }
             question.question_text.gsub!(/\\-/, '-')
@@ -730,10 +781,13 @@ class HtmlFormRenderer
         ev.dataTransfer.setData("Text",ev.target.id);
       }
       
-      function drop(ev, id) {
+      function drop(ev, id, clone) {
         ev.preventDefault();
         var data=ev.dataTransfer.getData("Text");
-        ev.target.appendChild(document.getElementById(data).cloneNode(true));
+        if (clone)
+          ev.target.appendChild(document.getElementById(data).cloneNode(true));
+        else
+          ev.target.appendChild(document.getElementById(data));
         var val=document.getElementById(id);
         val.value=document.getElementById(data).innerText;
       }
@@ -797,22 +851,35 @@ class HtmlFormRenderer
         float: left;
         margin-right: 50px;
       }
-      div.col2 {
+      div.col2, div.col2sm {
         float: left;
       }
       div.col3 {
         float: left;
         margin-left: 50px;
       }
-      div.clear-qddmc {
+      div.clear-qdd {
         clear: left;
       }
       input.input-qddmc {
         line-height: 1.7;
         margin-bottom: 3;
       }
-      button.button-qddmc {
+      button.button-qddmc, button.button-qddsm {
         margin-bottom: 3px;
+      }
+      button.button-qddsm {
+        margin-left: 1px;
+        margin-right: 1px;      
+      }
+      div.dragdropsm {
+        background-color: #FFF;
+        width: 600px;
+        height: 30px;
+        margin-bottom: 3;
+        border-radius: 5;
+        border-style: solid;
+        border-width: 1px;
       }
       CSS
     end
@@ -1033,7 +1100,7 @@ class HtmlFormRenderer
           answers = $("#" + x.toString() + " input");
           
           if (answers.length != 0) {
-          if ((answers.attr('class').match("fillin")) || (answers.attr('class').match("dragdropfi")) || (answers.attr('class').match("dragdropmc"))) {
+            if ((answers.attr('class').match("fillin")) || (answers.attr('class').match("dragdropfi")) || (answers.attr('class').match("dragdropmc"))) {
               correctAnswers = {};
               distractorAnswers = {};
               explanation = {};
@@ -1166,6 +1233,30 @@ class HtmlFormRenderer
               }
             }
           }
+          
+          else if ($("#" + x.toString() + " div[id^=qddsm").length != 0) {
+            answers = $("#" + x.toString() + " div[id^=qddsm");
+            userAnswers = {};
+            allEmpty = true;
+            
+            $.each(answers, function(i,v) {
+              if (v.value !== undefined)
+                allEmpty = false;
+            });
+            
+            if (!allEmpty) {
+              for (i = 0; i < answers.length; i++) {
+                answer = [];
+                for (j = 0; j < answers[i].children.length; j++)
+                  answer.push(answers[i].children[j].innerText);
+                userAnswers[answers[i].id] = answer;
+              }
+              
+              result = checkDragDropSM(x.toString(), userAnswers);
+              userPoints += calculateMark(data[x.toString()], x.toString(), result, 2, null, null);
+             }
+          }
+          
           else {  // Textarea
             numAnswer = parseInt(x.split('-')[1]) + 1;
             idAnswer = 'qp' + numAnswer.toString() + '-1';
@@ -1183,6 +1274,54 @@ class HtmlFormRenderer
             userPoints += calculateMark(data[x.toString()], x.toString(), result, 2, null, null);
           }
         }
+      }
+      
+      function itemExists(item, userAnswer) {
+        for (j = 0; j < userAnswer.length; j++) {
+          if (item == userAnswer[j])
+            return true;
+        }
+        return false;
+      }
+      
+      function checkDragDropSM(id_question, userAnswers) {
+        correctAnswers = {};
+        for (x in data[id_question]['answers']) {
+          correctAnswers[x] = data[id_question]['answers'][x]['answer_text'];
+        }
+        
+        results = [];
+        
+        for (x in correctAnswers) {
+          correctKeys = correctAnswers[x];
+          for (y in correctKeys) {
+            item = correctKeys[y];
+            if ((typeof(item)) == "object") {
+              if (item.length != userAnswers[x].length)         // If there're more or less answers that the number of correct answers
+                return false;
+              else {
+                for (z = 0; z < item.length; z++)
+                  results.push(itemExists(item[z], userAnswers[x]));
+              }
+            }
+            else if ((typeof(item)) == "string") {
+              if (userAnswers[x].length != 1)
+                return false;
+              else {
+                results.push(itemExists(item, userAnswers[x]));
+              }
+            }
+          }
+        }
+        
+        correction = true;
+        
+        $.each(results, function(i,v) {
+          if (v == false)
+            correction = false;
+        });
+        
+        return correction;
       }
       
       function checkAnswers() {
