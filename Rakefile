@@ -6,7 +6,7 @@ task :ruql do
 end
 
 desc "Run Ruql with HtmlForm renderer (with a template)"
-task :template do
+task :example do
   sh "ruby -Ilib bin/ruql examples/example.rb HtmlForm -t templates/htmlform.html.erb > examples/output.html"
 end
 
