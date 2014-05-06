@@ -611,6 +611,9 @@ class HtmlFormRenderer
   
   def insert_contextMenu(template)
     function = %Q{
+      #{File.read(File.expand_path(Dir.pwd, '../../../') + '/vendor/assets/ContextJS/js/context.js')}
+      #{File.read(File.expand_path(Dir.pwd, '../../../') + '/public/js/ContextJS_init.js')}
+      
       $(document).mousedown(function(e){ 
         if( e.button == 2 ) {
           id_answer = e.toElement.id;
@@ -619,17 +622,13 @@ class HtmlFormRenderer
             try {
               if (data["question-" + numQuestion.toString()]['answers'][id_answer]['type'] != "JS") {
                 answer = data["question-" + numQuestion.toString()]['answers'][id_answer]['answer_text'];
-                $.contextMenu({
-                  selector: "#" + id_answer,
-                  items: {
-                    "fold1": {
-                      "name": "#{translate(:show, 'buttons')}", 
-                      "items": {
-                        "fold1-key1": {"name": answer}
-                      }
-                    }
-                  }
-                }, null, { 'sizeStyle': 'auto' });
+                context.attach('#' + id_answer, [
+                  
+                  {header: '#{translate(:show, 'buttons')}'},
+                  {text: 'Ver respuesta', subMenu: [
+                    {text: answer}
+                  ]}
+                ]);
               }
             }
             catch(err) {}
@@ -638,18 +637,12 @@ class HtmlFormRenderer
       });
     }
     if (template)
-      code = %Q{<script type="text/javascript" src="http://medialize.github.com/jQuery-contextMenu/src/jquery.ui.position.js"></script>}
-      code << %Q{<script type="text/javascript" src="http://medialize.github.com/jQuery-contextMenu/src/jquery.contextMenu.js"></script>}
-      code << %Q{
+      code = %Q{
         <script type="text/javascript">
           #{function}
         </script>
       }
     else
-      @h.script(:type => 'text/javascript', :src => "http://medialize.github.com/jQuery-contextMenu/src/jquery.ui.position.js") do
-      end
-      @h.script(:type => 'text/javascript', :src => "http://medialize.github.com/jQuery-contextMenu/src/jquery.contextMenu.js") do
-      end
       @h.script(:type => 'text/javascript') do |j|
         j << function
       end
@@ -658,116 +651,7 @@ class HtmlFormRenderer
   
   def insert_contextMenu_css
     <<-CSS
-    .context-menu-list {
-      margin:0; 
-      padding:0;
-      
-      min-width: 160px;
-      max-width: 250px;
-      display: inline-block;
-      position: absolute;
-      list-style-type: none;
-      
-      border: 1px solid #DDD;
-      background: #EEE;
-      
-      -webkit-box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
-        -moz-box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
-          -ms-box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
-          -o-box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
-              box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
-      
-      font-family: Verdana, Arial, Helvetica, sans-serif;
-      font-size: 15px;
-    }
-
-    .context-menu-item {
-        padding: 2px 2px 2px 24px;
-        background-color: #EEE;
-        color: #000;
-        position: relative;
-        -webkit-user-select: none;
-          -moz-user-select: -moz-none;
-            -ms-user-select: none;
-                user-select: none;
-    }
-
-    .context-menu-separator {
-        padding-bottom:0;
-        border-bottom: 1px solid #DDD;
-    }
-
-    .context-menu-item > label > input,
-    .context-menu-item > label > textarea {
-        -webkit-user-select: text;
-          -moz-user-select: text;
-            -ms-user-select: text;
-                user-select: text;
-    }
-
-    .context-menu-item.hover {
-        cursor: pointer;
-        background-color: #428bca;
-        color: #FFF;
-    }
-
-    .context-menu-item.disabled {
-        color: #666;
-    }
-
-    .context-menu-input.hover,
-    .context-menu-item.disabled.hover {
-        cursor: default;
-        background-color: #EEE;
-    }
-
-    .context-menu-submenu:after {
-        content: ">";
-        color: #666;
-        position: absolute;
-        top: 2;
-        right: 3px;
-        z-index: 1;
-    }
-
-    /* vertically align inside labels */
-    .context-menu-input > label > * { vertical-align: top; }
-
-    .context-menu-input > label > span {
-        margin-left: 5px;
-    }
-
-    .context-menu-input > label,
-    .context-menu-input > label > input[type="text"],
-    .context-menu-input > label > textarea,
-    .context-menu-input > label > select {
-        display: block;
-        width: 100%;
-        
-        -webkit-box-sizing: border-box;
-          -moz-box-sizing: border-box;
-            -ms-box-sizing: border-box;
-            -o-box-sizing: border-box;
-                box-sizing: border-box;
-    }
-
-    .context-menu-input > label > textarea {
-        height: 100px;
-    }
-    .context-menu-item > .context-menu-list {
-        display: none;
-        /* re-positioned by js */
-        right: -5px;
-        top: 5px;
-    }
-
-    .context-menu-item.hover > .context-menu-list {
-        display: block;
-    }
-
-    .context-menu-accesskey {
-        text-decoration: underline;
-    }
+      #{File.read(File.expand_path(Dir.pwd, '../../../') + '/vendor/assets/ContextJS/css/context.standalone.css')}
     CSS
   end
   
