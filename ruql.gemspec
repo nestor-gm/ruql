@@ -9,6 +9,8 @@ Gem::Specification.new do |s|
   s.files = []
   s.files = Dir.glob("lib/**/*.rb")
   s.files += Dir.glob("config/locales/*.yml")
+  s.files += Dir.glob("vendor/**/*")
+  s.files += Dir.glob("public/**/*")
   # add the templates
   s.files += Dir["templates/*.erb"]
   s.executables << 'ruql'
