@@ -1,0 +1,57 @@
+div.quiz, p.comment, div.explanation {display:inline;}
+
+strong.correct {color:#14B63F;}
+
+strong.incorrect {color:rgb(255,0,0);}
+
+strong.mark {color:rgb(255,128,0);}
+
+input.correct {color:#14B63F; font-weight: bold;}
+
+input.incorrect {color:rgb(255,0,0); font-weight: bold;}
+
+div.btn-footer {text-align: center;}
+
+div.explanation {font-style: italic;}
+
+div.col1 {
+  float: left;
+  margin-right: 50px;
+}
+
+div.col2, div.col2sm {
+  float: left;
+}
+
+div.col3 {
+  float: left;
+  margin-left: 50px;
+}
+
+div.clear-qdd {
+  clear: left;
+}
+
+input.input-qddmc {
+  line-height: 1.7;
+  margin-bottom: 3;
+}
+
+button.button-qddmc, button.button-qddsm {
+  margin-bottom: 3px;
+}
+
+button.button-qddsm {
+  margin-left: 1px;
+  margin-right: 1px;      
+}
+
+div.dragdropsm {
+  background-color: #FFF;
+  width: 600px;
+  height: 30px;
+  margin-bottom: 3;
+  border-radius: 5;
+  border-style: solid;
+  border-width: 1px;
+}

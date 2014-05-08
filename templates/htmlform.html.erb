@@ -4,9 +4,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><%= quiz.title %></title>
-    <!-- Latest compiled and minified CSS -->
-    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
-    <!-- -->
+    <!-- Bootstrap CSS -->
+    <%= @bootstrap_css %>
     <style type="text/css" media="all">
       div.quiz, p.comment, div.explanation {display:inline;}
       strong.correct {color:#14B63F;}
@@ -70,17 +69,15 @@
       
       /* Inputs size */
       <%= @sass %>
-      /* jQuery ContextMenu */
-      <%= @context_menu_css %>
     </style>
+    <!-- jQuery ContextMenu CSS -->
+    <%= @context_menu_css %>
     <!-- Any CSS included by the user -->
     <%= @css_custom %>
     <!-- Mathjax -->
     <%= @mathjax %>
-    <!--         -->
     <!-- CodeMirror -->
     <%= @codemirror %>
-    <!--         -->
   </head>
   <body>
     <div class="container">
@@ -115,8 +112,7 @@
         <div id="footer">
           <div class="row text-muted">
             <div class="col-md-6">
-              Quiz generated using the RuQL Gem. For more information, visit <a href="https://github.com/jjlabrador/ruql">GitHub
-              <span class="glyphicon glyphicon-link"></span></a>
+              Quiz generated using the RuQL Gem. For more information, visit <a href="https://github.com/jjlabrador/ruql">GitHub</a>
             </div>
             <div class="col-md-3"></div>
             <div class="col-md-3">
@@ -126,25 +122,24 @@
         </div>
       <% end %>
     </div>
-    <!-- JavaScripts -->
+    <!-- ############################## JavaScripts ############################## -->
     <!-- jQuery -->
     <%= @jQuery %>
     <!-- Internationalization -->
-    <script><%= @i18n %></script>
+    <%= @i18n %>
     <!-- Drag and Drop -->
-    <script><%= @dragdrop %></script>
+    <%= @dragdrop %>
     <!-- XRegexp -->
     <%= @xregexp %>
     <!-- Form validation -->
-    <script><%= @validation_js %></script>
+    <%= @validation_js %>
     <!-- jQuery ContextMenu -->
     <%= @context_menu %>
     <!-- Any JavaScript included by the user -->
     <%= @js_custom %>
     <!-- CodeMirror object -->
     <%= @codemirror_object %>
-    <!-- Latest compiled and minified JavaScript for Bootstrap -->
-    <script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
-    <!-- -->
+    <!-- JavaScript for Bootstrap -->
+    <%= @bootstrap_js %>
   </body>
 </html>
