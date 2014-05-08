@@ -12,6 +12,6 @@ $.each(id_textareas, function(k,v) {
     lineNumbers: true,
     viewportMargin: Infinity
   });
-  id_textareas[k]['editor'].setSize(id_textareas[k]['height'], id_textareas[k]['width']);
+  id_textareas[k]['editor'].setSize(id_textareas[k]['width'], id_textareas[k]['height']);
   id_textareas[k]['editor'].setValue('');
 });

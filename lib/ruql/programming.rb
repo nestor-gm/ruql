@@ -7,8 +7,8 @@ class Programming < Question
     self.question_text = text
     self.case_sensitive = !!opts[:case_sensitive]
     self.language = opts[:language] || 'javascript'
-    self.height = opts[:height] || 800
-    self.width = opts[:width] || 150
+    self.height = opts[:height] || 150
+    self.width = opts[:width] || 800
   end
  
   def multiple ; false ; end
