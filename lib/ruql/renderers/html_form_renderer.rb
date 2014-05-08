@@ -71,6 +71,7 @@ class HtmlFormRenderer
     @context_menu_css = insert_contextMenu_css(true)
    
     render_questions
+    
     @validation_js = insert_defaultJS(@quiz.points, true)
     @sass = ''
     @sass = insert_sass('input') if !@size_inputs.empty?
@@ -550,6 +551,22 @@ class HtmlFormRenderer
     }
   end
   
+  def insert_in_template(code, tags, tag, template)
+    if (template)
+      tags
+    else
+      if (tag == 'style')
+        @h.style(:type =>'text/css') do |c|
+          c << code
+        end
+      elsif (tag == 'script')
+        @h.script(:type =>'text/javascript') do |j|
+          j << code
+        end
+      end
+    end
+  end
+  
   def insert_xregexp(template)
     code = File.read(File.expand_path(Dir.pwd, '../../..') + '/vendor/assets/XRegexp-2.0.0/xregexp-min.js')
     tags = %Q{
@@ -557,14 +574,7 @@ class HtmlFormRenderer
         #{code}
       </script>
     }
-    
-    if (template)
-      tags
-    else
-      @h.script(:type => 'text/javascript') do |j|
-        j << code
-      end
-    end
+    insert_in_template(code, tags, 'script', template)
   end
   
   def insert_mathjax(template)
@@ -592,7 +602,7 @@ class HtmlFormRenderer
     mode_js = File.read(File.expand_path(Dir.pwd, '../../..') + '/vendor/assets/CodeMirror-4.1.0/mode/javascript/javascript.js')
     
     if (template)
-      code = %Q{
+      tags = %Q{
         <style type="text/css">
           #{css}
         </style>
@@ -623,14 +633,7 @@ class HtmlFormRenderer
         #{code}
       </script>
     }
-    
-    if (template)
-      tags
-    else
-      @h.script(:type => 'text/javascript') do |j|
-        j << code
-      end
-    end
+    insert_in_template(code, tags, 'script', template)
   end
   
   def insert_contextMenu(template)
@@ -667,13 +670,7 @@ class HtmlFormRenderer
         #{code}
       </script>
     }
-    if (template)
-      tags
-    else
-      @h.script(:type => 'text/javascript') do |j|
-        j << code
-      end
-    end
+    insert_in_template(code, tags, 'script', template)
   end
   
   def insert_contextMenu_css(template)
@@ -683,14 +680,7 @@ class HtmlFormRenderer
         #{code}
       </style>
     }
-    
-    if (template)
-      tags
-    else
-      @h.style(:type =>'text/css') do |c|
-        c << code
-      end
-    end
+    insert_in_template(code, tags, 'style', template)
   end
   
   def insert_drag_drop(template)
@@ -700,14 +690,7 @@ class HtmlFormRenderer
         #{code}
       </script>
     }
-    
-    if (template)
-      tags
-    else
-      @h.script(:type => 'text/javascript') do |j|
-        j << code
-      end
-    end
+    insert_in_template(code, tags, 'script', template)
   end
   
   def insert_js(template)
@@ -753,14 +736,7 @@ class HtmlFormRenderer
         #{code}
       </script>
     }
-    
-    if (template)
-      tags
-    else
-      @h.script(:type => 'text/javascript') do |j|
-        j << code
-      end
-    end
+    insert_in_template(code, tags, 'script', template)
   end
   
   def translate(word, scope)
@@ -789,13 +765,6 @@ class HtmlFormRenderer
         #{code}
       </script>
     }
-    
-    if (template)
-      tags
-    else
-      @h.script(:type => 'text/javascript') do |j|
-        j << code
-      end
-    end
+    insert_in_template(code, tags, 'script', template)
   end
 end
