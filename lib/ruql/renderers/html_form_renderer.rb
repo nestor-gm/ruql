@@ -56,10 +56,10 @@ class HtmlFormRenderer
     # local variables that should be in scope in the template 
     quiz = @quiz
     title = translate(:title, 'quiz') unless @title
-    @css_custom = insert_css(true) if @css
+    @css_custom = insert_css_js(true, @css, 'css') if @css
     @bootstrap_css = insert_bootstrap_css
     @bootstrap_js = insert_bootstrap_js
-    @js_custom = insert_js(true) if @js
+    @js_custom = insert_css_js(true, @js, 'js') if @js
     @jQuery = insert_jQuery('', true)
     @mathjax = insert_mathjax(true)
     @codemirror = insert_codemirror(true)
@@ -110,6 +110,72 @@ class HtmlFormRenderer
     end
   end
 
+  def insert_input(type, id, name, klass, answer)
+    @h.input(:type => type, :id => id, :name => name, :class => klass) { |p| 
+      p << answer.answer_text
+      p << %Q{<br class="#{id}br">}
+    }
+    @h.div(:id => "#{id}r", :class => 'quiz') do
+    end
+  end
+  
+  def get_drag_drop_answers(answers, keys, values)
+    answers.each do |a|
+      keys << a.answer_text.keys[0].to_s
+      a.answer_text.each_value do |v|
+        values << v
+      end
+    end
+  end
+  
+  def store_answers(answers, index, klass, id_klass, type_input, klass_input)
+    id_answer = 1
+    
+    answers.each do |answer|
+      @data[:"question-#{index}"][:answers]["#{id_klass}#{index + 1}-#{id_answer}".to_sym] = {:answer_text => answer.answer_text, :correct => answer.correct, 
+                                                                                              :explanation => answer.explanation}
+      if ((klass == DragDrop_MC) || (klass == DragDrop_SM))
+        @data[:"question-#{index}"][:answers]["#{id_klass}#{index + 1}-#{id_answer}".to_sym][:type] = "Hash"
+      else
+        insert_input(type_input, "#{id_klass}#{index + 1}-#{id_answer}", "#{id_klass}#{index + 1}", klass_input, answer)
+      end
+      id_answer += 1
+    end
+  end
+  
+  def insert_drag_drop_keys(keys, id, q, index, klass, clone)
+    @h.div(:id => "col1-q#{q}-#{id}", :class => 'col1') do |d|
+      keys.each do |k|
+        @h.button(:class => "btn btn-default btn-sm disabled button-q#{q}-#{id}", :draggable => 'false') do |b|
+          b << k
+        end
+        @h.br
+      end
+    end
+    @h.div(:id => "col2-q#{q}-#{id}", :class => 'col2') do 
+      keys.length.times do |i|
+        if (id =~ /qddmc/)
+          @h.input(:id => "#{id}#{index + 1}-#{i + 1}", :type => 'text', :class => klass, :ondrop => "drop(event, '#{id}#{index + 1}-#{i + 1}', #{clone})", :ondragover => "allowDrop(event)")
+          @h.br
+        elsif (id =~ /qddsm/)
+          @h.div(:id => "#{id}#{index + 1}-#{i + 1}", :type => 'text', :class => klass, :ondrop => "drop(event, '#{id}#{index + 1}-#{i + 1}', #{clone})", :ondragover => "allowDrop(event)") do end
+        end
+      end
+    end
+  end
+  
+  def insert_drag_drop_values(d, values, id, index)
+    counter = 1
+    d << translate(:answers, '') + ": " if id =~ /qddsm/
+    values.each do |v|
+      @h.button(:id => "#{id}a#{index + 1}-#{counter}", :class => "btn btn-default btn-sm button-#{id}", :draggable => 'true', :ondragstart => 'drag(event)') do |b|
+        b << v           
+      end
+      counter += 1
+      @h.br if id =~ /qddmc/
+    end
+  end
+  
   def render_multiple_choice(q,index)
     render_question_text(q, index) do
       answers =
@@ -118,62 +184,22 @@ class HtmlFormRenderer
         else q.answers
         end
       @h.ol :class => 'answers' do
-        id_answer = 1
         
         if (q.class == DragDrop_MC)
           keys, values = [], []
-          answers.each do |a|
-            keys << a.answer_text.keys[0].to_s
-            values << a.answer_text.values[0].to_s
-          end
+          get_drag_drop_answers(answers, keys, values)
           values.sort_by! { rand }
         end
         
-        answers.each do |answer|
-          # Store answers for question-index
-          if (q.class == MultipleChoice)
-            @data[:"question-#{index}"][:answers]["qmc#{index + 1}-#{id_answer}".to_sym] = {:answer_text => answer.answer_text, :correct => answer.correct, 
-                                                                                            :explanation => answer.explanation} 
-          else # DragDrop_MC
-            @data[:"question-#{index}"][:answers]["qddmc#{index + 1}-#{id_answer}".to_sym] = {:answer_text => answer.answer_text, :correct => answer.correct, 
-                                                                                              :explanation => answer.explanation, :type => "Hash"}
-          end
-          
-          if (q.class == MultipleChoice)
-            @h.input(:type => 'radio', :id => "qmc#{index + 1}-#{id_answer}", :name => "qmc#{index + 1}", :class => 'select') { |p| 
-              p << answer.answer_text
-              p << "<br class=qmc#{index + 1}-#{id_answer}br>"
-            }
-            @h.div(:id => "qmc#{index + 1}-#{id_answer}r", :class => 'quiz') do
-            end
-          end
-          id_answer += 1
-        end
+        # Store answers for question-index
+        ((q.class == MultipleChoice) || (q.class == TrueFalse)) ? id_klass = "qmc" : id_klass = "qddmc"
+        store_answers(answers, index, q.class, id_klass, 'radio', 'select')
         
         if (q.class == DragDrop_MC)
           @h.div do
-            @h.div(:id => 'col1', :class => 'col1') do |d|
-              keys.each do |k|
-                @h.button(:class => 'btn btn-default btn-sm disabled button-qddmc', :draggable => 'false') do |b|
-                  b << k
-                end
-                @h.br
-              end
-            end
-            @h.div(:id => 'col2', :class => 'col2') do 
-              keys.length.times do |i|
-                @h.input(:id => "qddmc#{index + 1}-#{i + 1}", :type => 'text', :class => "dragdropmc input-qddmc", :ondrop => "drop(event, 'qddmc#{index + 1}-#{i + 1}', true)", :ondragover => "allowDrop(event)")
-                @h.br
-              end
-            end
-            @h.div(:id => 'col3', :class => 'col3') do |d|
-              counter = 1
-              values.each do |v|
-                @h.button(:id => "qddmca#{index + 1}-#{counter}", :class => 'btn btn-default btn-sm button-qddmc', :draggable => 'true', :ondragstart => 'drag(event)') { |b|
-                  b << v                                                                                                                                                                      }
-                counter += 1
-                @h.br
-              end
+            insert_drag_drop_keys(keys, 'qddmc', index + 1, index, "dragdropmc input-qddmc", true)
+            @h.div(:id => "col3-q#{index}-qddmc", :class => 'col3') do |d|
+              insert_drag_drop_values(d, values, 'qddmc', index)
             end
           end
           @h.div(:class => 'clear-qdd')
@@ -194,66 +220,24 @@ class HtmlFormRenderer
       else q.answers
       end
       @h.ol :class => 'answers' do
-        id_answer = 1
         
         if (q.class == DragDrop_SM)
           keys, values = [], []
-          answers.each do |a|
-            keys << a.answer_text.keys[0].to_s
-            a.answer_text.each_value do |v|
-              values << v
-            end
-          end
+          get_drag_drop_answers(answers, keys, values)
           values.flatten!.sort_by! { rand }
         end
         
-        answers.each do |answer|
-          # Store answers for question-index
-          if (q.class == SelectMultiple)
-            @data[:"question-#{index}"][:answers]["qsm#{index + 1}-#{id_answer}".to_sym] = {:answer_text => answer.answer_text, :correct => answer.correct, 
-                                                                                            :explanation => answer.explanation}
-          else # DragDrop_SM
-            @data[:"question-#{index}"][:answers]["qddsm#{index + 1}-#{id_answer}".to_sym] = {:answer_text => answer.answer_text, :correct => answer.correct, 
-                                                                                            :explanation => answer.explanation, :type => "Hash"}
-          end
-          
-          if (q.class == SelectMultiple)
-            @h.input(:type => 'checkbox', :id => "qsm#{index + 1}-#{id_answer}", :class => 'check') { |p| 
-              p << answer.answer_text
-              p << "<br class=qsm#{index + 1}-#{id_answer}br>"
-            }
-            @h.div(:id => "qsm#{index + 1}-#{id_answer}r", :class => 'quiz') do
-            end
-          end
-          id_answer += 1
-        end
+        # Store answers for question-index
+        q.class == SelectMultiple ? id_klass = "qsm" : id_klass = "qddsm"
+        store_answers(answers, index, q.class, id_klass, 'checkbox', 'check')
         
         if (q.class == DragDrop_SM)
           @h.div do
-            @h.div(:id => 'col1', :class => 'col1') do |d|
-              keys.each do |k|
-                @h.button(:class => 'btn btn-default btn-sm disabled button-qddsm', :draggable => 'false') do |b|
-                  b << k
-                end
-                @h.br
-              end
-            end
-            @h.div(:id => 'col2', :class => 'col2sm') do 
-              keys.length.times do |i|
-                @h.div(:id => "qddsm#{index + 1}-#{i + 1}", :type => 'text', :class => "dragdropsm", :ondrop => "drop(event, 'qddsm#{index + 1}-#{i + 1}', false)", :ondragover => "allowDrop(event)") do end
-              end
-            end
+            insert_drag_drop_keys(keys, 'qddsm', index + 1, index, "dragdropsm", false)
             @h.div(:class => 'clear-qdd')
             @h.br
-            @h.div(:id => "answers_qddsm", :ondrop => "drop(event, 'answers_qddsm', false)", :ondragover => "allowDrop(event)") do |d|
-              counter = 1
-              d << translate(:answers, '') + ": " 
-              values.each do |v|
-                @h.button(:id => "qddsma#{index + 1}-#{counter}", :class => 'btn btn-default btn-sm button-qddsm', :draggable => 'true', :ondragstart => 'drag(event)') do |b|
-                  b << v
-                end
-                counter += 1
-              end
+            @h.div(:id => "answers-q#{index + 1}-qddsm", :ondrop => "drop(event, 'answers-q#{index + 1}-qddsm', false)", :ondragover => "allowDrop(event)") do |d|
+              insert_drag_drop_values(d, values, 'qddsm', index)
             end
           end
           
@@ -294,11 +278,8 @@ class HtmlFormRenderer
     render_question_text(q, idx) do
       
       question_comment(q)
-      if (q.class == FillIn)
-        class_question = "qfi"
-      elsif (q.class == DragDrop_FI)
-        class_question = "qddfi"
-      end
+      q.class == FillIn ? class_question = "qfi" : class_question = "qddfi"
+      
       # Store answers for question-idx
       answer = q.answers[0]
       distractor = q.answers[1..-1]
@@ -347,6 +328,37 @@ class HtmlFormRenderer
     self
   end
   
+  def hyphens_to_inputs(question, index)
+    hyphen = question.question_text.scan(/(?<!\\)---+/)
+    hyphen.length.times { |i|
+                          nHyphen = hyphen[i].count('-')
+                          @size_inputs << nHyphen
+                          input = %Q{<input type="text" id="qfi#{index + 1}-#{i + 1}" class="fillin size-#{nHyphen}"></input>} if question.class == FillIn
+                          input = %Q{<input id="qddfi#{index + 1}-#{i + 1}" class="dragdropfi size-#{nHyphen}" ondrop="drop(event,'qddfi#{index + 1}-#{i + 1}', true)" 
+                          ondragover="allowDrop(event)"></input>} if question.class == DragDrop_FI
+                          question.question_text.sub!(/(?<!\\)---+/, input)
+                        }
+    question.question_text.gsub!(/\\-/, '-')
+    
+    if (question.class == FillIn)
+      question.question_text << %Q{<div id="qfi#{index + 1}-#{hyphen.length}r" class="quiz"></div></br></br>} 
+    
+    elsif (question.class == DragDrop_FI)
+      question.question_text << "<br/><br/>"
+      question.question_text << "<div> #{translate(:answers, '')}: "
+      question.answers[0].answer_text.each_with_index do |a, i|
+        @size_divs << a.to_s.length
+        question.question_text << %Q{<button class="dragdropfi size-#{a.to_s.length} btn btn-default btn-sm" id="qddfia#{i + 1}-#{i + 1}" draggable="true" 
+        ondragstart="drag(event)">#{a}</button>&nbsp&nbsp}
+      end
+      question.question_text << "<div/>"
+      question.question_text << "</br></br>"
+      
+    else 
+      question.raw? ? question.question_text : question.question_text << "<br></br>"
+    end
+  end
+  
   def render_question_text(question,index)
     html_args = {
       :id => "question-#{index}",
@@ -358,41 +370,7 @@ class HtmlFormRenderer
         questionText = question.question_text.clone
         qtext = "[#{question.points} point#{'s' if question.points>1}] " <<
           ('Select ALL that apply: ' if question.multiple).to_s <<
-          if question.class == FillIn
-            hyphen = question.question_text.scan(/(?<!\\)---+/)
-            hyphen.length.times { |i|
-                                 nHyphen = hyphen[i].count('-')
-                                 @size_inputs << nHyphen
-                                 input = %Q{<input type="text" id="qfi#{index + 1}-#{i + 1}" class="fillin size-#{nHyphen}"></input>}
-                                 question.question_text.sub!(/(?<!\\)---+/, input)
-                                }
-            question.question_text.gsub!(/\\-/, '-')
-            question.question_text << %Q{<div id="qfi#{index + 1}-#{hyphen.length}r" class="quiz"></div></br></br>}
-            
-          elsif question.class == DragDrop_FI
-            hyphen = question.question_text.scan(/(?<!\\)---+/)
-            hyphen.length.times { |i|
-                                 nHyphen = hyphen[i].count('-')
-                                 @size_inputs << nHyphen
-                                 attr = %Q{id="qddfi#{index + 1}-#{i + 1}" class="dragdropfi size-#{nHyphen}" ondrop="drop(event,'qddfi#{index + 1}-#{i + 1}', true)" ondragover="allowDrop(event)"}
-                                 question.question_text.sub!(/(?<!\\)---+/, "<input #{attr}></input>")
-                                }
-            question.question_text.gsub!(/\\-/, '-')
-            question.question_text << "<br/><br/>"
-            question.question_text << "<div> #{translate(:answers, '')}: "
-            question.answers[0].answer_text.each_with_index do |a, i|
-              @size_divs << a.to_s.length
-              question.question_text << %Q{<button class="dragdropfi size-#{a.to_s.length} btn btn-default btn-sm" id="qddfia#{i + 1}-#{i + 1}" draggable="true" ondragstart="drag(event)">#{a}</button>&nbsp&nbsp}
-            end
-            question.question_text << "<div/>"
-            question.question_text << "</br></br>"
-          else 
-            if (question.raw?)
-              question.question_text
-            else
-              question.question_text << "<br></br>"
-            end
-          end
+          hyphens_to_inputs(question, index)
           
           # Hash with questions and all posibles answers
           if ((question.class == FillIn) || (question.class == DragDrop_FI))
@@ -447,7 +425,7 @@ class HtmlFormRenderer
     insert_defaultCSS
     insert_html(h) if @html
     insert_contextMenu_css(false)
-    insert_css(false) if @css
+    insert_css_js(false, @css, 'css') if @css
     insert_mathjax(false)
     insert_codemirror(false)
   end
@@ -456,7 +434,7 @@ class HtmlFormRenderer
     insert_jQuery(b, false)
     insert_contextMenu(false)
     insert_xregexp(false)
-    insert_js(false) if @js
+    insert_css_js(false, @js, 'js') if @js
     insert_codemirror_object(false)
     insert_drag_drop(false)
     yml_to_json(false)
@@ -473,23 +451,29 @@ class HtmlFormRenderer
     end
   end
   
-  def insert_css(template)
+  def insert_css_js(template, attr, type)
     code = ""
-    if (@css.class == Array)
+    if (attr.class == Array)
       if (template)
-        @css.each do |file|
-          code << %Q{<link rel="stylesheet" type="text/css" href="#{File.expand_path(file)}" />\n}
+        attr.each do |file|
+          code << %Q{<link rel="stylesheet" type="text/css" href="#{File.expand_path(file)}" />\n} if type == 'css'
+          code << %Q{<script type="text/javascript" src="#{File.expand_path(file)}"></script>\n} if type == 'js'
         end
       else
-        @css.each do |file|
-          @h.link(:rel => 'stylesheet', :type =>'text/css', :href => File.expand_path(file))
+        attr.each do |file|
+          @h.link(:rel => 'stylesheet', :type =>'text/css', :href => File.expand_path(file)) if type == 'css'
+          @h.script(:type => 'text/javascript', :src => "#{File.expand_path(file)}") do
+          end if type == 'js'
         end
       end
     else
       if (template)
-        code << %Q{<link rel="stylesheet" type="text/css" href="#{File.expand_path(@css)}" />}
+        code << %Q{<link rel="stylesheet" type="text/css" href="#{File.expand_path(attr)}" />} if type == 'css'
+        code << %Q{<script type="text/javascript" src="#{File.expand_path(@js)}"></script>\n} if type == 'js'
       else
-        @h.link(:rel => 'stylesheet', :type =>'text/css', :href => File.expand_path(@css))
+        @h.link(:rel => 'stylesheet', :type =>'text/css', :href => File.expand_path(attr)) if type == 'css'
+        @h.script(:type => 'text/javascript', :src => "#{File.expand_path(@js)}") do
+        end if type == 'js'
       end
     end
     code if template
@@ -692,31 +676,7 @@ class HtmlFormRenderer
     }
     insert_in_template(code, tags, 'script', template)
   end
-  
-  def insert_js(template)
-    code = ""
-    if (@js.class == Array)
-      if (template)
-        @js.each do |file|
-          code << %Q{<script type="text/javascript" src="#{File.expand_path(file)}"></script>\n}
-        end
-      else
-        @js.each do |file|
-            @h.script(:type => 'text/javascript', :src => "#{File.expand_path(file)}") do
-            end
-        end
-      end
-    else
-      if (template)
-        code << %Q{<script type="text/javascript" src="#{File.expand_path(@js)}"></script>\n}
-      else
-        @h.script(:type => 'text/javascript', :src => "#{File.expand_path(@js)}") do
-        end
-      end
-    end
-    code if template
-  end
-  
+
   def load_yml
     I18n.enforce_available_locales = false if I18n.respond_to?('enforce_available_locales')
     files = []

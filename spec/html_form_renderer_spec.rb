@@ -44,16 +44,16 @@ describe HtmlFormRenderer do
       f = Tempfile.new('spec')
       f.write str
       f.close
-      return f.path
+      return f
     end
     before :each do
       @atts = {:title => 'My Quiz', :points => 20, :num_questions => 5} 
-      #@quiz = double('quiz', @atts.merge(:questions => []))
+      @quiz = Quiz.new('quiz', @atts.merge(:questions => []))
     end
     %w(title total_points num_questions).each do |var|
       it "should set '#{var}'" do
         value = @atts[var]
-        HtmlFormRenderer.new(Quiz.new(''), 't' => write_template("#{var}: <%= #{value} 
+        HtmlFormRenderer.new(@quiz, 't' => write_template("#{var}: <%= #{value} 
 %>")).render_quiz.output.
           should match /#{var}: #{value}/
       end
