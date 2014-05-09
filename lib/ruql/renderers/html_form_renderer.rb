@@ -28,6 +28,7 @@ class HtmlFormRenderer
     @data = {}
     @size_inputs = []
     @size_divs = []
+    @size_dd_divs = []
     @language = (Locale.current[0].language || 'en').to_sym
   end
 
@@ -76,6 +77,7 @@ class HtmlFormRenderer
     @sass = ''
     @sass = insert_sass('input') if !@size_inputs.empty?
     @sass << insert_sass('div') if !@size_divs.empty?
+    @sass << insert_sass('dd_div') if !@size_dd_divs.empty?
     
     # the ERB template includes 'yield' where questions should go:
     output = ERB.new(IO.read(File.expand_path @template)).result(binding)
@@ -176,6 +178,24 @@ class HtmlFormRenderer
     end
   end
   
+  def get_max_length_select_multiple_div(answers)
+    max = []
+    answers.each do |item| 
+      item.answer_text.each_value do |a|
+        local_max = 0
+        if (a.class == Array)
+          a.each do |value|
+            local_max += value.length
+          end
+        else
+          local_max += a.length
+        end
+        max << local_max
+      end
+    end
+    max.max
+  end
+  
   def render_multiple_choice(q,index)
     render_question_text(q, index) do
       answers =
@@ -232,8 +252,11 @@ class HtmlFormRenderer
         store_answers(answers, index, q.class, id_klass, 'checkbox', 'check')
         
         if (q.class == DragDrop_SM)
+          max = get_max_length_select_multiple_div(answers)
+          @size_dd_divs << max
+          
           @h.div do
-            insert_drag_drop_keys(keys, 'qddsm', index + 1, index, "dragdropsm", false)
+            insert_drag_drop_keys(keys, 'qddsm', index + 1, index, "dragdropsm size-#{max}", false)
             @h.div(:class => 'clear-qdd')
             @h.br
             @h.div(:id => "answers-q#{index + 1}-qddsm", :ondrop => "drop(event, 'answers-q#{index + 1}-qddsm', false)", :ondragover => "allowDrop(event)") do |d|
@@ -484,7 +507,8 @@ class HtmlFormRenderer
     if (tag == 'input')
       @size_inputs.uniq.sort.each { |sz| sass << "input.size-#{sz.to_s} { width: #{sz-(sz*0.3)}em}"}
     else
-      @size_divs.uniq.sort.each { |sz| sass << "div.size-#{sz.to_s} { width: #{sz-(sz*0.3)}em; display: inline;}"}
+      @size_divs.uniq.sort.each { |sz| sass << "div.size-#{sz.to_s} { width: #{sz-(sz*0.3)}em; display: inline;}"} if tag == 'div'
+      @size_dd_divs.uniq.sort.each { |sz| sass << "div.size-#{sz.to_s} { width: #{sz-(sz*0.25)}em;}"} if tag == 'dd_div'
     end
     engine = Sass::Engine.new(sass, :syntax => :scss)
     engine.options[:style] = :compact
