@@ -58,7 +58,7 @@ end
 desc "Install Ruql using RVM"
 task :install do
   sh "gem build ruql.gemspec"
-  sh "gem install ./ruql-0.0.3.gem"
+  sh "gem install ./ruql-0.0.4.gem"
 end
 
 desc "Uninstall Ruql"

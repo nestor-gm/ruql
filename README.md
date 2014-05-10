@@ -91,7 +91,7 @@ fill_in do
 end
 ```
 
-Another notation is allowed to fill_in questions for HTML Form renderer:
+Another notation is allowed to fill_in questions for HTML Form renderer when all answers are strings:
 
 ```ruby
 fill_in do
@@ -108,20 +108,6 @@ fill_in do
     Write two numbers x = ---- e  y = ---- which multiplication's result would be equal to 100
   }
   answer JS.new(%q{result = function(x,y) { return (x * y === 100); }})
-end
-```
-
-Drag-and-Drop questions
-------------------------------------------------------
-
-This type of questions is only supported in the HTML Form renderer. The syntax is similar to the fill_in
-questions. It's compatible with his optional arguments. The only restriction is that all the answers must be
-strings or numbers:
-
-```ruby
-drag_drop do
-  text 'The ---- brown fox jumped over the lazy ----'
-  answer ['fox', 'dog'], :explanation => 'This sentence contains all of the letters of the English Alphabet'
 end
 ```
 
@@ -165,7 +151,7 @@ away so don't rely on it.
 Multiple-choice "select all that apply" questions
 -------------------------------------------------
 
-These use the same syntax as single-choice quetsions, but multiple
+These use the same syntax as single-choice questions, but multiple
 `answer` clauses are allowed:
 
 ```ruby
@@ -189,6 +175,56 @@ shortcut syntax for them.
 ```ruby
 truefalse 'The week has 7 days.', true
 truefalse 'The earth is flat.', false, :explanation => 'No, just looks that way'
+```
+
+Drag-and-Drop questions
+-----------------------
+
+This kind of questions is only supported in the HTML Form renderer. There are three types:
+
+### Drag-and-Drop fill_in question
+
+The syntax is quite similar to the fill_in questions. The only restriction is that all the answers must be
+strings or numbers:
+
+```ruby
+drag_drop_fill_in do
+  text 'The ---- brown fox jumped over the lazy ----'
+  answer ['fox', 'dog'], :explanation => 'This sentence contains all of the letters of the English Alphabet'
+end
+```
+
+### Drag-and-Drop multiple-choice question
+
+```ruby
+drag_drop_choice_answer do
+  text  "Relate these concepts"
+  relation :Facebook => 'Mark Zuckerberg', :Twitter => 'Jack Dorsey'
+end
+```
+
+### Drag-and-Drop select-multiple question
+
+```ruby
+drag_drop_select_multiple do
+  text  "Relate these concepts"
+  relation :Ruby => ['Sinatra', 'Rails'], :JavaScript => 'jQuery'
+end
+```
+
+Programming questions
+---------------------
+
+This kind of question generate a textarea where the code can be typed. It's possible to customize
+the height and the width of the textarea using `:height` and `:width`. 
+
+As the validation take place in the client's browser, JavaScript code is the only language supported.
+
+```ruby
+programming :language => :javascript, :height => 150, :width => 800  do
+  text %q{Write a JavaScript function named 'suma' with two arguments that return the sum of them}
+  answer JS.new(:'examples/test_suma.js')
+end
 ```
 
 Preparing a quiz
@@ -283,12 +319,16 @@ the default header/footer:
 Besides, this renderer has the following features:
 + JavaScript validation of answers.
 + Local Storage for answers.
++ Context menu on right-click event to show answers (strings, regexps or numbers) of fill_in questions.
 + English and Spanish languages supported.
 + The options of Ruby Regexps support -s option. (Using XRegExp)  - http://xregexp.com/
 + Used the MathJax library to use LaTeX expressions - http://www.mathjax.org/. 
 Use a slash for the braces if you use a single quote ('\\{\\}') or two slashes for double quotes ("\\\\{\\\\}").
 
 In the [examples' directory](http://github.com/jjlabrador/ruql/blob/develop/examples/example.rb) there's an example quiz that contains all the features of this renderer.
+Use `rake example` to generate it (executing the source code).
+
+To a local installation of the gem, use `rake install`.
 
 Creating an AutoQCM quiz
 ------------------------
