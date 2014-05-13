@@ -338,8 +338,8 @@ function checkAnswer(x) {
       }
     }
     
-    else if ($("#" + x.toString() + " div[id^=qddsm").length != 0) {
-      answers = $("#" + x.toString() + " div[id^=qddsm");
+    else if ($("#" + x.toString() + " div[id^=qddsm]").length != 0) {
+      answers = $("#" + x.toString() + " div[id^=qddsm]");
       userAnswers = {};
       allEmpty = true;
       
@@ -352,7 +352,7 @@ function checkAnswer(x) {
         for (i = 0; i < answers.length; i++) {
           answer = [];
           for (j = 0; j < answers[i].children.length; j++)
-            answer.push(answers[i].children[j].innerText);
+            answer.push(answers[i].children[j].innerHTML);
           userAnswers[answers[i].id] = answer;
         }
         
@@ -517,7 +517,7 @@ function clearTextarea() {
 }
 
 function trimButtons() {
-  buttons = $('button');
+  buttons = $('a');
   $.each(buttons, function(i, v) {
     v.textContent = v.textContent.trim();
   });
@@ -528,18 +528,8 @@ function showOrHideAnswer(numQuestion, flag) {
   typeQuestion = Object.keys(answers)[0].split('-')[0].slice(0, 3);
   numQuestion = (++numQuestion).toString();
   
-  if (typeQuestion.match(/^qfi$/)) {
-    inputs = $("input[id^=qfi" + numQuestion + "-");
-    
-    $.each(inputs, function(index, value) {
-      if (flag == 1)
-        $("input[id=" + value.id).val(answers[value.id]['answer_text']);
-      else
-        $("input[id=" + value.id).val('');
-    });
-  }
-  else if (typeQuestion.match(/^qmc$/)){
-    inputs = $("input[id^=qmc" + numQuestion + "-");
+  if (typeQuestion.match(/^qmc$/)){
+    inputs = $("input[id^=qmc" + numQuestion + "-]");
     correct = '';
     
     $.each(answers, function(key, value) {
@@ -548,12 +538,12 @@ function showOrHideAnswer(numQuestion, flag) {
     })
     
     if (flag == 1)
-      $("input[id=" + correct).prop('checked', true);
+      $("input[id=" + correct + "]").prop('checked', true);
     else
-      $("input[id=" + correct).prop('checked', false);
+      $("input[id=" + correct + "]").prop('checked', false);
   }
-  else {
-    inputs = $("input[id^=qsm" + numQuestion + "-");
+  else if (typeQuestion.match(/^qsm$/)) {
+    inputs = $("input[id^=qsm" + numQuestion + "-]");
     corrects = [];
     $.each(answers, function(key, value) {
       if (answers[key]['correct'] == true)
@@ -562,9 +552,9 @@ function showOrHideAnswer(numQuestion, flag) {
     
     $.each(corrects, function(index, value) {
       if (flag == 1)
-        $("input[id=" + value).prop('checked', true);
+        $("input[id=" + value + "]").prop('checked', true);
       else
-        $("input[id=" + value).prop('checked', false);
+        $("input[id=" + value + "]").prop('checked', false);
     });
   }
 }
@@ -598,12 +588,12 @@ $("#deleteStorage").click(function() {
   reload();
 });
 
-$("button[id^=show-answer-q-").click(function() {
+$("a[id^=show-answer-q-]").click(function() {
   numQuestion = parseInt($(this).attr('id').split('-')[3]);
   changeButton($(this), numQuestion);
 });
 
-$("button[id^=q-").click(function() {
+$("a[id^=q-]").click(function() {
   nQuestion = $(this).attr('id').split('-')[1];
   checkAnswer('question-' + nQuestion);
   storeAnswers();

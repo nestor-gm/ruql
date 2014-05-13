@@ -148,7 +148,7 @@ class HtmlFormRenderer
   def insert_drag_drop_keys(keys, id, q, index, klass, clone)
     @h.div(:id => "col1-q#{q}-#{id}", :class => 'col1') do |d|
       keys.each do |k|
-        @h.button(:class => "btn btn-default btn-sm disabled button-q#{q}-#{id}", :draggable => 'false') do |b|
+        @h.a(:class => "btn btn-default btn-sm disabled button-q#{q}-#{id}", :draggable => 'false') do |b|
           b << k
         end
         @h.br
@@ -170,7 +170,7 @@ class HtmlFormRenderer
     counter = 1
     d << translate(:answers, '') + ": " if id =~ /qddsm/
     values.each do |v|
-      @h.button(:id => "#{id}a#{index + 1}-#{counter}", :class => "btn btn-default btn-sm button-#{id}", :draggable => 'true', :ondragstart => 'drag(event)') do |b|
+      @h.a(:id => "#{id}a#{index + 1}-#{counter}", :class => "btn btn-default btn-sm button-#{id}", :draggable => 'true', :ondragstart => 'drag(event)') do |b|
         b << v           
       end
       counter += 1
@@ -371,8 +371,8 @@ class HtmlFormRenderer
       question.question_text << "<div> #{translate(:answers, '')}: "
       question.answers[0].answer_text.each_with_index do |a, i|
         @size_divs << a.to_s.length
-        question.question_text << %Q{<button class="dragdropfi size-#{a.to_s.length} btn btn-default btn-sm" id="qddfia#{i + 1}-#{i + 1}" draggable="true" 
-        ondragstart="drag(event)">#{a}</button>&nbsp&nbsp}
+        question.question_text << %Q{<a class="dragdropfi size-#{a.to_s.length} btn btn-default btn-sm" id="qddfia#{i + 1}-#{i + 1}" draggable="true" 
+        ondragstart="drag(event)">#{a}</a>&nbsp&nbsp}
       end
       question.question_text << "<div/>"
       question.question_text << "</br></br>"
@@ -432,7 +432,7 @@ class HtmlFormRenderer
   end
   
   def insert_button(id, name, type)
-    @h.button(:type => 'button', :id => id, :class => type) do |b|
+    @h.a(:id => id, :class => type) do |b|
       b << name
     end
   end
@@ -651,7 +651,7 @@ class HtmlFormRenderer
       
       $(document).mousedown(function(e){ 
         if( e.button == 2 ) {
-          id_answer = e.toElement.id;
+          id_answer = e.target.id;
           if (id_answer.match(/^qfi/)) {
             numQuestion = parseInt(id_answer.split('-')[0].slice(3)) - 1;
             try {

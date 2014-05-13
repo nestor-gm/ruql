@@ -16,5 +16,5 @@ function drop(ev, id, clone) {
     ev.target.appendChild(document.getElementById(data));
   
   var val = document.getElementById(id);
-  val.value = document.getElementById(data).innerText;
+  val.value = document.getElementById(data).innerHTML;
 }

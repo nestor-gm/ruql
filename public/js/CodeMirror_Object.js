@@ -3,8 +3,9 @@ id_textareas = {};
 $("textarea").each(function() { 
   id_textareas[this.id] = {};
   id_textareas[this.id]['id'] = this.id;
-  id_textareas[this.id]['height'] = parseInt(this.attributes['4'].value);
-  id_textareas[this.id]['width'] = parseInt(this.attributes['5'].value);
+  numQuestion = parseInt(this.id.split('-')[0].slice(2)) - 1;
+  id_textareas[this.id]['height'] = data['question-' + numQuestion.toString()]['height'];
+  id_textareas[this.id]['width'] = data['question-' + numQuestion.toString()]['width'];
 });
 
 $.each(id_textareas, function(k,v) {
