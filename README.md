@@ -91,7 +91,18 @@ fill_in do
 end
 ```
 
-Another notation is allowed to fill_in questions for HTML Form renderer when all answers are strings:
+Another two notations are allowed to fill_in questions for HTML Form renderer:
+
+Hash notation: it allows all kind of answers
+
+```ruby
+fill_in do
+  text "The capital of Tenerife is -----{:santa} Cruz de --------{:tenerife}"
+  answer :santa => /Santa/i, :tenerife => /Tenerife/i
+end
+```
+
+Compact notation: this one only works when all answers are strings:
 
 ```ruby
 fill_in do
