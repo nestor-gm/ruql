@@ -1,7 +1,0 @@
-task :default => :s090414
-
-desc "Run Ruql with HtmlForm renderer (with a template). 090414 example."
-task :s090414 do
-  sh "ruby -I../lib ../bin/ruql 090414.rb HtmlForm -t ../templates/htmlform.html.erb > output2.html"
-end
-
