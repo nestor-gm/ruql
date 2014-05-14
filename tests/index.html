@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Mocha</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="mocha.css" />
+  </head>
+  <body>
+    <div id="mocha"></div>
+    
+    <ol class="questions">
+    <li id="question-0" class="question fillin ">
+      <div class="quiz text">
+[1 point] <i>Example of escaped HTML and three hyphens not evaluated:</i><br> &lt;a href=&quot;www.google.es&quot;&gt;&lt;/a&gt; <b>is</b> a --- <input type="text" id="qfi1_1" class="fillin 
+size-4"></input> ---<div id="qfi1-1r" class="quiz"></div></br></br>      </div>
+      <a id="q_0" class="btn btn-primary btn-sm">
+Enviar      </a>
+      <br>
+      </br>
+    </li>
+    <li id="question-1" class="question multiplechoice ">
+      <div class="quiz text">
+[1 point] What is the largest US state?<br></br>      </div>
+      <ol class="answers">
+        <input type="radio" id="qmc2_1" name="qmc2" class="select">
+Hawaii<br class="qmc2-1br">        </input>
+        <div id="qmc2-1r" class="quiz">
+        </div>
+        <input type="radio" id="qmc2_2" name="qmc2" class="select">
+Texas<br class="qmc2-2br">        </input>
+        <div id="qmc2-2r" class="quiz">
+        </div>
+        <input type="radio" id="qmc2_3" name="qmc2" class="select">
+Alaska<br class="qmc2-3br">        </input>
+        <div id="qmc2-3r" class="quiz">
+        </div>
+        <br/>
+      </ol>
+    </li>
+    <a id="show-answer-q-1" class="btn btn-success btn-sm">
+Mostrar respuesta    </a>
+    <a id="q_1" class="btn btn-primary btn-sm">
+Enviar    </a>
+    <br>
+    </br>
+    <li id="question-2" class="question selectmultiple multiple">
+      <div class="quiz text">
+[1 point] Select ALL that apply: Which are American political parties?<br></br>      </div>
+      <ol class="answers">
+        <input type="checkbox" id="qsm3_1" name="qsm3" class="check">
+Democrats<br class="qsm3-1br">        </input>
+        <div id="qsm3-1r" class="quiz">
+        </div>
+        <input type="checkbox" id="qsm3_2" name="qsm3" class="check">
+Republicans<br class="qsm3-2br">        </input>
+        <div id="qsm3-2r" class="quiz">
+        </div>
+        <input type="checkbox" id="qsm3_3" name="qsm3" class="check">
+Greens<br class="qsm3-3br">        </input>
+        <div id="qsm3-3r" class="quiz">
+        </div>
+        <input type="checkbox" id="qsm3_4" name="qsm3" class="check">
+Tories<br class="qsm3-4br">        </input>
+        <div id="qsm3-4r" class="quiz">
+        </div>
+        <input type="checkbox" id="qsm3_5" name="qsm3" class="check">
+Social Democrats<br class="qsm3-5br">        </input>
+        <div id="qsm3-5r" class="quiz">
+        </div>
+        <br/>
+      </ol>
+    </li>
+    <a id="show-answer-q-2" class="btn btn-success btn-sm">
+Mostrar respuesta    </a>
+    <a id="q_2" class="btn btn-primary btn-sm">
+Enviar    </a>
+    <br>
+    </br>
+    <li id="question-3" class="question truefalse ">
+      <div class="quiz text">
+[1 point] True or False: The earth is flat.<br></br>      </div>
+      <ol class="answers">
+        <input type="radio" id="qmc4_1" name="qmc4" class="select">
+True<br class="qmc4-1br">        </input>
+        <div id="qmc4-1r" class="quiz">
+        </div>
+        <input type="radio" id="qmc4_2" name="qmc4" class="select">
+False<br class="qmc4-2br">        </input>
+        <div id="qmc4-2r" class="quiz">
+        </div>
+        <br/>
+      </ol>
+    </li>
+    <a id="q_3" class="btn btn-primary btn-sm">
+Enviar    </a>
+    <br>
+    </br>
+  </ol>
+  
+  <script src="chai.js"></script>
+    <script src="mocha.js"></script>
+    <script src="../vendor/assets/jQuery/jquery-2.1.0.min.js"></script>
+    <script src="../public/js/Validator.js"></script>
+    <script>mocha.setup('tdd')</script>
+    <script type="text/javascript">
+data = {"question-0":{"answers":{"qfi1-1":{"answer_text":/^link$/,"correct":true}}},"question-1":
+{"answers":{"qmc2-1":{"answer_text":"Hawaii","correct":false},"qmc2-2":{"answer_text":"Texas","correct": 
+false},"qmc2-3":{"answer_text":"Alaska","correct":true}}},"question-2":{"answers":{"qsm3-1":
+{"answer_text":"Democrats","correct":true},"qsm3-2":{"answer_text":"Republicans","correct":true},"qsm3-3":{ 
+"answer_text":"Greens","correct":true},"qsm3-4":{"answer_text":"Tories","correct":false},"qsm3-5":
+{"answer_text":"Social Democrats","correct":false}}},"question-3":{"answers":{"qmc4-1":{"answer_text": 
+"True","correct":false},"qmc4-2":{"answer_text":"False","correct":true}}}};
+      timestamp = 1399994307;
+      timestamp = timestamp.toString();
+      language = 'es';
+      
+      i18n = {"es":{"quiz":{"title":"Cuestionario"},"questions":{"correct":"Correcto","incorrect":"Incorrecto","points":"puntos","score":"Puntuaci&oacute;n total","placeholder":
+      "Escribe tu código aquí"},"answers":"Respuestas","buttons":{"submit":"Enviar","reset":"Reset","delete":"Borrar respuestas","deleteAll":"Borrar almacenamiento","show":
+      "Mostrar respuesta","hide":"Ocultar respuesta"},"alerts":{"answers":"Respuestas borradas","storage":"Almacenamiento borrado","noStorage":
+      "El navegador no soporta almacenamiento de respuestas"},"exceptions":{"question":"Pregunta","text":"No se ha especificado el texto de la pregunta","answer":
+      "No se ha especificado ninguna respuesta"}}}
+    </script>
+    <script src="tests.js"></script>
+    <script>
+      mocha.run();
+    </script>
+  </body>
+</html>

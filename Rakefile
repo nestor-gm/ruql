@@ -65,3 +65,8 @@ desc "Uninstall Ruql"
 task :uninstall do
   sh "gem uninstall ruql"
 end
+
+desc "Run Mocha test"
+task :karma do
+  sh "karma start"
+end

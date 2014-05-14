@@ -476,14 +476,16 @@ function loadAnswers() {
   }
 }
 
-function deleteAnswers(all) {
+function deleteAnswers(all, flag) {
   if (all) {
     localStorage.clear();
-    alert(i18n[language]['alerts']['storage']);
+    if (flag)
+      alert(i18n[language]['alerts']['storage']);
   }
   else {
     localStorage.removeItem(timestamp);
-    alert(i18n[language]['alerts']['answers']);
+    if (flag)
+      alert(i18n[language]['alerts']['answers']);
   }
 }
 
@@ -579,12 +581,12 @@ $("#reset").click(function() {
 });
 
 $("#deleteAnswers").click(function() {
-  deleteAnswers(false);
+  deleteAnswers(false, 1);
   reload();
 });
 
 $("#deleteStorage").click(function() {
-  deleteAnswers(true);
+  deleteAnswers(true, 1);
   reload();
 });
 
