@@ -16,8 +16,9 @@ module.exports = function(config) {
     // list of files / patterns to load in the browser
     files: [
       'vendor/assets/jQuery/jquery-2.1.0.min.js',
-      'public/js/Validator.js',
-      'tests/*.*'
+      'tests/*.*',
+      'public/js/Validator.js'
+      
     ],
 
 
