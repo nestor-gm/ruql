@@ -16,12 +16,7 @@ class HtmlFormRenderer
     @html = options.delete('h') || options.delete('html')
     @show_solutions = options.delete('s') || options.delete('solutions')
     @template = options.delete('t')  ||
-      options.delete('template') ||
-      if (ENV['test'] == 'production')
-        File.join(Gem.loaded_specs['ruql'].full_gem_path, 'templates/htmlform.html.erb')
-      else
-        'templates/htmlform.html.erb'
-      end
+      options.delete('template')
     @output = ''
     @quiz = quiz
     @h = Builder::XmlMarkup.new(:target => @output, :indent => 2)
@@ -455,13 +450,13 @@ class HtmlFormRenderer
   
   def insert_resources_body(b)
     insert_jQuery(b, false)
+    insert_defaultJS(@quiz.points, false)
     insert_contextMenu(false)
     insert_xregexp(false)
     insert_css_js(false, @js, 'js') if @js
     insert_codemirror_object(false)
     insert_drag_drop(false)
     yml_to_json(false)
-    insert_defaultJS(@quiz.points, false)
   end
   
   def insert_html(h)
@@ -515,9 +510,18 @@ class HtmlFormRenderer
     engine.render
   end
   
+  def install_gem
+    Gem.loaded_specs['ruql']
+  end
+  
   def insert_jQuery(h, template)
-    jQuery2 = File.read(File.expand_path(Dir.pwd, '../../..') + '/vendor/assets/jQuery/jquery-2.1.0.min.js')
-    jQuery1 = File.read(File.expand_path(Dir.pwd, '../../..') + '/vendor/assets/jQuery/jquery-1.11.0.min.js')
+    if (install_gem == nil)
+      jQuery2 = File.read(File.expand_path(Dir.pwd, '../../..') + '/vendor/assets/jQuery/jquery-2.1.0.min.js')
+      jQuery1 = File.read(File.expand_path(Dir.pwd, '../../..') + '/vendor/assets/jQuery/jquery-1.11.0.min.js')
+    else
+      jQuery2 = File.read(File.join(Gem.loaded_specs['ruql'].full_gem_path, 'vendor/assets/jQuery/jquery-2.1.0.min.js'))
+      jQuery1 = File.read(File.join(Gem.loaded_specs['ruql'].full_gem_path, 'vendor/assets/jQuery/jquery-1.11.0.min.js'))
+    end
     
     if (template)
       code = %Q{
@@ -544,17 +548,27 @@ class HtmlFormRenderer
   end
   
   def insert_bootstrap_css
+    if (install_gem == nil)
+      css = File.read(File.expand_path(Dir.pwd, '../../..') + '/vendor/assets/Bootstrap-3.1.1/css/bootstrap.min.css')
+    else
+      css = File.read(File.join(Gem.loaded_specs['ruql'].full_gem_path, 'vendor/assets/Bootstrap-3.1.1/css/bootstrap.min.css'))
+    end
     %Q{
       <style type="text/css">
-        #{File.read(File.expand_path(Dir.pwd, '../../..') + '/vendor/assets/Bootstrap-3.1.1/css/bootstrap.min.css')}
+        #{css}
       </style>
     }
   end
   
   def insert_bootstrap_js
+    if (install_gem == nil)
+      js = File.read(File.expand_path(Dir.pwd, '../../..') + '/vendor/assets/Bootstrap-3.1.1/js/bootstrap.min.js')
+    else
+      js = File.read(File.join(Gem.loaded_specs['ruql'].full_gem_path, 'vendor/assets/Bootstrap-3.1.1/js/bootstrap.min.js'))
+    end
     %Q{
       <script type="text/javascript">
-        #{File.read(File.expand_path(Dir.pwd, '../../..') + '/vendor/assets/Bootstrap-3.1.1/js/bootstrap.min.js')}
+        #{js}
       </script>
     }
   end
@@ -576,7 +590,11 @@ class HtmlFormRenderer
   end
   
   def insert_xregexp(template)
-    code = File.read(File.expand_path(Dir.pwd, '../../..') + '/vendor/assets/XRegexp-2.0.0/xregexp-min.js')
+    if (install_gem == nil)
+      code = File.read(File.expand_path(Dir.pwd, '../../..') + '/vendor/assets/XRegexp-2.0.0/xregexp-min.js')
+    else
+      code = File.read(File.join(Gem.loaded_specs['ruql'].full_gem_path, 'vendor/assets/XRegexp-2.0.0/xregexp-min.js'))
+    end
     tags = %Q{
       <script type="text/javascript">
         #{code}
@@ -586,7 +604,11 @@ class HtmlFormRenderer
   end
   
   def insert_mathjax(template)
-    config = File.read(File.expand_path(Dir.pwd, '../../..') + '/public/js/MathJax_config.js')
+    if (install_gem == nil)
+      config = File.read(File.expand_path(Dir.pwd, '../../..') + '/public/js/MathJax_config.js')
+    else
+      config = File.read(File.join(Gem.loaded_specs['ruql'].full_gem_path, 'public/js/MathJax_config.js'))
+    end
     if (template)
       code = %Q{
         <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
@@ -605,10 +627,15 @@ class HtmlFormRenderer
   end
   
   def insert_codemirror(template)
-    css = File.read(File.expand_path(Dir.pwd, '../../..') + '/vendor/assets/CodeMirror-4.1.0/css/codemirror.css')
-    js = File.read(File.expand_path(Dir.pwd, '../../..') + '/vendor/assets/CodeMirror-4.1.0/js/codemirror.min.js')
-    mode_js = File.read(File.expand_path(Dir.pwd, '../../..') + '/vendor/assets/CodeMirror-4.1.0/mode/javascript/javascript.js')
-    
+    if (install_gem == nil)
+      css = File.read(File.expand_path(Dir.pwd, '../../..') + '/vendor/assets/CodeMirror-4.1.0/css/codemirror.css')
+      js = File.read(File.expand_path(Dir.pwd, '../../..') + '/vendor/assets/CodeMirror-4.1.0/js/codemirror.min.js')
+      mode_js = File.read(File.expand_path(Dir.pwd, '../../..') + '/vendor/assets/CodeMirror-4.1.0/mode/javascript/javascript.js')
+    else
+      css = File.read(File.join(Gem.loaded_specs['ruql'].full_gem_path, 'vendor/assets/CodeMirror-4.1.0/css/codemirror.css'))
+      js = File.read(File.join(Gem.loaded_specs['ruql'].full_gem_path, 'vendor/assets/CodeMirror-4.1.0/js/codemirror.min.js'))
+      mode_js = File.read(File.join(Gem.loaded_specs['ruql'].full_gem_path, 'vendor/assets/CodeMirror-4.1.0/mode/javascript/javascript.js'))
+    end
     if (template)
       tags = %Q{
         <style type="text/css">
@@ -635,7 +662,11 @@ class HtmlFormRenderer
   end
   
   def insert_codemirror_object(template)
-    code = File.read(File.expand_path(Dir.pwd, '../../..') + '/public/js/CodeMirror_Object.js')
+    if (install_gem == nil)
+      code = File.read(File.expand_path(Dir.pwd, '../../..') + '/public/js/CodeMirror_Object.js')
+    else
+      code = File.read(File.join(Gem.loaded_specs['ruql'].full_gem_path, 'public/js/CodeMirror_Object.js'))
+    end
     tags = %Q{
       <script type="text/javascript">
         #{code}
@@ -645,9 +676,16 @@ class HtmlFormRenderer
   end
   
   def insert_contextMenu(template)
+    if (install_gem == nil)
+      js1 = File.read(File.expand_path(Dir.pwd, '../../..') + '/vendor/assets/ContextJS/js/context.js')
+      js2 = File.read(File.expand_path(Dir.pwd, '../../..') + '/public/js/ContextJS_init.js')
+    else
+      js1 = File.read(File.join(Gem.loaded_specs['ruql'].full_gem_path, 'vendor/assets/ContextJS/js/context.js'))
+      js2 = File.read(File.join(Gem.loaded_specs['ruql'].full_gem_path, 'public/js/ContextJS_init.js'))
+    end
     code = %Q{
-      #{File.read(File.expand_path(Dir.pwd, '../../..') + '/vendor/assets/ContextJS/js/context.js')}
-      #{File.read(File.expand_path(Dir.pwd, '../../..') + '/public/js/ContextJS_init.js')}
+      #{js1}
+      #{js2}
       
       $(document).mousedown(function(e){ 
         if( e.button == 2 ) {
@@ -682,7 +720,11 @@ class HtmlFormRenderer
   end
   
   def insert_contextMenu_css(template)
-    code = File.read(File.expand_path(Dir.pwd, '../../..') + '/vendor/assets/ContextJS/css/context.standalone.css')
+    if (install_gem == nil)
+      code = File.read(File.expand_path(Dir.pwd, '../../..') + '/vendor/assets/ContextJS/css/context.standalone.css')
+    else
+      code = File.read(File.join(Gem.loaded_specs['ruql'].full_gem_path, 'vendor/assets/ContextJS/css/context.standalone.css'))
+    end
     tags = %Q{
       <style type="text/css">
         #{code}
@@ -692,7 +734,11 @@ class HtmlFormRenderer
   end
   
   def insert_drag_drop(template)
-    code = File.read(File.expand_path(Dir.pwd, '../../..') + '/public/js/Drag_Drop.js')
+    if (install_gem == nil)
+      code = File.read(File.expand_path(Dir.pwd, '../../..') + '/public/js/Drag_Drop.js')
+    else
+      code = File.read(File.join(Gem.loaded_specs['ruql'].full_gem_path, 'public/js/Drag_Drop.js'))
+    end
     tags = %Q{
       <script type="text/javascript">
         #{code}
@@ -704,12 +750,22 @@ class HtmlFormRenderer
   def load_yml
     I18n.enforce_available_locales = false if I18n.respond_to?('enforce_available_locales')
     files = []
-    Dir['config/locales/*.yml'].each { |path| files << File.expand_path(Dir.pwd, '../../..') + "/#{path}" }
+    Dir['config/locales/*.yml'].each do |path|
+      if (install_gem == nil)
+        files << File.expand_path(Dir.pwd, '../../..') + "/#{path}" 
+      else
+        files << File.join(Gem.loaded_specs['ruql'].full_gem_path, "#{path}") 
+      end
+    end
     I18n.load_path = files
   end
   
   def yml_to_json(template)
-    yml = File.read(File.expand_path(Dir.pwd, '../../..') + "/config/locales/#{@language.to_s}.yml")
+    if (install_gem == nil)
+      yml = File.read(File.expand_path(Dir.pwd, '../../..') + "/config/locales/#{@language.to_s}.yml")
+    else
+      yml = File.read(File.join(Gem.loaded_specs['ruql'].full_gem_path, "config/locales/#{@language.to_s}.yml"))
+    end
     data = YAML::load(yml)
     json = JSON.dump(data)
     code = %Q{
@@ -729,11 +785,20 @@ class HtmlFormRenderer
   
   def insert_defaultCSS
     @h.style do |s|
-      s << File.read(File.expand_path(Dir.pwd, '../../../') + '/public/css/Style.css')
+      if (install_gem == nil)
+        s << File.read(File.expand_path(Dir.pwd, '../../../') + '/public/css/Style.css')
+      else
+        s << File.read(File.join(Gem.loaded_specs['ruql'].full_gem_path, 'public/css/Style.css'))             
+      end
     end
   end
  
   def insert_defaultJS(totalPoints, template)
+    if (install_gem == nil)
+      js = File.read(File.expand_path(Dir.pwd, '../../../') + '/public/js/Validator.js')
+    else
+      js = File.read(File.join(Gem.loaded_specs['ruql'].full_gem_path, 'public/js/Validator.js'))
+    end
     code = %Q{
       data = #{@data.to_json};
       timestamp = #{Time.now.getutc.to_i}
@@ -742,7 +807,7 @@ class HtmlFormRenderer
       totalPoints = #{totalPoints};
       userPoints = 0;
       
-      #{File.read(File.expand_path(Dir.pwd, '../../../') + '/public/js/Validator.js')}
+      #{js}
     }
     tags = %Q{
       <script type="text/javascript">

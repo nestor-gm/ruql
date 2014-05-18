@@ -58,6 +58,34 @@ div.dragdropsm {
   border-radius: 5;
   border-style: solid;
   border-width: 1px;
+}
+
+.btn {
+  display: inline-block;
+  margin-bottom: 0;
+  font-weight: 400;
+  text-align: center;
+  vertical-align: middle;
+  cursor: pointer;
+  background-image: none;
+  border: 1px solid transparent;
+  white-space: nowrap;
+  padding: 6px 12px;
+  font-size: 14px;
+  line-height: 1.42857143;
+  border-radius: 4px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  border-color: #000;
+}
+
+.btn-sm, .btn-group-sm>.btn {
+  padding: 5px 10px;
+  font-size: 12px;
+  line-height: 1.5;
+  border-radius: 3px;
 }    </style>
     <style type="text/css">
 /**
@@ -1235,14 +1263,14 @@ CodeMirror.defineMIME("application/typescript", { name: "javascript", typescript
     </script>
   </head>
   <body>
-    <!-- Seed: 96127212777452346550344500280772620118 -->
+    <!-- Seed: 146311663398305536523901753943163031845 -->
     <form id="form">
       <ol class="questions">
         <li id="question-0" class="question fillin ">
           <div class="quiz text">
 [1 point] <i>Example of escaped HTML and three hyphens not evaluated:</i><br> &lt;a href=&quot;www.google.es&quot;&gt;&lt;/a&gt; <b>is</b> a --- <input type="text" id="qfi1-1" class="fillin size-4"></input> ---<div id="qfi1-1r" class="quiz"></div></br></br>          </div>
-          <button type="button" id="q-0" class="btn btn-primary btn-sm">
-Enviar          </button>
+          <a id="q-0" class="btn btn-primary btn-sm">
+Enviar          </a>
           <br>
           </br>
         </li>
@@ -1251,16 +1279,16 @@ Enviar          </button>
 [2 points] The visionary founder of Apple is <input type="text" id="qfi2-1" class="fillin size-8"></input><div id="qfi2-1r" class="quiz"></div></br></br>          </div>
           <p class="comment">
 Question too easy<br></br>          </p>
-          <button type="button" id="q-1" class="btn btn-primary btn-sm">
-Enviar          </button>
+          <a id="q-1" class="btn btn-primary btn-sm">
+Enviar          </a>
           <br>
           </br>
         </li>
         <li id="question-2" class="question fillin ">
           <div class="quiz text">
 [1 point] The <input type="text" id="qfi3-1" class="fillin size-4"></input> brown fox jumped over the lazy <input type="text" id="qfi3-2" class="fillin size-4"></input><div id="qfi3-2r" class="quiz"></div></br></br>          </div>
-          <button type="button" id="q-2" class="btn btn-primary btn-sm">
-Enviar          </button>
+          <a id="q-2" class="btn btn-primary btn-sm">
+Enviar          </a>
           <br>
           </br>
         </li>
@@ -1268,35 +1296,35 @@ Enviar          </button>
           <div class="quiz text">
 [1 point] The <input id="qddfi4-1" class="dragdropfi size-4" ondrop="drop(event,'qddfi4-1', true)" 
                           ondragover="allowDrop(event)"></input> brown fox jumped over the lazy <input id="qddfi4-2" class="dragdropfi size-4" ondrop="drop(event,'qddfi4-2', true)" 
-                          ondragover="allowDrop(event)"></input><br/><br/><div> Respuestas: <button class="dragdropfi size-3 btn btn-default btn-sm" id="qddfia1-1" draggable="true" 
-        ondragstart="drag(event)">fox</button>&nbsp&nbsp<button class="dragdropfi size-3 btn btn-default btn-sm" id="qddfia2-2" draggable="true" 
-        ondragstart="drag(event)">dog</button>&nbsp&nbsp<div/></br></br>          </div>
-          <button type="button" id="q-3" class="btn btn-primary btn-sm">
-Enviar          </button>
+                          ondragover="allowDrop(event)"></input><br/><br/><div> Respuestas: <a class="dragdropfi size-3 btn btn-default btn-sm" id="qddfia1-1" draggable="true" 
+        ondragstart="drag(event)">fox</a>&nbsp&nbsp<a class="dragdropfi size-3 btn btn-default btn-sm" id="qddfia2-2" draggable="true" 
+        ondragstart="drag(event)">dog</a>&nbsp&nbsp<div/></br></br>          </div>
+          <a id="q-3" class="btn btn-primary btn-sm">
+Enviar          </a>
           <br>
           </br>
         </li>
         <li id="question-4" class="question fillin ">
           <div class="quiz text">
 [1 point] The three stooges are <input type="text" id="qfi5-1" class="fillin size-5"></input>, <input type="text" id="qfi5-2" class="fillin size-4"></input>, and <input type="text" id="qfi5-3" class="fillin size-5"></input>.<div id="qfi5-3r" class="quiz"></div></br></br>          </div>
-          <button type="button" id="q-4" class="btn btn-primary btn-sm">
-Enviar          </button>
+          <a id="q-4" class="btn btn-primary btn-sm">
+Enviar          </a>
           <br>
           </br>
         </li>
         <li id="question-5" class="question fillin ">
           <div class="quiz text">
 [1 point] The three stooges are <input type="text" id="qfi6-1" class="fillin size-5"></input>, <input type="text" id="qfi6-2" class="fillin size-4"></input>, and <input type="text" id="qfi6-3" class="fillin size-5"></input>.<div id="qfi6-3r" class="quiz"></div></br></br>          </div>
-          <button type="button" id="q-5" class="btn btn-primary btn-sm">
-Enviar          </button>
+          <a id="q-5" class="btn btn-primary btn-sm">
+Enviar          </a>
           <br>
           </br>
         </li>
         <li id="question-6" class="question fillin ">
           <div class="quiz text">
 [1 point] The capital of Tenerife is <input type="text" id="qfi7-1" class="fillin size-5"></input> Cruz de <input type="text" id="qfi7-2" class="fillin size-8"></input><div id="qfi7-2r" class="quiz"></div></br></br>          </div>
-          <button type="button" id="q-6" class="btn btn-primary btn-sm">
-Enviar          </button>
+          <a id="q-6" class="btn btn-primary btn-sm">
+Enviar          </a>
           <br>
           </br>
         </li>
@@ -1305,24 +1333,23 @@ Enviar          </button>
 [1 point] 
       Diga dos números x = <input type="text" id="qfi8-1" class="fillin size-4"></input> e  y = <input type="text" id="qfi8-2" class="fillin size-4"></input> que multiplicados den 100
     <div id="qfi8-2r" class="quiz"></div></br></br>          </div>
-          <button type="button" id="q-7" class="btn btn-primary btn-sm">
-Enviar          </button>
+          <a id="q-7" class="btn btn-primary btn-sm">
+Enviar          </a>
           <br>
           </br>
         </li>
         <li id="question-8" class="question programming ">
           <div class="quiz text">
-[1 point] Escriba una función JavaScript llamada `suma` que recibe dos números 
-    y devuelve la suma<br></br>          </div>
+[1 point] Write a JavaScript function named `suma` with two arguments that return the sum of them<br></br>          </div>
           <ol class="answers">
-            <textarea id="qp9-1" class="programming" rows="5" cols="80" height="800" width="150" placeholder="Escribe tu código aquí...">
+            <textarea id="qp9-1" class="programming" rows="5" cols="80" height="150" width="800" placeholder="Escribe tu código aquí...">
             </textarea>
             <br/>
             <br/>
           </ol>
         </li>
-        <button type="button" id="q-8" class="btn btn-primary btn-sm">
-Enviar        </button>
+        <a id="q-8" class="btn btn-primary btn-sm">
+Enviar        </a>
         <br>
         </br>
         <li id="question-9" class="question fillin ">
@@ -1336,8 +1363,8 @@ Enviar        </button>
       <br/>
       <input type="text" id="qfi10-1" class="fillin size-4"></input>
     <div id="qfi10-1r" class="quiz"></div></br></br>          </div>
-          <button type="button" id="q-9" class="btn btn-primary btn-sm">
-Enviar          </button>
+          <a id="q-9" class="btn btn-primary btn-sm">
+Enviar          </a>
           <br>
           </br>
         </li>
@@ -1349,8 +1376,8 @@ Enviar          </button>
       when n = 5 and k = 2:
       <input type="text" id="qfi11-1" class="fillin size-4"></input>
     <div id="qfi11-1r" class="quiz"></div></br></br>          </div>
-          <button type="button" id="q-10" class="btn btn-primary btn-sm">
-Enviar          </button>
+          <a id="q-10" class="btn btn-primary btn-sm">
+Enviar          </a>
           <br>
           </br>
         </li>
@@ -1360,8 +1387,8 @@ Enviar          </button>
       When x = 2, the solution of $\sqrt{3x+3}+(1+x)^2$ is:
       <input type="text" id="qfi12-1" class="fillin size-4"></input>
     <div id="qfi12-1r" class="quiz"></div></br></br>          </div>
-          <button type="button" id="q-11" class="btn btn-primary btn-sm">
-Enviar          </button>
+          <a id="q-11" class="btn btn-primary btn-sm">
+Enviar          </a>
           <br>
           </br>
         </li>
@@ -1384,10 +1411,10 @@ Texas<br class="qmc13-3br">            </input>
             <br/>
           </ol>
         </li>
-        <button type="button" id="show-answer-q-12" class="btn btn-success btn-sm">
-Mostrar respuesta        </button>
-        <button type="button" id="q-12" class="btn btn-primary btn-sm">
-Enviar        </button>
+        <a id="show-answer-q-12" class="btn btn-success btn-sm">
+Mostrar respuesta        </a>
+        <a id="q-12" class="btn btn-primary btn-sm">
+Enviar        </a>
         <br>
         </br>
         <li id="question-13" class="question dragdrop_mc ">
@@ -1396,11 +1423,11 @@ Enviar        </button>
           <ol class="answers">
             <div>
               <div id="col1-q14-qddmc" class="col1">
-                <button class="btn btn-default btn-sm disabled button-q14-qddmc" draggable="false">
-Facebook                </button>
+                <a class="btn btn-default btn-sm disabled button-q14-qddmc" draggable="false">
+Facebook                </a>
                 <br/>
-                <button class="btn btn-default btn-sm disabled button-q14-qddmc" draggable="false">
-Twitter                </button>
+                <a class="btn btn-default btn-sm disabled button-q14-qddmc" draggable="false">
+Twitter                </a>
                 <br/>
               </div>
               <div id="col2-q14-qddmc" class="col2">
@@ -1410,11 +1437,11 @@ Twitter                </button>
                 <br/>
               </div>
               <div id="col3-q13-qddmc" class="col3">
-                <button id="qddmca14-1" class="btn btn-default btn-sm button-qddmc" draggable="true" ondragstart="drag(event)">
-Jack Dorsey                </button>
+                <a id="qddmca14-1" class="btn btn-default btn-sm button-qddmc" draggable="true" ondragstart="drag(event)">
+Jack Dorsey                </a>
                 <br/>
-                <button id="qddmca14-2" class="btn btn-default btn-sm button-qddmc" draggable="true" ondragstart="drag(event)">
-Mark Zuckerberg                </button>
+                <a id="qddmca14-2" class="btn btn-default btn-sm button-qddmc" draggable="true" ondragstart="drag(event)">
+Mark Zuckerberg                </a>
                 <br/>
               </div>
             </div>
@@ -1422,8 +1449,8 @@ Mark Zuckerberg                </button>
             <br/>
           </ol>
         </li>
-        <button type="button" id="q-13" class="btn btn-primary btn-sm">
-Enviar        </button>
+        <a id="q-13" class="btn btn-primary btn-sm">
+Enviar        </a>
         <br>
         </br>
         <li id="question-14" class="question selectmultiple multiple">
@@ -1453,10 +1480,10 @@ Social Democrats<br class="qsm15-5br">            </input>
             <br/>
           </ol>
         </li>
-        <button type="button" id="show-answer-q-14" class="btn btn-success btn-sm">
-Mostrar respuesta        </button>
-        <button type="button" id="q-14" class="btn btn-primary btn-sm">
-Enviar        </button>
+        <a id="show-answer-q-14" class="btn btn-success btn-sm">
+Mostrar respuesta        </a>
+        <a id="q-14" class="btn btn-primary btn-sm">
+Enviar        </a>
         <br>
         </br>
         <li id="question-15" class="question dragdrop_sm multiple">
@@ -1465,35 +1492,35 @@ Enviar        </button>
           <ol class="answers">
             <div>
               <div id="col1-q16-qddsm" class="col1">
-                <button class="btn btn-default btn-sm disabled button-q16-qddsm" draggable="false">
-Ruby                </button>
+                <a class="btn btn-default btn-sm disabled button-q16-qddsm" draggable="false">
+Ruby                </a>
                 <br/>
-                <button class="btn btn-default btn-sm disabled button-q16-qddsm" draggable="false">
-JavaScript                </button>
+                <a class="btn btn-default btn-sm disabled button-q16-qddsm" draggable="false">
+JavaScript                </a>
                 <br/>
               </div>
               <div id="col2-q16-qddsm" class="col2">
-                <div id="qddsm16-1" type="text" class="dragdropsm" ondrop="drop(event, 'qddsm16-1', false)" ondragover="allowDrop(event)">
+                <div id="qddsm16-1" type="text" class="dragdropsm size-12" ondrop="drop(event, 'qddsm16-1', false)" ondragover="allowDrop(event)">
                 </div>
-                <div id="qddsm16-2" type="text" class="dragdropsm" ondrop="drop(event, 'qddsm16-2', false)" ondragover="allowDrop(event)">
+                <div id="qddsm16-2" type="text" class="dragdropsm size-12" ondrop="drop(event, 'qddsm16-2', false)" ondragover="allowDrop(event)">
                 </div>
               </div>
               <div class="clear-qdd"/>
               <br/>
               <div id="answers-q16-qddsm" ondrop="drop(event, 'answers-q16-qddsm', false)" ondragover="allowDrop(event)">
-Respuestas:                 <button id="qddsma16-1" class="btn btn-default btn-sm button-qddsm" draggable="true" ondragstart="drag(event)">
-Sinatra                </button>
-                <button id="qddsma16-2" class="btn btn-default btn-sm button-qddsm" draggable="true" ondragstart="drag(event)">
-Rails                </button>
-                <button id="qddsma16-3" class="btn btn-default btn-sm button-qddsm" draggable="true" ondragstart="drag(event)">
-jQuery                </button>
+Respuestas:                 <a id="qddsma16-1" class="btn btn-default btn-sm button-qddsm" draggable="true" ondragstart="drag(event)">
+jQuery                </a>
+                <a id="qddsma16-2" class="btn btn-default btn-sm button-qddsm" draggable="true" ondragstart="drag(event)">
+Rails                </a>
+                <a id="qddsma16-3" class="btn btn-default btn-sm button-qddsm" draggable="true" ondragstart="drag(event)">
+Sinatra                </a>
               </div>
             </div>
             <br/>
           </ol>
         </li>
-        <button type="button" id="q-15" class="btn btn-primary btn-sm">
-Enviar        </button>
+        <a id="q-15" class="btn btn-primary btn-sm">
+Enviar        </a>
         <br>
         </br>
         <li id="question-16" class="question truefalse ">
@@ -1511,8 +1538,8 @@ False<br class="qmc17-2br">            </input>
             <br/>
           </ol>
         </li>
-        <button type="button" id="q-16" class="btn btn-primary btn-sm">
-Enviar        </button>
+        <a id="q-16" class="btn btn-primary btn-sm">
+Enviar        </a>
         <br>
         </br>
         <li id="question-17" class="question multiplechoice ">
@@ -1534,24 +1561,24 @@ Prints a friendly message<br class="qmc18-2br">            </input>
             <br/>
           </ol>
         </li>
-        <button type="button" id="show-answer-q-17" class="btn btn-success btn-sm">
-Mostrar respuesta        </button>
-        <button type="button" id="q-17" class="btn btn-primary btn-sm">
-Enviar        </button>
+        <a id="show-answer-q-17" class="btn btn-success btn-sm">
+Mostrar respuesta        </a>
+        <a id="q-17" class="btn btn-primary btn-sm">
+Enviar        </a>
         <br>
         </br>
       </ol>
       <div id="score" class="score">
       </div>
       <div class="btn-footer">
-        <button type="button" id="submit" class="btn btn-primary">
-Enviar        </button>
-        <button type="button" id="reset" class="btn btn-info">
-Reset        </button>
-        <button type="button" id="deleteAnswers" class="btn btn-warning">
-Borrar respuestas        </button>
-        <button type="button" id="deleteStorage" class="btn btn-danger">
-Borrar almacenamiento        </button>
+        <a id="submit" class="btn btn-primary">
+Enviar        </a>
+        <a id="reset" class="btn btn-info">
+Reset        </a>
+        <a id="deleteAnswers" class="btn btn-warning">
+Borrar respuestas        </a>
+        <a id="deleteStorage" class="btn btn-danger">
+Borrar almacenamiento        </a>
       </div>
     </form>
     <script type="text/javascript">
@@ -1568,234 +1595,8 @@ return d||(f=$b[b],$b[b]=e,e=null!=c(a,b,d)?b.toLowerCase():null,$b[b]=f),e}});v
     </script>
 <![endif]-->    <script type="text/javascript">
 
-      /* 
- * Context.js
- * Copyright Jacob Kelley
- * MIT License
- */
-
-var context = context || (function () {
-    
-	var options = {
-		fadeSpeed: 100,
-		filter: function ($obj) {
-			// Modify $obj, Do not return
-		},
-		above: 'auto',
-		preventDoubleContext: true,
-		compress: false
-	};
-
-	function initialize(opts) {
-		
-		options = $.extend({}, options, opts);
-		
-		$(document).on('click', 'html', function () {
-			$('.dropdown-context').fadeOut(options.fadeSpeed, function(){
-				$('.dropdown-context').css({display:''}).find('.drop-left').removeClass('drop-left');
-			});
-		});
-		if(options.preventDoubleContext){
-			$(document).on('contextmenu', '.dropdown-context', function (e) {
-				e.preventDefault();
-			});
-		}
-		$(document).on('mouseenter', '.dropdown-submenu', function(){
-			var $sub = $(this).find('.dropdown-context-sub:first'),
-				subWidth = $sub.width(),
-				subLeft = $sub.offset().left,
-				collision = (subWidth+subLeft) > window.innerWidth;
-			if(collision){
-				$sub.addClass('drop-left');
-			}
-		});
-		
-	}
-
-	function updateOptions(opts){
-		options = $.extend({}, options, opts);
-	}
-
-	function buildMenu(data, id, subMenu) {
-		var subClass = (subMenu) ? ' dropdown-context-sub' : '',
-			compressed = options.compress ? ' compressed-context' : '',
-			$menu = $('<ul class="dropdown-menu dropdown-context' + subClass + compressed+'" id="dropdown-' + id + '"></ul>');
-        var i = 0, linkTarget = '';
-        for(i; i<data.length; i++) {
-        	if (typeof data[i].divider !== 'undefined') {
-				$menu.append('<li class="divider"></li>');
-			} else if (typeof data[i].header !== 'undefined') {
-				$menu.append('<li class="nav-header">' + data[i].header + '</li>');
-			} else {
-				if (typeof data[i].href == 'undefined') {
-					data[i].href = '#';
-				}
-				if (typeof data[i].target !== 'undefined') {
-					linkTarget = ' target="'+data[i].target+'"';
-				}
-				if (typeof data[i].subMenu !== 'undefined') {
-					$sub = ('<li class="dropdown-submenu"><a tabindex="-1" href="' + data[i].href + '">' + data[i].text + '</a></li>');
-				} else {
-					$sub = $('<li><a tabindex="-1" href="' + data[i].href + '"'+linkTarget+'>' + data[i].text + '</a></li>');
-				}
-				if (typeof data[i].action !== 'undefined') {
-					var actiond = new Date(),
-						actionID = 'event-' + actiond.getTime() * Math.floor(Math.random()*100000),
-						eventAction = data[i].action;
-					$sub.find('a').attr('id', actionID);
-					$('#' + actionID).addClass('context-event');
-					$(document).on('click', '#' + actionID, eventAction);
-				}
-				$menu.append($sub);
-				if (typeof data[i].subMenu != 'undefined') {
-					var subMenuData = buildMenu(data[i].subMenu, id, true);
-					$menu.find('li:last').append(subMenuData);
-				}
-			}
-			if (typeof options.filter == 'function') {
-				options.filter($menu.find('li:last'));
-			}
-		}
-		return $menu;
-	}
-
-	function addContext(selector, data) {
-		
-		var d = new Date(),
-			id = d.getTime(),
-			$menu = buildMenu(data, id);
-			
-		$('body').append($menu);
-		
-		
-		$(document).on('contextmenu', selector, function (e) {
-			e.preventDefault();
-			e.stopPropagation();
-			
-			$('.dropdown-context:not(.dropdown-context-sub)').hide();
-			
-			$dd = $('#dropdown-' + id);
-			if (typeof options.above == 'boolean' && options.above) {
-				$dd.addClass('dropdown-context-up').css({
-					top: e.pageY - 20 - $('#dropdown-' + id).height(),
-					left: e.pageX - 13
-				}).fadeIn(options.fadeSpeed);
-			} else if (typeof options.above == 'string' && options.above == 'auto') {
-				$dd.removeClass('dropdown-context-up');
-				var autoH = $dd.height() + 12;
-				if ((e.pageY + autoH) > $('html').height()) {
-					$dd.addClass('dropdown-context-up').css({
-						top: e.pageY - 20 - autoH,
-						left: e.pageX - 13
-					}).fadeIn(options.fadeSpeed);
-				} else {
-					$dd.css({
-						top: e.pageY + 10,
-						left: e.pageX - 13
-					}).fadeIn(options.fadeSpeed);
-				}
-			}
-		});
-	}
-	
-	function destroyContext(selector) {
-		$(document).off('contextmenu', selector).off('click', '.context-event');
-	}
-	
-	return {
-		init: initialize,
-		settings: updateOptions,
-		attach: addContext,
-		destroy: destroyContext
-	};
-})();
-      $(document).ready(function(){
-  context.init({preventDoubleContext: false});
-  context.settings({compress: true});
-});
-
-context.init({
-  fadeSpeed: 100,               // The speed in which the context menu fades in (in milliseconds)
-  filter: function ($obj){},    // Function that each finished list element will pass through for extra modification.
-  above: 'auto',                // If set to 'auto', menu will appear as a "dropup" if there is not enough room below it. Settings to true will make the menu a popup by default.
-  preventDoubleContext: true,   // If set to true, browser-based context menus will not work on contextjs menus.
-  compress: false               // If set to true, context menus will have less padding, making them (hopefully) more unobtrusive
-});
-      
-      $(document).mousedown(function(e){ 
-        if( e.button == 2 ) {
-          id_answer = e.toElement.id;
-          if (id_answer.match(/^qfi/)) {
-            numQuestion = parseInt(id_answer.split('-')[0].slice(3)) - 1;
-            try {
-              if (data["question-" + numQuestion.toString()]['answers'][id_answer]['type'] != "JS") {
-                answer = data["question-" + numQuestion.toString()]['answers'][id_answer]['answer_text'];
-                type = data["question-" + numQuestion.toString()]['answers'][id_answer]['type'];
-                context.attach('#' + id_answer, [
-                  
-                  {header: 'Mostrar respuesta'},
-                  {text: 'Ver respuesta', subMenu: [
-                    {header: type},
-                    {text: answer}
-                  ]}
-                ]);
-              }
-            }
-            catch(err) {}
-          }
-        };
-      });
-        </script>
-    <script type="text/javascript">
-//XRegExp 2.0.0 <xregexp.com> MIT License
-var XRegExp;XRegExp=XRegExp||function(n){"use strict";function v(n,i,r){var u;for(u in t.prototype)t.prototype.hasOwnProperty(u)&&(n[u]=t.prototype[u]);return n.xregexp={captureNames:i,isNative:!!r},n}function g(n){return(n.global?"g":"")+(n.ignoreCase?"i":"")+(n.multiline?"m":"")+(n.extended?"x":"")+(n.sticky?"y":"")}function o(n,r,u){if(!t.isRegExp(n))throw new TypeError("type RegExp expected");var f=i.replace.call(g(n)+(r||""),h,"");return u&&(f=i.replace.call(f,new RegExp("["+u+"]+","g"),"")),n=n.xregexp&&!n.xregexp.isNative?v(t(n.source,f),n.xregexp.captureNames?n.xregexp.captureNames.slice(0):null):v(new RegExp(n.source,f),null,!0)}function a(n,t){var i=n.length;if(Array.prototype.lastIndexOf)return n.lastIndexOf(t);while(i--)if(n[i]===t)return i;return-1}function s(n,t){return Object.prototype.toString.call(n).toLowerCase()==="[object "+t+"]"}function d(n){return n=n||{},n==="all"||n.all?n={natives:!0,extensibility:!0}:s(n,"string")&&(n=t.forEach(n,/[^\s,]+/,function(n){this[n]=!0},{})),n}function ut(n,t,i,u){var o=p.length,s=null,e,f;y=!0;try{while(o--)if(f=p[o],(f.scope==="all"||f.scope===i)&&(!f.trigger||f.trigger.call(u))&&(f.pattern.lastIndex=t,e=r.exec.call(f.pattern,n),e&&e.index===t)){s={output:f.handler.call(u,e,i),match:e};break}}catch(h){throw h;}finally{y=!1}return s}function b(n){t.addToken=c[n?"on":"off"],f.extensibility=n}function tt(n){RegExp.prototype.exec=(n?r:i).exec,RegExp.prototype.test=(n?r:i).test,String.prototype.match=(n?r:i).match,String.prototype.replace=(n?r:i).replace,String.prototype.split=(n?r:i).split,f.natives=n}var t,c,u,f={natives:!1,extensibility:!1},i={exec:RegExp.prototype.exec,test:RegExp.prototype.test,match:String.prototype.match,replace:String.prototype.replace,split:String.prototype.split},r={},k={},p=[],e="default",rt="class",it={"default":/^(?:\\(?:0(?:[0-3][0-7]{0,2}|[4-7][0-7]?)?|[1-9]\d*|x[\dA-Fa-f]{2}|u[\dA-Fa-f]{4}|c[A-Za-z]|[\s\S])|\(\?[:=!]|[?*+]\?|{\d+(?:,\d*)?}\??)/,"class":/^(?:\\(?:[0-3][0-7]{0,2}|[4-7][0-7]?|x[\dA-Fa-f]{2}|u[\dA-Fa-f]{4}|c[A-Za-z]|[\s\S]))/},et=/\$(?:{([\w$]+)}|(\d\d?|[\s\S]))/g,h=/([\s\S])(?=[\s\S]*\1)/g,nt=/^(?:[?*+]|{\d+(?:,\d*)?})\??/,ft=i.exec.call(/()??/,"")[1]===n,l=RegExp.prototype.sticky!==n,y=!1,w="gim"+(l?"y":"");return t=function(r,u){if(t.isRegExp(r)){if(u!==n)throw new TypeError("can't supply flags when constructing one RegExp from another");return o(r)}if(y)throw new Error("can't call the XRegExp constructor within token definition functions");var l=[],a=e,b={hasNamedCapture:!1,captureNames:[],hasFlag:function(n){return u.indexOf(n)>-1}},f=0,c,s,p;if(r=r===n?"":String(r),u=u===n?"":String(u),i.match.call(u,h))throw new SyntaxError("invalid duplicate regular expression flag");for(r=i.replace.call(r,/^\(\?([\w$]+)\)/,function(n,t){if(i.test.call(/[gy]/,t))throw new SyntaxError("can't use flag g or y in mode modifier");return u=i.replace.call(u+t,h,""),""}),t.forEach(u,/[\s\S]/,function(n){if(w.indexOf(n[0])<0)throw new SyntaxError("invalid regular expression flag "+n[0]);});f<r.length;)c=ut(r,f,a,b),c?(l.push(c.output),f+=c.match[0].length||1):(s=i.exec.call(it[a],r.slice(f)),s?(l.push(s[0]),f+=s[0].length):(p=r.charAt(f),p==="["?a=rt:p==="]"&&(a=e),l.push(p),++f));return v(new RegExp(l.join(""),i.replace.call(u,/[^gimy]+/g,"")),b.hasNamedCapture?b.captureNames:null)},c={on:function(n,t,r){r=r||{},n&&p.push({pattern:o(n,"g"+(l?"y":"")),handler:t,scope:r.scope||e,trigger:r.trigger||null}),r.customFlags&&(w=i.replace.call(w+r.customFlags,h,""))},off:function(){throw new Error("extensibility must be installed before using addToken");}},t.addToken=c.off,t.cache=function(n,i){var r=n+"/"+(i||"");return k[r]||(k[r]=t(n,i))},t.escape=function(n){return i.replace.call(n,/[-[\]{}()*+?.,\\^$|#\s]/g,"\\$&")},t.exec=function(n,t,i,u){var e=o(t,"g"+(u&&l?"y":""),u===!1?"y":""),f;return e.lastIndex=i=i||0,f=r.exec.call(e,n),u&&f&&f.index!==i&&(f=null),t.global&&(t.lastIndex=f?e.lastIndex:0),f},t.forEach=function(n,i,r,u){for(var e=0,o=-1,f;f=t.exec(n,i,e);)r.call(u,f,++o,n,i),e=f.index+(f[0].length||1);return u},t.globalize=function(n){return o(n,"g")},t.install=function(n){n=d(n),!f.natives&&n.natives&&tt(!0),!f.extensibility&&n.extensibility&&b(!0)},t.isInstalled=function(n){return!!f[n]},t.isRegExp=function(n){return s(n,"regexp")},t.matchChain=function(n,i){return function r(n,u){for(var o=i[u].regex?i[u]:{regex:i[u]},f=[],s=function(n){f.push(o.backref?n[o.backref]||"":n[0])},e=0;e<n.length;++e)t.forEach(n[e],o.regex,s);return u===i.length-1||!f.length?f:r(f,u+1)}([n],0)},t.replace=function(i,u,f,e){var c=t.isRegExp(u),s=u,h;return c?(e===n&&u.global&&(e="all"),s=o(u,e==="all"?"g":"",e==="all"?"":"g")):e==="all"&&(s=new RegExp(t.escape(String(u)),"g")),h=r.replace.call(String(i),s,f),c&&u.global&&(u.lastIndex=0),h},t.split=function(n,t,i){return r.split.call(n,t,i)},t.test=function(n,i,r,u){return!!t.exec(n,i,r,u)},t.uninstall=function(n){n=d(n),f.natives&&n.natives&&tt(!1),f.extensibility&&n.extensibility&&b(!1)},t.union=function(n,i){var l=/(\()(?!\?)|\\([1-9]\d*)|\\[\s\S]|\[(?:[^\\\]]|\\[\s\S])*]/g,o=0,f,h,c=function(n,t,i){var r=h[o-f];if(t){if(++o,r)return"(?<"+r+">"}else if(i)return"\\"+(+i+f);return n},e=[],r,u;if(!(s(n,"array")&&n.length))throw new TypeError("patterns must be a nonempty array");for(u=0;u<n.length;++u)r=n[u],t.isRegExp(r)?(f=o,h=r.xregexp&&r.xregexp.captureNames||[],e.push(t(r.source).source.replace(l,c))):e.push(t.escape(r));return t(e.join("|"),i)},t.version="2.0.0",r.exec=function(t){var r,f,e,o,u;if(this.global||(o=this.lastIndex),r=i.exec.apply(this,arguments),r){if(!ft&&r.length>1&&a(r,"")>-1&&(e=new RegExp(this.source,i.replace.call(g(this),"g","")),i.replace.call(String(t).slice(r.index),e,function(){for(var t=1;t<arguments.length-2;++t)arguments[t]===n&&(r[t]=n)})),this.xregexp&&this.xregexp.captureNames)for(u=1;u<r.length;++u)f=this.xregexp.captureNames[u-1],f&&(r[f]=r[u]);this.global&&!r[0].length&&this.lastIndex>r.index&&(this.lastIndex=r.index)}return this.global||(this.lastIndex=o),r},r.test=function(n){return!!r.exec.call(this,n)},r.match=function(n){if(t.isRegExp(n)){if(n.global){var u=i.match.apply(this,arguments);return n.lastIndex=0,u}}else n=new RegExp(n);return r.exec.call(n,this)},r.replace=function(n,r){var e=t.isRegExp(n),u,f,h,o;return e?(n.xregexp&&(u=n.xregexp.captureNames),n.global||(o=n.lastIndex)):n+="",s(r,"function")?f=i.replace.call(String(this),n,function(){var t=arguments,i;if(u)for(t[0]=new String(t[0]),i=0;i<u.length;++i)u[i]&&(t[0][u[i]]=t[i+1]);return e&&n.global&&(n.lastIndex=t[t.length-2]+t[0].length),r.apply(null,t)}):(h=String(this),f=i.replace.call(h,n,function(){var n=arguments;return i.replace.call(String(r),et,function(t,i,r){var f;if(i){if(f=+i,f<=n.length-3)return n[f]||"";if(f=u?a(u,i):-1,f<0)throw new SyntaxError("backreference to undefined group "+t);return n[f+1]||""}if(r==="$")return"$";if(r==="&"||+r==0)return n[0];if(r==="`")return n[n.length-1].slice(0,n[n.length-2]);if(r==="'")return n[n.length-1].slice(n[n.length-2]+n[0].length);if(r=+r,!isNaN(r)){if(r>n.length-3)throw new SyntaxError("backreference to undefined group "+t);return n[r]||""}throw new SyntaxError("invalid token "+t);})})),e&&(n.lastIndex=n.global?0:o),f},r.split=function(r,u){if(!t.isRegExp(r))return i.split.apply(this,arguments);var e=String(this),h=r.lastIndex,f=[],o=0,s;return u=(u===n?-1:u)>>>0,t.forEach(e,r,function(n){n.index+n[0].length>o&&(f.push(e.slice(o,n.index)),n.length>1&&n.index<e.length&&Array.prototype.push.apply(f,n.slice(1)),s=n[0].length,o=n.index+s)}),o===e.length?(!i.test.call(r,"")||s)&&f.push(""):f.push(e.slice(o)),r.lastIndex=h,f.length>u?f.slice(0,u):f},u=c.on,u(/\\([ABCE-RTUVXYZaeg-mopqyz]|c(?![A-Za-z])|u(?![\dA-Fa-f]{4})|x(?![\dA-Fa-f]{2}))/,function(n,t){if(n[1]==="B"&&t===e)return n[0];throw new SyntaxError("invalid escape "+n[0]);},{scope:"all"}),u(/\[(\^?)]/,function(n){return n[1]?"[\\s\\S]":"\\b\\B"}),u(/(?:\(\?#[^)]*\))+/,function(n){return i.test.call(nt,n.input.slice(n.index+n[0].length))?"":"(?:)"}),u(/\\k<([\w$]+)>/,function(n){var t=isNaN(n[1])?a(this.captureNames,n[1])+1:+n[1],i=n.index+n[0].length;if(!t||t>this.captureNames.length)throw new SyntaxError("backreference to undefined group "+n[0]);return"\\"+t+(i===n.input.length||isNaN(n.input.charAt(i))?"":"(?:)")}),u(/(?:\s+|#.*)+/,function(n){return i.test.call(nt,n.input.slice(n.index+n[0].length))?"":"(?:)"},{trigger:function(){return this.hasFlag("x")},customFlags:"x"}),u(/\./,function(){return"[\\s\\S]"},{trigger:function(){return this.hasFlag("s")},customFlags:"s"}),u(/\(\?P?<([\w$]+)>/,function(n){if(!isNaN(n[1]))throw new SyntaxError("can't use integer as capture name "+n[0]);return this.captureNames.push(n[1]),this.hasNamedCapture=!0,"("}),u(/\\(\d+)/,function(n,t){if(!(t===e&&/^[1-9]/.test(n[1])&&+n[1]<=this.captureNames.length)&&n[1]!=="0")throw new SyntaxError("can't use octal escape or backreference to undefined group "+n[0]);return n[0]},{scope:"all"}),u(/\((?!\?)/,function(){return this.hasFlag("n")?"(?:":(this.captureNames.push(null),"(")},{customFlags:"n"}),typeof exports!="undefined"&&(exports.XRegExp=t),t}()    </script>
-    <script type="text/javascript">
-id_textareas = {};
-
-$("textarea").each(function() { 
-  id_textareas[this.id] = {};
-  id_textareas[this.id]['id'] = this.id;
-  id_textareas[this.id]['height'] = parseInt(this.attributes['4'].value);
-  id_textareas[this.id]['width'] = parseInt(this.attributes['5'].value);
-});
-
-$.each(id_textareas, function(k,v) {
-  id_textareas[k]['editor'] = CodeMirror.fromTextArea(document.getElementById(k), {
-    lineNumbers: true,
-    viewportMargin: Infinity
-  });
-  id_textareas[k]['editor'].setSize(id_textareas[k]['height'], id_textareas[k]['width']);
-  id_textareas[k]['editor'].setValue('');
-});    </script>
-    <script type="text/javascript">
-function allowDrop(ev) {
-  ev.preventDefault();
-}
-
-function drag(ev) {
-  ev.dataTransfer.setData("Text",ev.target.id);
-}
-
-function drop(ev, id, clone) {
-  ev.preventDefault();
-  var data = ev.dataTransfer.getData("Text");
-  
-  if (clone)
-    ev.target.appendChild(document.getElementById(data).cloneNode(true));
-  else
-    ev.target.appendChild(document.getElementById(data));
-  
-  var val = document.getElementById(id);
-  val.value = document.getElementById(data).innerText;
-}    </script>
-    <script type="text/javascript">
-
-      i18n = {"es":{"quiz":{"title":"Cuestionario"},"questions":{"correct":"Correcto","incorrect":"Incorrecto","points":"puntos","score":"Puntuaci&oacute;n total","placeholder":"Escribe tu código aquí"},"answers":"Respuestas","buttons":{"submit":"Enviar","reset":"Reset","delete":"Borrar respuestas","deleteAll":"Borrar almacenamiento","show":"Mostrar respuesta","hide":"Ocultar respuesta"},"alerts":{"answers":"Respuestas borradas","storage":"Almacenamiento borrado","noStorage":"El navegador no soporta almacenamiento de respuestas"},"exceptions":{"question":"Pregunta","text":"No se ha especificado el texto de la pregunta","answer":"No se ha especificado ninguna respuesta"}}}
-        </script>
-    <script type="text/javascript">
-
-      data = {"question-0":{"question_text":"<i>Example of escaped HTML and three hyphens not evaluated:</i><br> &lt;a href=&quot;www.google.es&quot;&gt;&lt;/a&gt; <b>is</b> a \\-\\-\\- ---- \\-\\-\\-","answers":{"qfi1-1":{"answer_text":"/^link$/","correct":true,"explanation":null,"type":"Regexp"}},"points":1,"order":true,"question_comment":""},"question-1":{"question_text":"The visionary founder of Apple is --------","answers":{"qfi2-1":{"answer_text":"/^ste(ve|phen)\\s+jobs #comment $/ixm","correct":true,"explanation":null,"type":"Regexp"},"qfi2-2":{"answer_text":"/^steve\\s+wozniak/i","correct":false,"explanation":"Almost, but not quite.","type":"Regexp"}},"points":2,"order":true,"question_comment":"Question too easy"},"question-2":{"question_text":"The ---- brown fox jumped over the lazy ----","answers":{"qfi3-1":{"answer_text":"/fox/","correct":true,"explanation":"This sentence contains all of the letters of the English Alphabet","type":"Regexp"},"qfi3-2":{"answer_text":"/dog/","correct":true,"explanation":"This sentence contains all of the letters of the English Alphabet","type":"Regexp"}},"points":1,"order":true,"question_comment":""},"question-3":{"question_text":"The ---- brown fox jumped over the lazy ----","answers":{"qddfi4-1":{"answer_text":"fox","correct":true,"explanation":"This sentence contains all of the letters of the English Alphabet","type":"String"},"qddfi4-2":{"answer_text":"dog","correct":true,"explanation":"This sentence contains all of the letters of the English Alphabet","type":"String"}},"points":1,"order":true,"question_comment":""},"question-4":{"question_text":"The three stooges are -----, ----, and -----.","answers":{"qfi5-1":{"answer_text":"larry","correct":true,"explanation":null,"type":"String"},"qfi5-2":{"answer_text":"moe","correct":true,"explanation":null,"type":"String"},"qfi5-3":{"answer_text":"curly","correct":true,"explanation":null,"type":"String"}},"points":1,"order":true,"question_comment":""},"question-5":{"question_text":"The three stooges are -----, ----, and -----.","answers":{"qfi6-1":{"answer_text":"larry","correct":true,"explanation":null,"type":"String"},"qfi6-2":{"answer_text":"moe","correct":true,"explanation":null,"type":"String"},"qfi6-3":{"answer_text":"curly","correct":true,"explanation":null,"type":"String"}},"points":1,"order":false,"question_comment":""},"question-6":{"question_text":"The capital of Tenerife is ----- Cruz de --------","answers":{"qfi7-1":{"answer_text":"/Santa/i","correct":true,"explanation":null,"type":"Regexp"},"qfi7-2":{"answer_text":"/Tenerife/i","correct":true,"explanation":null,"type":"Regexp"}},"points":1,"order":true,"question_comment":""},"question-7":{"question_text":"\n      Diga dos números x = ---- e  y = ---- que multiplicados den 100\n    ","answers":{"qfi8-1":{"answer_text":"result = function(x,y) { return (x * y === 100); }","correct":true,"explanation":null,"type":"JS"}},"points":1,"order":true,"question_comment":""},"question-8":{"question_text":"Escriba una función JavaScript llamada `suma` que recibe dos números \n    y devuelve la suma","answers":{"qp9-1":{"answer_text":"function () { \n  if (suma(3,4) == 7) \n    return true;\n  else\n    return false;\n}","correct":true,"explanation":null}},"points":1,"question_comment":"","language":"javascript","height":800,"width":150},"question-9":{"question_text":"\n      Calculate the determinant of this matrix:\n      $$\\mathbf{A} = \\begin{vmatrix} \n      1 & 3 \\\\ \n      2 & 4 \n      \\end{vmatrix}$$\n      <br/>\n      ----\n    ","answers":{"qfi10-1":{"answer_text":-1,"correct":true,"explanation":null,"type":"Fixnum"}},"points":1,"order":true,"question_comment":""},"question-10":{"question_text":"\n      Solve: \n      $$\\binom{n}{k} = \\frac{n!}{k!(n-k)!}$$\n      when n = 5 and k = 2:\n      ----\n    ","answers":{"qfi11-1":{"answer_text":10,"correct":true,"explanation":null,"type":"Fixnum"},"qfi11-2":{"answer_text":9,"correct":false,"explanation":"Not exactly","type":"Fixnum"}},"points":1,"order":true,"question_comment":""},"question-11":{"question_text":"\n      When x = 2, the solution of $\\sqrt{3x+3}+(1+x)^2$ is:\n      ----\n    ","answers":{"qfi12-1":{"answer_text":12,"correct":true,"explanation":null,"type":"Fixnum"},"qfi12-2":{"answer_text":11,"correct":false,"explanation":"Try again!","type":"Fixnum"}},"points":1,"order":true,"question_comment":""},"question-12":{"question_text":"What is the largest US state?","answers":{"qmc13-1":{"answer_text":"Alaska","correct":true,"explanation":null},"qmc13-2":{"answer_text":"Hawaii","correct":false,"explanation":"Not big enough."},"qmc13-3":{"answer_text":"Texas","correct":false,"explanation":"That's pretty big, but think colder."}},"points":1,"question_comment":""},"question-13":{"question_text":"Relate these concepts","answers":{"qddmc14-1":{"answer_text":{"Facebook":"Mark Zuckerberg"},"correct":true,"explanation":null,"type":"Hash"},"qddmc14-2":{"answer_text":{"Twitter":"Jack Dorsey"},"correct":true,"explanation":null,"type":"Hash"}},"points":1,"question_comment":""},"question-14":{"question_text":"Which are American political parties?","answers":{"qsm15-1":{"answer_text":"Democrats","correct":true,"explanation":null},"qsm15-2":{"answer_text":"Republicans","correct":true,"explanation":null},"qsm15-3":{"answer_text":"Greens","correct":true,"explanation":"Yes, they're a party!"},"qsm15-4":{"answer_text":"Tories","correct":false,"explanation":"They're British"},"qsm15-5":{"answer_text":"Social Democrats","correct":false,"explanation":""}},"points":1,"question_comment":""},"question-15":{"question_text":"Relate these concepts","answers":{"qddsm16-1":{"answer_text":{"Ruby":["Sinatra","Rails"]},"correct":true,"explanation":null,"type":"Hash"},"qddsm16-2":{"answer_text":{"JavaScript":"jQuery"},"correct":true,"explanation":null,"type":"Hash"}},"points":1,"question_comment":""},"question-16":{"question_text":"True or False: The earth is flat.","answers":{"qmc17-1":{"answer_text":"True","correct":false,"explanation":"No, just looks that way"},"qmc17-2":{"answer_text":"False","correct":true,"explanation":null}},"points":1,"question_comment":""},"question-17":{"question_text":"What does the following code do:\n    <pre>\n    puts \"Hello world!\"\n    </pre>\n    ","answers":{"qmc18-1":{"answer_text":"Throws an exception","correct":false,"explanation":"Don't be an idiot."},"qmc18-2":{"answer_text":"Prints a friendly message","correct":true,"explanation":null}},"points":1,"question_comment":""}};
-      timestamp = 1399580567
+      data = {"question-0":{"question_text":"<i>Example of escaped HTML and three hyphens not evaluated:</i><br> &lt;a href=&quot;www.google.es&quot;&gt;&lt;/a&gt; <b>is</b> a \\-\\-\\- ---- \\-\\-\\-","answers":{"qfi1-1":{"answer_text":"/^link$/","correct":true,"explanation":null,"type":"Regexp"}},"points":1,"order":true,"question_comment":""},"question-1":{"question_text":"The visionary founder of Apple is --------","answers":{"qfi2-1":{"answer_text":"/^ste(ve|phen)\\s+jobs #comment $/ixm","correct":true,"explanation":null,"type":"Regexp"},"qfi2-2":{"answer_text":"/^steve\\s+wozniak/i","correct":false,"explanation":"Almost, but not quite.","type":"Regexp"}},"points":2,"order":true,"question_comment":"Question too easy"},"question-2":{"question_text":"The ---- brown fox jumped over the lazy ----","answers":{"qfi3-1":{"answer_text":"/fox/","correct":true,"explanation":"This sentence contains all of the letters of the English Alphabet","type":"Regexp"},"qfi3-2":{"answer_text":"/dog/","correct":true,"explanation":"This sentence contains all of the letters of the English Alphabet","type":"Regexp"}},"points":1,"order":true,"question_comment":""},"question-3":{"question_text":"The ---- brown fox jumped over the lazy ----","answers":{"qddfi4-1":{"answer_text":"fox","correct":true,"explanation":"This sentence contains all of the letters of the English Alphabet","type":"String"},"qddfi4-2":{"answer_text":"dog","correct":true,"explanation":"This sentence contains all of the letters of the English Alphabet","type":"String"}},"points":1,"order":true,"question_comment":""},"question-4":{"question_text":"The three stooges are -----, ----, and -----.","answers":{"qfi5-1":{"answer_text":"larry","correct":true,"explanation":null,"type":"String"},"qfi5-2":{"answer_text":"moe","correct":true,"explanation":null,"type":"String"},"qfi5-3":{"answer_text":"curly","correct":true,"explanation":null,"type":"String"}},"points":1,"order":true,"question_comment":""},"question-5":{"question_text":"The three stooges are -----, ----, and -----.","answers":{"qfi6-1":{"answer_text":"larry","correct":true,"explanation":null,"type":"String"},"qfi6-2":{"answer_text":"moe","correct":true,"explanation":null,"type":"String"},"qfi6-3":{"answer_text":"curly","correct":true,"explanation":null,"type":"String"}},"points":1,"order":false,"question_comment":""},"question-6":{"question_text":"The capital of Tenerife is ----- Cruz de --------","answers":{"qfi7-1":{"answer_text":"/Santa/i","correct":true,"explanation":null,"type":"Regexp"},"qfi7-2":{"answer_text":"/Tenerife/i","correct":true,"explanation":null,"type":"Regexp"}},"points":1,"order":true,"question_comment":""},"question-7":{"question_text":"\n      Diga dos números x = ---- e  y = ---- que multiplicados den 100\n    ","answers":{"qfi8-1":{"answer_text":"result = function(x,y) { return (x * y === 100); }","correct":true,"explanation":null,"type":"JS"}},"points":1,"order":true,"question_comment":""},"question-8":{"question_text":"Write a JavaScript function named `suma` with two arguments that return the sum of them","answers":{"qp9-1":{"answer_text":"function () { \n  if (suma(3,4) == 7) \n    return true;\n  else\n    return false;\n}","correct":true,"explanation":null}},"points":1,"question_comment":"","language":"javascript","height":150,"width":800},"question-9":{"question_text":"\n      Calculate the determinant of this matrix:\n      $$\\mathbf{A} = \\begin{vmatrix} \n      1 & 3 \\\\ \n      2 & 4 \n      \\end{vmatrix}$$\n      <br/>\n      ----\n    ","answers":{"qfi10-1":{"answer_text":-1,"correct":true,"explanation":null,"type":"Fixnum"}},"points":1,"order":true,"question_comment":""},"question-10":{"question_text":"\n      Solve: \n      $$\\binom{n}{k} = \\frac{n!}{k!(n-k)!}$$\n      when n = 5 and k = 2:\n      ----\n    ","answers":{"qfi11-1":{"answer_text":10,"correct":true,"explanation":null,"type":"Fixnum"},"qfi11-2":{"answer_text":9,"correct":false,"explanation":"Not exactly","type":"Fixnum"}},"points":1,"order":true,"question_comment":""},"question-11":{"question_text":"\n      When x = 2, the solution of $\\sqrt{3x+3}+(1+x)^2$ is:\n      ----\n    ","answers":{"qfi12-1":{"answer_text":12,"correct":true,"explanation":null,"type":"Fixnum"},"qfi12-2":{"answer_text":11,"correct":false,"explanation":"Try again!","type":"Fixnum"}},"points":1,"order":true,"question_comment":""},"question-12":{"question_text":"What is the largest US state?","answers":{"qmc13-1":{"answer_text":"Alaska","correct":true,"explanation":null},"qmc13-2":{"answer_text":"Hawaii","correct":false,"explanation":"Not big enough."},"qmc13-3":{"answer_text":"Texas","correct":false,"explanation":"That's pretty big, but think colder."}},"points":1,"question_comment":""},"question-13":{"question_text":"Relate these concepts","answers":{"qddmc14-1":{"answer_text":{"Facebook":"Mark Zuckerberg"},"correct":true,"explanation":null,"type":"Hash"},"qddmc14-2":{"answer_text":{"Twitter":"Jack Dorsey"},"correct":true,"explanation":null,"type":"Hash"}},"points":1,"question_comment":""},"question-14":{"question_text":"Which are American political parties?","answers":{"qsm15-1":{"answer_text":"Democrats","correct":true,"explanation":null},"qsm15-2":{"answer_text":"Republicans","correct":true,"explanation":null},"qsm15-3":{"answer_text":"Greens","correct":true,"explanation":"Yes, they're a party!"},"qsm15-4":{"answer_text":"Tories","correct":false,"explanation":"They're British"},"qsm15-5":{"answer_text":"Social Democrats","correct":false,"explanation":""}},"points":1,"question_comment":""},"question-15":{"question_text":"Relate these concepts","answers":{"qddsm16-1":{"answer_text":{"Ruby":["Sinatra","Rails"]},"correct":true,"explanation":null,"type":"Hash"},"qddsm16-2":{"answer_text":{"JavaScript":"jQuery"},"correct":true,"explanation":null,"type":"Hash"}},"points":1,"question_comment":""},"question-16":{"question_text":"True or False: The earth is flat.","answers":{"qmc17-1":{"answer_text":"True","correct":false,"explanation":"No, just looks that way"},"qmc17-2":{"answer_text":"False","correct":true,"explanation":null}},"points":1,"question_comment":""},"question-17":{"question_text":"What does the following code do:\n    <pre>\n    puts \"Hello world!\"\n    </pre>\n    ","answers":{"qmc18-1":{"answer_text":"Throws an exception","correct":false,"explanation":"Don't be an idiot."},"qmc18-2":{"answer_text":"Prints a friendly message","correct":true,"explanation":null}},"points":1,"question_comment":""}};
+      timestamp = 1400452685
       timestamp = timestamp.toString();
       language = 'es';
       totalPoints = 19;
@@ -2141,8 +1942,8 @@ function checkAnswer(x) {
       }
     }
     
-    else if ($("#" + x.toString() + " div[id^=qddsm").length != 0) {
-      answers = $("#" + x.toString() + " div[id^=qddsm");
+    else if ($("#" + x.toString() + " div[id^=qddsm]").length != 0) {
+      answers = $("#" + x.toString() + " div[id^=qddsm]");
       userAnswers = {};
       allEmpty = true;
       
@@ -2155,7 +1956,7 @@ function checkAnswer(x) {
         for (i = 0; i < answers.length; i++) {
           answer = [];
           for (j = 0; j < answers[i].children.length; j++)
-            answer.push(answers[i].children[j].innerText);
+            answer.push(answers[i].children[j].innerHTML);
           userAnswers[answers[i].id] = answer;
         }
         
@@ -2279,14 +2080,16 @@ function loadAnswers() {
   }
 }
 
-function deleteAnswers(all) {
+function deleteAnswers(all, flag) {
   if (all) {
     localStorage.clear();
-    alert(i18n[language]['alerts']['storage']);
+    if (flag)
+      alert(i18n[language]['alerts']['storage']);
   }
   else {
     localStorage.removeItem(timestamp);
-    alert(i18n[language]['alerts']['answers']);
+    if (flag)
+      alert(i18n[language]['alerts']['answers']);
   }
 }
 
@@ -2320,7 +2123,7 @@ function clearTextarea() {
 }
 
 function trimButtons() {
-  buttons = $('button');
+  buttons = $('a');
   $.each(buttons, function(i, v) {
     v.textContent = v.textContent.trim();
   });
@@ -2331,18 +2134,8 @@ function showOrHideAnswer(numQuestion, flag) {
   typeQuestion = Object.keys(answers)[0].split('-')[0].slice(0, 3);
   numQuestion = (++numQuestion).toString();
   
-  if (typeQuestion.match(/^qfi$/)) {
-    inputs = $("input[id^=qfi" + numQuestion + "-");
-    
-    $.each(inputs, function(index, value) {
-      if (flag == 1)
-        $("input[id=" + value.id).val(answers[value.id]['answer_text']);
-      else
-        $("input[id=" + value.id).val('');
-    });
-  }
-  else if (typeQuestion.match(/^qmc$/)){
-    inputs = $("input[id^=qmc" + numQuestion + "-");
+  if (typeQuestion.match(/^qmc$/)){
+    inputs = $("input[id^=qmc" + numQuestion + "-]");
     correct = '';
     
     $.each(answers, function(key, value) {
@@ -2351,12 +2144,12 @@ function showOrHideAnswer(numQuestion, flag) {
     })
     
     if (flag == 1)
-      $("input[id=" + correct).prop('checked', true);
+      $("input[id=" + correct + "]").prop('checked', true);
     else
-      $("input[id=" + correct).prop('checked', false);
+      $("input[id=" + correct + "]").prop('checked', false);
   }
-  else {
-    inputs = $("input[id^=qsm" + numQuestion + "-");
+  else if (typeQuestion.match(/^qsm$/)) {
+    inputs = $("input[id^=qsm" + numQuestion + "-]");
     corrects = [];
     $.each(answers, function(key, value) {
       if (answers[key]['correct'] == true)
@@ -2365,9 +2158,9 @@ function showOrHideAnswer(numQuestion, flag) {
     
     $.each(corrects, function(index, value) {
       if (flag == 1)
-        $("input[id=" + value).prop('checked', true);
+        $("input[id=" + value + "]").prop('checked', true);
       else
-        $("input[id=" + value).prop('checked', false);
+        $("input[id=" + value + "]").prop('checked', false);
     });
   }
 }
@@ -2392,21 +2185,21 @@ $("#reset").click(function() {
 });
 
 $("#deleteAnswers").click(function() {
-  deleteAnswers(false);
+  deleteAnswers(false, 1);
   reload();
 });
 
 $("#deleteStorage").click(function() {
-  deleteAnswers(true);
+  deleteAnswers(true, 1);
   reload();
 });
 
-$("button[id^=show-answer-q-").click(function() {
+$("a[id^=show-answer-q-]").click(function() {
   numQuestion = parseInt($(this).attr('id').split('-')[3]);
   changeButton($(this), numQuestion);
 });
 
-$("button[id^=q-").click(function() {
+$("a[id^=q-]").click(function() {
   nQuestion = $(this).attr('id').split('-')[1];
   checkAnswer('question-' + nQuestion);
   storeAnswers();
@@ -2418,6 +2211,233 @@ $(document).ready(function() {
   clearTextarea();
   trimButtons();
 });
+        </script>
+    <script type="text/javascript">
+
+      /* 
+ * Context.js
+ * Copyright Jacob Kelley
+ * MIT License
+ */
+
+var context = context || (function () {
+    
+	var options = {
+		fadeSpeed: 100,
+		filter: function ($obj) {
+			// Modify $obj, Do not return
+		},
+		above: 'auto',
+		preventDoubleContext: true,
+		compress: false
+	};
+
+	function initialize(opts) {
+		
+		options = $.extend({}, options, opts);
+		
+		$(document).on('click', 'html', function () {
+			$('.dropdown-context').fadeOut(options.fadeSpeed, function(){
+				$('.dropdown-context').css({display:''}).find('.drop-left').removeClass('drop-left');
+			});
+		});
+		if(options.preventDoubleContext){
+			$(document).on('contextmenu', '.dropdown-context', function (e) {
+				e.preventDefault();
+			});
+		}
+		$(document).on('mouseenter', '.dropdown-submenu', function(){
+			var $sub = $(this).find('.dropdown-context-sub:first'),
+				subWidth = $sub.width(),
+				subLeft = $sub.offset().left,
+				collision = (subWidth+subLeft) > window.innerWidth;
+			if(collision){
+				$sub.addClass('drop-left');
+			}
+		});
+		
+	}
+
+	function updateOptions(opts){
+		options = $.extend({}, options, opts);
+	}
+
+	function buildMenu(data, id, subMenu) {
+		var subClass = (subMenu) ? ' dropdown-context-sub' : '',
+			compressed = options.compress ? ' compressed-context' : '',
+			$menu = $('<ul class="dropdown-menu dropdown-context' + subClass + compressed+'" id="dropdown-' + id + '"></ul>');
+        var i = 0, linkTarget = '';
+        for(i; i<data.length; i++) {
+        	if (typeof data[i].divider !== 'undefined') {
+				$menu.append('<li class="divider"></li>');
+			} else if (typeof data[i].header !== 'undefined') {
+				$menu.append('<li class="nav-header">' + data[i].header + '</li>');
+			} else {
+				if (typeof data[i].href == 'undefined') {
+					data[i].href = '#';
+				}
+				if (typeof data[i].target !== 'undefined') {
+					linkTarget = ' target="'+data[i].target+'"';
+				}
+				if (typeof data[i].subMenu !== 'undefined') {
+					$sub = ('<li class="dropdown-submenu"><a tabindex="-1" href="' + data[i].href + '">' + data[i].text + '</a></li>');
+				} else {
+					$sub = $('<li><a tabindex="-1" href="' + data[i].href + '"'+linkTarget+'>' + data[i].text + '</a></li>');
+				}
+				if (typeof data[i].action !== 'undefined') {
+					var actiond = new Date(),
+						actionID = 'event-' + actiond.getTime() * Math.floor(Math.random()*100000),
+						eventAction = data[i].action;
+					$sub.find('a').attr('id', actionID);
+					$('#' + actionID).addClass('context-event');
+					$(document).on('click', '#' + actionID, eventAction);
+				}
+				$menu.append($sub);
+				if (typeof data[i].subMenu != 'undefined') {
+					var subMenuData = buildMenu(data[i].subMenu, id, true);
+					$menu.find('li:last').append(subMenuData);
+				}
+			}
+			if (typeof options.filter == 'function') {
+				options.filter($menu.find('li:last'));
+			}
+		}
+		return $menu;
+	}
+
+	function addContext(selector, data) {
+		
+		var d = new Date(),
+			id = d.getTime(),
+			$menu = buildMenu(data, id);
+			
+		$('body').append($menu);
+		
+		
+		$(document).on('contextmenu', selector, function (e) {
+			e.preventDefault();
+			e.stopPropagation();
+			
+			$('.dropdown-context:not(.dropdown-context-sub)').hide();
+			
+			$dd = $('#dropdown-' + id);
+			if (typeof options.above == 'boolean' && options.above) {
+				$dd.addClass('dropdown-context-up').css({
+					top: e.pageY - 20 - $('#dropdown-' + id).height(),
+					left: e.pageX - 13
+				}).fadeIn(options.fadeSpeed);
+			} else if (typeof options.above == 'string' && options.above == 'auto') {
+				$dd.removeClass('dropdown-context-up');
+				var autoH = $dd.height() + 12;
+				if ((e.pageY + autoH) > $('html').height()) {
+					$dd.addClass('dropdown-context-up').css({
+						top: e.pageY - 20 - autoH,
+						left: e.pageX - 13
+					}).fadeIn(options.fadeSpeed);
+				} else {
+					$dd.css({
+						top: e.pageY + 10,
+						left: e.pageX - 13
+					}).fadeIn(options.fadeSpeed);
+				}
+			}
+		});
+	}
+	
+	function destroyContext(selector) {
+		$(document).off('contextmenu', selector).off('click', '.context-event');
+	}
+	
+	return {
+		init: initialize,
+		settings: updateOptions,
+		attach: addContext,
+		destroy: destroyContext
+	};
+})();
+      $(document).ready(function(){
+  context.init({preventDoubleContext: false});
+  context.settings({compress: true});
+});
+
+context.init({
+  fadeSpeed: 100,               // The speed in which the context menu fades in (in milliseconds)
+  filter: function ($obj){},    // Function that each finished list element will pass through for extra modification.
+  above: 'auto',                // If set to 'auto', menu will appear as a "dropup" if there is not enough room below it. Settings to true will make the menu a popup by default.
+  preventDoubleContext: true,   // If set to true, browser-based context menus will not work on contextjs menus.
+  compress: false               // If set to true, context menus will have less padding, making them (hopefully) more unobtrusive
+});
+      
+      $(document).mousedown(function(e){ 
+        if( e.button == 2 ) {
+          id_answer = e.target.id;
+          if (id_answer.match(/^qfi/)) {
+            numQuestion = parseInt(id_answer.split('-')[0].slice(3)) - 1;
+            try {
+              if (data["question-" + numQuestion.toString()]['answers'][id_answer]['type'] != "JS") {
+                answer = data["question-" + numQuestion.toString()]['answers'][id_answer]['answer_text'];
+                type = data["question-" + numQuestion.toString()]['answers'][id_answer]['type'];
+                context.attach('#' + id_answer, [
+                  
+                  {header: 'Mostrar respuesta'},
+                  {text: 'Ver respuesta', subMenu: [
+                    {header: type},
+                    {text: answer}
+                  ]}
+                ]);
+              }
+            }
+            catch(err) {}
+          }
+        };
+      });
+        </script>
+    <script type="text/javascript">
+//XRegExp 2.0.0 <xregexp.com> MIT License
+var XRegExp;XRegExp=XRegExp||function(n){"use strict";function v(n,i,r){var u;for(u in t.prototype)t.prototype.hasOwnProperty(u)&&(n[u]=t.prototype[u]);return n.xregexp={captureNames:i,isNative:!!r},n}function g(n){return(n.global?"g":"")+(n.ignoreCase?"i":"")+(n.multiline?"m":"")+(n.extended?"x":"")+(n.sticky?"y":"")}function o(n,r,u){if(!t.isRegExp(n))throw new TypeError("type RegExp expected");var f=i.replace.call(g(n)+(r||""),h,"");return u&&(f=i.replace.call(f,new RegExp("["+u+"]+","g"),"")),n=n.xregexp&&!n.xregexp.isNative?v(t(n.source,f),n.xregexp.captureNames?n.xregexp.captureNames.slice(0):null):v(new RegExp(n.source,f),null,!0)}function a(n,t){var i=n.length;if(Array.prototype.lastIndexOf)return n.lastIndexOf(t);while(i--)if(n[i]===t)return i;return-1}function s(n,t){return Object.prototype.toString.call(n).toLowerCase()==="[object "+t+"]"}function d(n){return n=n||{},n==="all"||n.all?n={natives:!0,extensibility:!0}:s(n,"string")&&(n=t.forEach(n,/[^\s,]+/,function(n){this[n]=!0},{})),n}function ut(n,t,i,u){var o=p.length,s=null,e,f;y=!0;try{while(o--)if(f=p[o],(f.scope==="all"||f.scope===i)&&(!f.trigger||f.trigger.call(u))&&(f.pattern.lastIndex=t,e=r.exec.call(f.pattern,n),e&&e.index===t)){s={output:f.handler.call(u,e,i),match:e};break}}catch(h){throw h;}finally{y=!1}return s}function b(n){t.addToken=c[n?"on":"off"],f.extensibility=n}function tt(n){RegExp.prototype.exec=(n?r:i).exec,RegExp.prototype.test=(n?r:i).test,String.prototype.match=(n?r:i).match,String.prototype.replace=(n?r:i).replace,String.prototype.split=(n?r:i).split,f.natives=n}var t,c,u,f={natives:!1,extensibility:!1},i={exec:RegExp.prototype.exec,test:RegExp.prototype.test,match:String.prototype.match,replace:String.prototype.replace,split:String.prototype.split},r={},k={},p=[],e="default",rt="class",it={"default":/^(?:\\(?:0(?:[0-3][0-7]{0,2}|[4-7][0-7]?)?|[1-9]\d*|x[\dA-Fa-f]{2}|u[\dA-Fa-f]{4}|c[A-Za-z]|[\s\S])|\(\?[:=!]|[?*+]\?|{\d+(?:,\d*)?}\??)/,"class":/^(?:\\(?:[0-3][0-7]{0,2}|[4-7][0-7]?|x[\dA-Fa-f]{2}|u[\dA-Fa-f]{4}|c[A-Za-z]|[\s\S]))/},et=/\$(?:{([\w$]+)}|(\d\d?|[\s\S]))/g,h=/([\s\S])(?=[\s\S]*\1)/g,nt=/^(?:[?*+]|{\d+(?:,\d*)?})\??/,ft=i.exec.call(/()??/,"")[1]===n,l=RegExp.prototype.sticky!==n,y=!1,w="gim"+(l?"y":"");return t=function(r,u){if(t.isRegExp(r)){if(u!==n)throw new TypeError("can't supply flags when constructing one RegExp from another");return o(r)}if(y)throw new Error("can't call the XRegExp constructor within token definition functions");var l=[],a=e,b={hasNamedCapture:!1,captureNames:[],hasFlag:function(n){return u.indexOf(n)>-1}},f=0,c,s,p;if(r=r===n?"":String(r),u=u===n?"":String(u),i.match.call(u,h))throw new SyntaxError("invalid duplicate regular expression flag");for(r=i.replace.call(r,/^\(\?([\w$]+)\)/,function(n,t){if(i.test.call(/[gy]/,t))throw new SyntaxError("can't use flag g or y in mode modifier");return u=i.replace.call(u+t,h,""),""}),t.forEach(u,/[\s\S]/,function(n){if(w.indexOf(n[0])<0)throw new SyntaxError("invalid regular expression flag "+n[0]);});f<r.length;)c=ut(r,f,a,b),c?(l.push(c.output),f+=c.match[0].length||1):(s=i.exec.call(it[a],r.slice(f)),s?(l.push(s[0]),f+=s[0].length):(p=r.charAt(f),p==="["?a=rt:p==="]"&&(a=e),l.push(p),++f));return v(new RegExp(l.join(""),i.replace.call(u,/[^gimy]+/g,"")),b.hasNamedCapture?b.captureNames:null)},c={on:function(n,t,r){r=r||{},n&&p.push({pattern:o(n,"g"+(l?"y":"")),handler:t,scope:r.scope||e,trigger:r.trigger||null}),r.customFlags&&(w=i.replace.call(w+r.customFlags,h,""))},off:function(){throw new Error("extensibility must be installed before using addToken");}},t.addToken=c.off,t.cache=function(n,i){var r=n+"/"+(i||"");return k[r]||(k[r]=t(n,i))},t.escape=function(n){return i.replace.call(n,/[-[\]{}()*+?.,\\^$|#\s]/g,"\\$&")},t.exec=function(n,t,i,u){var e=o(t,"g"+(u&&l?"y":""),u===!1?"y":""),f;return e.lastIndex=i=i||0,f=r.exec.call(e,n),u&&f&&f.index!==i&&(f=null),t.global&&(t.lastIndex=f?e.lastIndex:0),f},t.forEach=function(n,i,r,u){for(var e=0,o=-1,f;f=t.exec(n,i,e);)r.call(u,f,++o,n,i),e=f.index+(f[0].length||1);return u},t.globalize=function(n){return o(n,"g")},t.install=function(n){n=d(n),!f.natives&&n.natives&&tt(!0),!f.extensibility&&n.extensibility&&b(!0)},t.isInstalled=function(n){return!!f[n]},t.isRegExp=function(n){return s(n,"regexp")},t.matchChain=function(n,i){return function r(n,u){for(var o=i[u].regex?i[u]:{regex:i[u]},f=[],s=function(n){f.push(o.backref?n[o.backref]||"":n[0])},e=0;e<n.length;++e)t.forEach(n[e],o.regex,s);return u===i.length-1||!f.length?f:r(f,u+1)}([n],0)},t.replace=function(i,u,f,e){var c=t.isRegExp(u),s=u,h;return c?(e===n&&u.global&&(e="all"),s=o(u,e==="all"?"g":"",e==="all"?"":"g")):e==="all"&&(s=new RegExp(t.escape(String(u)),"g")),h=r.replace.call(String(i),s,f),c&&u.global&&(u.lastIndex=0),h},t.split=function(n,t,i){return r.split.call(n,t,i)},t.test=function(n,i,r,u){return!!t.exec(n,i,r,u)},t.uninstall=function(n){n=d(n),f.natives&&n.natives&&tt(!1),f.extensibility&&n.extensibility&&b(!1)},t.union=function(n,i){var l=/(\()(?!\?)|\\([1-9]\d*)|\\[\s\S]|\[(?:[^\\\]]|\\[\s\S])*]/g,o=0,f,h,c=function(n,t,i){var r=h[o-f];if(t){if(++o,r)return"(?<"+r+">"}else if(i)return"\\"+(+i+f);return n},e=[],r,u;if(!(s(n,"array")&&n.length))throw new TypeError("patterns must be a nonempty array");for(u=0;u<n.length;++u)r=n[u],t.isRegExp(r)?(f=o,h=r.xregexp&&r.xregexp.captureNames||[],e.push(t(r.source).source.replace(l,c))):e.push(t.escape(r));return t(e.join("|"),i)},t.version="2.0.0",r.exec=function(t){var r,f,e,o,u;if(this.global||(o=this.lastIndex),r=i.exec.apply(this,arguments),r){if(!ft&&r.length>1&&a(r,"")>-1&&(e=new RegExp(this.source,i.replace.call(g(this),"g","")),i.replace.call(String(t).slice(r.index),e,function(){for(var t=1;t<arguments.length-2;++t)arguments[t]===n&&(r[t]=n)})),this.xregexp&&this.xregexp.captureNames)for(u=1;u<r.length;++u)f=this.xregexp.captureNames[u-1],f&&(r[f]=r[u]);this.global&&!r[0].length&&this.lastIndex>r.index&&(this.lastIndex=r.index)}return this.global||(this.lastIndex=o),r},r.test=function(n){return!!r.exec.call(this,n)},r.match=function(n){if(t.isRegExp(n)){if(n.global){var u=i.match.apply(this,arguments);return n.lastIndex=0,u}}else n=new RegExp(n);return r.exec.call(n,this)},r.replace=function(n,r){var e=t.isRegExp(n),u,f,h,o;return e?(n.xregexp&&(u=n.xregexp.captureNames),n.global||(o=n.lastIndex)):n+="",s(r,"function")?f=i.replace.call(String(this),n,function(){var t=arguments,i;if(u)for(t[0]=new String(t[0]),i=0;i<u.length;++i)u[i]&&(t[0][u[i]]=t[i+1]);return e&&n.global&&(n.lastIndex=t[t.length-2]+t[0].length),r.apply(null,t)}):(h=String(this),f=i.replace.call(h,n,function(){var n=arguments;return i.replace.call(String(r),et,function(t,i,r){var f;if(i){if(f=+i,f<=n.length-3)return n[f]||"";if(f=u?a(u,i):-1,f<0)throw new SyntaxError("backreference to undefined group "+t);return n[f+1]||""}if(r==="$")return"$";if(r==="&"||+r==0)return n[0];if(r==="`")return n[n.length-1].slice(0,n[n.length-2]);if(r==="'")return n[n.length-1].slice(n[n.length-2]+n[0].length);if(r=+r,!isNaN(r)){if(r>n.length-3)throw new SyntaxError("backreference to undefined group "+t);return n[r]||""}throw new SyntaxError("invalid token "+t);})})),e&&(n.lastIndex=n.global?0:o),f},r.split=function(r,u){if(!t.isRegExp(r))return i.split.apply(this,arguments);var e=String(this),h=r.lastIndex,f=[],o=0,s;return u=(u===n?-1:u)>>>0,t.forEach(e,r,function(n){n.index+n[0].length>o&&(f.push(e.slice(o,n.index)),n.length>1&&n.index<e.length&&Array.prototype.push.apply(f,n.slice(1)),s=n[0].length,o=n.index+s)}),o===e.length?(!i.test.call(r,"")||s)&&f.push(""):f.push(e.slice(o)),r.lastIndex=h,f.length>u?f.slice(0,u):f},u=c.on,u(/\\([ABCE-RTUVXYZaeg-mopqyz]|c(?![A-Za-z])|u(?![\dA-Fa-f]{4})|x(?![\dA-Fa-f]{2}))/,function(n,t){if(n[1]==="B"&&t===e)return n[0];throw new SyntaxError("invalid escape "+n[0]);},{scope:"all"}),u(/\[(\^?)]/,function(n){return n[1]?"[\\s\\S]":"\\b\\B"}),u(/(?:\(\?#[^)]*\))+/,function(n){return i.test.call(nt,n.input.slice(n.index+n[0].length))?"":"(?:)"}),u(/\\k<([\w$]+)>/,function(n){var t=isNaN(n[1])?a(this.captureNames,n[1])+1:+n[1],i=n.index+n[0].length;if(!t||t>this.captureNames.length)throw new SyntaxError("backreference to undefined group "+n[0]);return"\\"+t+(i===n.input.length||isNaN(n.input.charAt(i))?"":"(?:)")}),u(/(?:\s+|#.*)+/,function(n){return i.test.call(nt,n.input.slice(n.index+n[0].length))?"":"(?:)"},{trigger:function(){return this.hasFlag("x")},customFlags:"x"}),u(/\./,function(){return"[\\s\\S]"},{trigger:function(){return this.hasFlag("s")},customFlags:"s"}),u(/\(\?P?<([\w$]+)>/,function(n){if(!isNaN(n[1]))throw new SyntaxError("can't use integer as capture name "+n[0]);return this.captureNames.push(n[1]),this.hasNamedCapture=!0,"("}),u(/\\(\d+)/,function(n,t){if(!(t===e&&/^[1-9]/.test(n[1])&&+n[1]<=this.captureNames.length)&&n[1]!=="0")throw new SyntaxError("can't use octal escape or backreference to undefined group "+n[0]);return n[0]},{scope:"all"}),u(/\((?!\?)/,function(){return this.hasFlag("n")?"(?:":(this.captureNames.push(null),"(")},{customFlags:"n"}),typeof exports!="undefined"&&(exports.XRegExp=t),t}()    </script>
+    <script type="text/javascript">
+id_textareas = {};
+
+$("textarea").each(function() { 
+  id_textareas[this.id] = {};
+  id_textareas[this.id]['id'] = this.id;
+  numQuestion = parseInt(this.id.split('-')[0].slice(2)) - 1;
+  id_textareas[this.id]['height'] = data['question-' + numQuestion.toString()]['height'];
+  id_textareas[this.id]['width'] = data['question-' + numQuestion.toString()]['width'];
+});
+
+$.each(id_textareas, function(k,v) {
+  id_textareas[k]['editor'] = CodeMirror.fromTextArea(document.getElementById(k), {
+    lineNumbers: true,
+    viewportMargin: Infinity
+  });
+  id_textareas[k]['editor'].setSize(id_textareas[k]['width'], id_textareas[k]['height']);
+  id_textareas[k]['editor'].setValue('');
+});    </script>
+    <script type="text/javascript">
+function allowDrop(ev) {
+  ev.preventDefault();
+}
+
+function drag(ev) {
+  ev.dataTransfer.setData("Text",ev.target.id);
+}
+
+function drop(ev, id, clone) {
+  ev.preventDefault();
+  var data = ev.dataTransfer.getData("Text");
+  
+  if (clone)
+    ev.target.appendChild(document.getElementById(data).cloneNode(true));
+  else
+    ev.target.appendChild(document.getElementById(data));
+  
+  var val = document.getElementById(id);
+  val.value = document.getElementById(data).innerHTML;
+}    </script>
+    <script type="text/javascript">
+
+      i18n = {"es":{"quiz":{"title":"Cuestionario"},"questions":{"correct":"Correcto","incorrect":"Incorrecto","points":"puntos","score":"Puntuaci&oacute;n total","placeholder":"Escribe tu código aquí"},"answers":"Respuestas","buttons":{"submit":"Enviar","reset":"Reset","delete":"Borrar respuestas","deleteAll":"Borrar almacenamiento","show":"Mostrar respuesta","hide":"Ocultar respuesta"},"alerts":{"answers":"Respuestas borradas","storage":"Almacenamiento borrado","noStorage":"El navegador no soporta almacenamiento de respuestas"},"exceptions":{"question":"Pregunta","text":"No se ha especificado el texto de la pregunta","answer":"No se ha especificado ninguna respuesta"}}}
         </script>
   </body>
 </html>
