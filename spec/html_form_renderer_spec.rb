@@ -1,4 +1,5 @@
 require 'spec_helper'
+ENV['environment'] = 'test'
 
 describe HtmlFormRenderer do
   describe 'when created' do
@@ -11,11 +12,11 @@ describe HtmlFormRenderer do
     end
     it 'should include CSS link with -c option' do
       rendering_with('c' => 'foo.html').
-        should match /<link rel="stylesheet" type="text\/css" href="foo.html"/
+        should match /<link rel="stylesheet" type="text\/css" href="#{File.expand_path('foo.html')}"/
     end
     it 'should include CSS link with --css option' do
       rendering_with('css' => 'foo.html').
-        should match /<link rel="stylesheet" type="text\/css" href="foo.html"/
+      should match /<link rel="stylesheet" type="text\/css" href="#{File.expand_path('foo.html')}"/
     end
     it 'should use ERB template if directed' do
       rendering_with('template' => File.join(File.dirname(__FILE__),'fixtures','template.html.erb')).
@@ -29,30 +30,11 @@ describe HtmlFormRenderer do
     end
     it 'should include JS link with -j option' do
       rendering_with('j' => 'foo.js').
-      should match /<script type="text\/javascript" src="foo.js"/
+      should match /<script type="text\/javascript" src="#{File.expand_path('foo.js')}"/
     end
     it 'should include JS link with --js option' do
       rendering_with('js' => 'foo.js').
-      should match /<script type="text\/javascript" src="foo.js"/
-    end
-  end
-    
-  describe 'rendering solutions' do
-    before :each do
-      @a = [
-        Answer.new('aa',true,'This is right'),
-        Answer.new('bb',false,'Nope'),
-        Answer.new('cc',false)]
-      @q = MultipleChoice.new('question', :answers => @a)
-      @quiz = Quiz.new('foo', :questions => [@q])
-      @output = HtmlFormRenderer.new(@quiz,{'solutions' => true}).render_quiz.output
-    end
-    it 'should highlight correct answer' do
-      @output.should have_xml_element "//li[@class='correct']/p", :value => 'aa'
-    end
-    it 'should show explanations for incorrect answers' do
-      @output.should have_xml_element "//li[@class='incorrect']/p", :value => 'bb'
-      @output.should have_xml_element "//li[@class='incorrect']/p[@class='explanation']", :value => 'Nope'
+      should match /<script type="text\/javascript" src="#{File.expand_path('foo.js')}"/
     end
   end
 
@@ -62,11 +44,11 @@ describe HtmlFormRenderer do
       f = Tempfile.new('spec')
       f.write str
       f.close
-      return f.path
+      return f
     end
     before :each do
       @atts = {:title => 'My Quiz', :points => 20, :num_questions => 5} 
-      @quiz = mock('quiz', @atts.merge(:questions => []))
+      @quiz = Quiz.new('quiz', @atts.merge(:questions => []))
     end
     %w(title total_points num_questions).each do |var|
       it "should set '#{var}'" do
@@ -77,7 +59,7 @@ describe HtmlFormRenderer do
       end
     end
   end
-
+  
   describe 'rendering raw content' do
     before :each do
       @q = MultipleChoice.new '<tt>xx</tt>', :raw => true
@@ -107,9 +89,6 @@ describe HtmlFormRenderer do
       runs = Array.new(10) { @h.render_multiple_choice(@q,1).output }
       runs[0].should match /.*aa.*bb.*cc/m
       runs.all? { |run| runs[0] == run }.should be_true
-    end
-    it 'should not indicate solution' do
-      @h.render_multiple_choice(@q,1).output.should_not include '<li class="correct">'
     end
   end
 end

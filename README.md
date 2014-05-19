@@ -49,6 +49,17 @@ fill_in :points => 2 do
 end
 ```
 
+The HTML Form renderer allows Fixnum answer too and the number of hyphens
+indicates the size of the answer input. It's possible to escape three or more 
+hyphens using the slash ('\') for each hyphen if you use single quotes or
+double slashes ("\\") for double quotes. 
+
+To escape any HTML tag use the escape method:
+
+```ruby
+  escape('<a href="www.google.es"></a>')
+```
+
 Optional distractors can capture common incorrect answers.  As with all
 question types, an optional `:explanation` can accompany a correct
 answer or a distractor; its usage varies with the LMS, but a typical use
@@ -65,8 +76,8 @@ end
 
 You can have multiple blanks per question and pass an array of regexps
 or strings to check them.  Passing `:order => false` means that the
-order in which blanks are filled doesn't matter.  The number of elements
-in the array must exactly match the number of blanks.
+order in which blanks are filled doesn't matter.  By default, the order is
+set to true. The number of elements in the array must exactly match the number of blanks.
 
 ```ruby
 fill_in do
@@ -77,6 +88,37 @@ end
 fill_in do
   text 'The three stooges are ---, ---, and ---.'
   answer %w(larry moe curly), :order => false
+end
+```
+
+Another two notations are allowed to fill_in questions for HTML Form renderer:
+
+Hash notation: it allows all kind of answers
+
+```ruby
+fill_in do
+  text "The capital of Tenerife is -----{:santa} Cruz de --------{:tenerife}"
+  answer :santa => /Santa/i, :tenerife => /Tenerife/i
+end
+```
+
+Compact notation: this one only works when all answers are strings:
+
+```ruby
+fill_in do
+  text 'The three stooges are -----{larry}, ----{moe}, and -----{curly}.', :order => false
+end
+```
+
+The HTML Form renderer allows a JavaScript object in a fill_in answer. The JavaScript code is
+a parameter of the constructor. It must be written like a string and it must return true or false.
+
+```ruby
+fill_in do
+  text %q{
+    Write two numbers x = ---- e  y = ---- which multiplication's result would be equal to 100
+  }
+  answer JS.new(%q{result = function(x,y) { return (x * y === 100); }})
 end
 ```
 
@@ -120,7 +162,7 @@ away so don't rely on it.
 Multiple-choice "select all that apply" questions
 -------------------------------------------------
 
-These use the same syntax as single-choice quetsions, but multiple
+These use the same syntax as single-choice questions, but multiple
 `answer` clauses are allowed:
 
 ```ruby
@@ -144,6 +186,56 @@ shortcut syntax for them.
 ```ruby
 truefalse 'The week has 7 days.', true
 truefalse 'The earth is flat.', false, :explanation => 'No, just looks that way'
+```
+
+Drag-and-Drop questions
+-----------------------
+
+This kind of questions is only supported in the HTML Form renderer. There are three types:
+
+### Drag-and-Drop fill_in question
+
+The syntax is quite similar to the fill_in questions. The only restriction is that all the answers must be
+strings or numbers:
+
+```ruby
+drag_drop_fill_in do
+  text 'The ---- brown fox jumped over the lazy ----'
+  answer ['fox', 'dog'], :explanation => 'This sentence contains all of the letters of the English Alphabet'
+end
+```
+
+### Drag-and-Drop multiple-choice question
+
+```ruby
+drag_drop_choice_answer do
+  text  "Relate these concepts"
+  relation :Facebook => 'Mark Zuckerberg', :Twitter => 'Jack Dorsey'
+end
+```
+
+### Drag-and-Drop select-multiple question
+
+```ruby
+drag_drop_select_multiple do
+  text  "Relate these concepts"
+  relation :Ruby => ['Sinatra', 'Rails'], :JavaScript => 'jQuery'
+end
+```
+
+Programming questions
+---------------------
+
+This kind of question generate a textarea where the code can be typed. It's possible to customize
+the height and the width of the textarea using `:height` and `:width`. 
+
+As the validation take place in the client's browser, JavaScript code is the only language supported.
+
+```ruby
+programming :language => :javascript, :height => 150, :width => 800  do
+  text %q{Write a JavaScript function named 'suma' with two arguments that return the sum of them}
+  answer JS.new(:'examples/test_suma.js')
+end
 ```
 
 Preparing a quiz
@@ -213,6 +305,41 @@ an HTML5 version that includes identification of the correct answer.
 NOTE that if you do this, the HTML5 tags will clearly identify the correct
 answer--this format is meant for printing, not for online use, since a
 simple "view page source" would show the correct answers!
+
+Creating an HTML Form Version of a Quiz
+-------------------------------------------------
+
+Run `ruql questionfile.rb HtmlForm --template=template.html.erb > output.html`
+
+The optional template should be an `.html.erb` template in which `yield` 
+is rendered where the questions should go.  If you omit the `template`
+argument, you'll get the `htmlform.html.erb` file template that comes in
+the `templates` directory of the gem. This template uses some elements of Twitter Bootstrap.
+
+NOTE: the -c, -j and -h options can be used with the default template too.
+
+It's possible to add a custom header/footer to the template. It can be a symbol with the path
+of the file or a string with the HTML code. This header/footer will replace
+the default header/footer:
+
+```ruby
+  head :'examples/header.html'
+  foot '<footer>Custom footer</footer>'
+```
+
+Besides, this renderer has the following features:
++ JavaScript validation of answers.
++ Local Storage for answers.
++ Context menu on right-click event to show answers (strings, regexps or numbers) of fill_in questions.
++ English and Spanish languages supported.
++ The options of Ruby Regexps support -s option. (Using XRegExp)  - http://xregexp.com/
++ Used the MathJax library to use LaTeX expressions - http://www.mathjax.org/. 
+Use a slash for the braces if you use a single quote ('\\{\\}') or two slashes for double quotes ("\\\\{\\\\}").
+
+In the [examples' directory](http://github.com/jjlabrador/ruql/blob/develop/examples/example.rb) there's an example quiz that contains all the features of this renderer.
+Use `rake example` to generate it (executing the source code).
+
+To a local installation of the gem, use `rake install`.
 
 Creating an AutoQCM quiz
 ------------------------

@@ -58,25 +58,24 @@ class Quiz
     @seed = num.to_i
   end
   
-  # this should really be done using mixins.
-  def choice_answer(*args, &block)
+  def constructor(klass, args)
     if args.first.is_a?(Hash) # no question text
-      q = MultipleChoice.new('',*args)
+      klass.new('',*args)
     else
       text = args.shift
-      q = MultipleChoice.new(text, *args)
+      klass.new(text, *args)
     end
+  end
+  
+  # this should really be done using mixins.
+  def choice_answer(*args, &block)
+    q = constructor(MultipleChoice, args)
     q.instance_eval(&block)
     @questions << q
   end
 
   def select_multiple(*args, &block)
-    if args.first.is_a?(Hash) # no question text
-      q = SelectMultiple.new('',*args)
-    else
-      text = args.shift
-      q = SelectMultiple.new(text, *args)
-    end
+    q = constructor(SelectMultiple, args)
     q.instance_eval(&block)
     @questions << q
   end
@@ -87,16 +86,59 @@ class Quiz
   end
 
   def fill_in(*args, &block)
-    if args.first.is_a?(Hash) # no question text
-      q = FillIn.new('', *args)
-    else
-      text = args.shift
-      q = FillIn.new(text, *args)
-    end
+    q = constructor(FillIn, args)
     q.instance_eval(&block)
     @questions << q
   end
-
+  
+  def drag_drop_fill_in(*args, &block)
+    q = constructor(DragDrop_FI, args)
+    q.instance_eval(&block)
+    @questions << q
+  end
+  
+  def drag_drop_choice_answer(*args, &block)
+    q = constructor(DragDrop_MC, args)
+    q.instance_eval(&block)
+    @questions << q
+  end
+  
+  def drag_drop_select_multiple(*args, &block)
+    q = constructor(DragDrop_SM, args)
+    q.instance_eval(&block)
+    @questions << q
+  end
+  
+  def programming(*args, &block)
+    q = constructor(Programming, args)
+    q.instance_eval(&block)
+    @questions << q
+  end
+  
+  def head(arg)
+    if (arg.class == String)
+      @head = arg
+    elsif (arg.class == Symbol)
+      @head = File.read(File.expand_path(arg.to_s))
+    end
+  end
+  
+  def get_header
+    @head
+  end
+  
+  def foot(arg)
+    if (arg.class == String)
+      @foot = arg
+    elsif (arg.class == Symbol)
+      @foot = File.read(File.expand_path(arg.to_s))
+    end
+  end
+  
+  def get_footer
+    @foot
+  end
+  
   def self.quiz(*args,&block)
     quiz = Quiz.new(*args)
     quiz.instance_eval(&block)

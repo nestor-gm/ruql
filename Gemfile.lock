@@ -2,11 +2,15 @@ GEM
   remote: http://rubygems.org/
   specs:
     archive-tar-minitar (0.5.2)
-    builder (3.0.0)
+    builder (3.2.2)
     columnize (0.3.6)
     getopt (1.4.1)
+    htmlentities (4.3.1)
+    i18n (0.6.9)
+    json (1.8.1)
     linecache19 (0.5.12)
       ruby_core_source (>= 0.1.4)
+    locale (2.1.0)
     ruby-debug-base19 (0.11.25)
       columnize (>= 0.3.1)
       linecache19 (>= 0.5.11)
@@ -17,6 +21,7 @@ GEM
       ruby-debug-base19 (>= 0.11.19)
     ruby_core_source (0.1.5)
       archive-tar-minitar (>= 0.5.2)
+    sass (3.2.19)
 
 PLATFORMS
   ruby
@@ -24,4 +29,9 @@ PLATFORMS
 DEPENDENCIES
   builder
   getopt
+  htmlentities
+  i18n
+  json
+  locale
   ruby-debug19
+  sass (~> 3.2.19)

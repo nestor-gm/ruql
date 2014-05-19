@@ -1,0 +1,843 @@
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>REPASO. 2ª PARTE. <br />
+ANÁLISIS SINTÁCTICO</title>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+    <!-- -->
+    <style type="text/css" media="all">
+      div.quiz, p.comment, div.explanation {display:inline;}
+      strong.correct {color:#14B63F;}
+      strong.incorrect {color:rgb(255,0,0);}
+      strong.mark {color:rgb(255,128,0);}
+      div.score {font-weight: bold; font-size: 20px;}
+      input.correct {color:#14B63F; font-weight: bold;}
+      input.incorrect {color:rgb(255,0,0); font-weight: bold;}
+      div.custom-header {background-color:#7a3b7a; color:#FFFFFF; font-weight: bold;}
+      body {padding-top: 20px; padding-bottom: 20px; margin-bottom: 20px;}
+      html {position: relative; min-height: 100%;}
+      .navbar {margin-bottom: 20px;}
+      .btn-footer {text-align: center;}
+      #footer {
+        position: absolute;
+        bottom: 0;
+        height: 30px;
+        width: inherit;
+      }
+      div.container {background-color:#EAEAEA;}
+      div.explanation {font-style: italic;}
+      .nav>li>a.links {
+        display: inline; 
+        padding: 0; 
+        color: #FFFFFF;
+      }
+      .nav>li>a.links:hover {color: #FFCCFF;}
+      /* Inputs size */
+      input.size-3 { width: 2.1em; }
+
+input.size-4 { width: 2.8em; }
+
+input.size-5 { width: 3.5em; }
+
+input.size-6 { width: 4.2em; }
+
+input.size-7 { width: 4.9em; }
+
+input.size-8 { width: 5.6em; }
+
+input.size-9 { width: 6.300000000000001em; }
+
+input.size-10 { width: 7.0em; }
+div.size-5 { width: 3.5em; display: inline; }
+
+div.size-9 { width: 6.300000000000001em; display: inline; }
+
+div.size-10 { width: 7.0em; display: inline; }
+
+    </style>
+    <!-- Any CSS included by the user -->
+    
+    <!-- Mathjax -->
+    
+        <script type=text/javascript src=http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML></script>
+        <script type=text/javascript>
+          MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+        </script>
+      
+    <!--         -->
+  </head>
+  <body>
+    <div class="container">
+      
+        <div class="navbar navbar-default custom-header">
+          <div class="navbar-header">
+            <h3>REPASO. 2ª PARTE. <br />
+ANÁLISIS SINTÁCTICO</h3>
+          </div>
+          <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+              <li>Asignatura: TFG</li><br/>
+              <li>Curso: 4º</li><br/>
+              <li>
+                <a href="http://www.ull.es/view/centros/etsii/Inicio/es" class="links">
+                  Escuela T&eacute;cnica Superior de Ingenier&iacute;a Inform&aacute;tica</a>
+                |
+                <a href="http://www.ull.es/" class="links">Universidad de la Laguna</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      
+      <!-- Seed: 149745583888372573975331561658178793108 -->
+<form id="form">
+  <ol class="questions">
+    <li id="question-0" class="question fillin ">
+      <div class="quiz text">
+[1 point] 
+Dado un conjunto $A$, se define $A^*$ el cierre de Kleene de $A$ como:
+\( A^* = \cup_{n=1}^{\infty} A^n \)
+Se admite que $A^0 = { \epsilon }$, donde $\epsilon$ denota la
+<input type=text id=qfi1-1 class='fillin size-6'></input> <input type=text id=qfi1-2 class='fillin size-6'></input>, esto es
+la palabra que tiene longitud cero, formada por cero símbolos del conjunto base $A$.<div id=qfi1-2r class=quiz></div></br></br>      </div>
+      <button type="button" id="show-answer-q-0" class="btn btn-success btn-sm">
+Mostrar respuesta      </button>
+      <button type="button" id="q-0" class="btn btn-primary btn-sm">
+Enviar      </button>
+      <br>
+      </br>
+    </li>
+    <li id="question-1" class="question fillin ">
+      <div class="quiz text">
+[1 point] 
+Una producción de la forma $A \rightarrow A \alpha$.
+se dice que es <input type=text id=qfi2-1 class='fillin size-7'></input> por la <input type=text id=qfi2-2 class='fillin size-8'></input>
+<div id=qfi2-2r class=quiz></div></br></br>      </div>
+      <button type="button" id="show-answer-q-1" class="btn btn-success btn-sm">
+Mostrar respuesta      </button>
+      <button type="button" id="q-1" class="btn btn-primary btn-sm">
+Enviar      </button>
+      <br>
+      </br>
+    </li>
+    <li id="question-2" class="question fillin ">
+      <div class="quiz text">
+[1 point] 
+Recuerde el <b>analizador sintáctico descendente predictivo recursivo</b> 
+para la <a id="grammar">gramática</a>:<br/>
+<ul>
+  <li> $\Sigma = { ; =, ID, P, ADDOP, MULOP, COMPARISON, (, ), NUM }$, 
+  <li> $V = { statements, statement, condition, expression, term, factor }$
+  <li> Productions:
+  <ol>
+    <li>
+    statements  $ \rightarrow$ statement ';' statements  $\vert$ statement
+    <li>
+    statement  $ \rightarrow$ ID '=' expression  $\vert$ P expression
+ $ \vert$ IF condition THEN statement·
+    <li> condition $ \rightarrow$ expression COMPARISON expression
+    <li>
+    expression  $ \rightarrow$ term ADDOP expression  $\vert$ term
+    <li>
+    term  $ \rightarrow$ factor MULOP term  $\vert$ factor
+    <li>
+    factor  $ \rightarrow$ '(' expression ')' $\vert$ ID $ \vert$ NUM
+  </ol>
+  <li> Start symbol: $statements$
+</ul>
+Rellene las partes que faltan de código CoffeeScript del 
+método que se encarga de reconocer el lenguaje generado
+por <tt>expression</tt>:
+<pre>
+  expression = ->
+    result = term()
+    while <input type=text id=qfi3-1 class='fillin size-6'></input> and <input type=text id=qfi3-2 class='fillin size-9'></input> is "ADDOP"
+      type = lookahead.value
+      match "ADDOP"
+      right = <input type=text id=qfi3-3 class='fillin size-4'></input>
+      result =
+        type: <input type=text id=qfi3-4 class='fillin size-4'></input>
+        left: result
+        right: right
+    result
+</pre>
+<div id=qfi3-4r class=quiz></div></br></br>      </div>
+      <button type="button" id="show-answer-q-2" class="btn btn-success btn-sm">
+Mostrar respuesta      </button>
+      <button type="button" id="q-2" class="btn btn-primary btn-sm">
+Enviar      </button>
+      <br>
+      </br>
+    </li>
+    <li id="question-3" class="question fillin ">
+      <div class="quiz text">
+[1 point] 
+Rellene las partes que faltan de código CoffeeScript del 
+método que se encarga de reconocer el lenguaje generado
+por <tt>statement</tt> para la <a href="#grammar">gramática
+definida anteriormente</a>:
+<pre>
+    statement = function() {
+      var left, result, right;
+      result = null;
+      if (<input type=text id=qfi4-1 class='fillin size-6'></input> && <input type=text id=qfi4-2 class='fillin size-6'></input> === "ID") {
+        left = {
+          type: "<input type=text id=qfi4-3 class='fillin size-3'></input>",
+          value: <input type=text id=qfi4-4 class='fillin size-6'></input>.value
+        };
+        match("ID");
+        match("=");
+        right = <input type=text id=qfi4-5 class='fillin size-6'></input>();
+        result = {
+          type: "=",
+          left: left,
+          right: right
+        };
+      } else if (<input type=text id=qfi4-6 class='fillin size-6'></input> && <input type=text id=qfi4-7 class='fillin size-6'></input>.<input type=text id=qfi4-8 class='fillin size-6'></input> === "P") {
+        match("P");
+        right = expression();
+        result = {
+          type: "P",
+          value: <input type=text id=qfi4-9 class='fillin size-6'></input>
+        };
+      } else if (<input type=text id=qfi4-10 class='fillin size-6'></input> && <input type=text id=qfi4-11 class='fillin size-6'></input>.<input type=text id=qfi4-12 class='fillin size-6'></input> === "IF") {
+        match("<input type=text id=qfi4-13 class='fillin size-3'></input>");
+        left = <input type=text id=qfi4-14 class='fillin size-6'></input>;
+        match("THEN");
+        right = <input type=text id=qfi4-15 class='fillin size-6'></input>;
+        result = {
+          type: "IF",
+          left: <input type=text id=qfi4-16 class='fillin size-4'></input>,
+          right: <input type=text id=qfi4-17 class='fillin size-4'></input>
+        };
+      } else {
+        throw "Syntax Error. Expected identifier but found " + 
+         (lookahead ? lookahead.value : "end of input") + 
+         (" near '" + (input.substr(lookahead.from)) + "'");
+      }
+      return result;
+    };
+</pre>
+<div id=qfi4-17r class=quiz></div></br></br>      </div>
+      <button type="button" id="show-answer-q-3" class="btn btn-success btn-sm">
+Mostrar respuesta      </button>
+      <button type="button" id="q-3" class="btn btn-primary btn-sm">
+Enviar      </button>
+      <br>
+      </br>
+    </li>
+    <li id="question-4" class="question dragdrop ">
+      <div class="quiz text">
+[1 point] Rellene las partes que faltan del código CoffeeScript
+que reconoce el sublenguaje generado por <i>condition</i>:
+  <pre>
+  condition = ->
+    left = <input id=qdd5-1 class='dragdrop size-10' ondrop=drop(event,'qdd5-1') ondragover=allowDrop(event)></input>()
+    type = <input id=qdd5-2 class='dragdrop size-9' ondrop=drop(event,'qdd5-2') ondragover=allowDrop(event)></input>.<input id=qdd5-3 class='dragdrop size-5' ondrop=drop(event,'qdd5-3') ondragover=allowDrop(event)></input>
+    match "COMPARISON"
+    right = <input id=qdd5-4 class='dragdrop size-10' ondrop=drop(event,'qdd5-4') ondragover=allowDrop(event)></input>()
+    result =
+      type: type
+      left: left
+      right: right
+    result
+  </pre>
+<br/><br/><div> Respuestas: <button class='dragdrop size-10 btn btn-default btn-sm' id=qdda1-1 draggable=true ondragstart=drag(event)>expression</button>&nbsp&nbsp<button class='dragdrop size-9 btn btn-default btn-sm' id=qdda2-2 draggable=true ondragstart=drag(event)>lookahead</button>&nbsp&nbsp<button class='dragdrop size-5 btn btn-default btn-sm' id=qdda3-3 draggable=true ondragstart=drag(event)>value</button>&nbsp&nbsp<button class='dragdrop size-10 btn btn-default btn-sm' id=qdda4-4 draggable=true ondragstart=drag(event)>expression</button>&nbsp&nbsp<div/></br></br>      </div>
+      <button type="button" id="q-4" class="btn btn-primary btn-sm">
+Enviar      </button>
+      <br>
+      </br>
+    </li>
+    <li id="question-5" class="question fillin ">
+      <div class="quiz text">
+[1 point] 
+Complete este fragmento de <tt>slim</tt> que establece el favicon de 
+la página HTML:
+<pre>
+    link rel="<input type=text id=qfi6-1 class='fillin size-6'></input>" type="image/jpg" href="images/favicon.jpg"
+</pre><div id=qfi6-1r class=quiz></div></br></br>      </div>
+      <button type="button" id="show-answer-q-5" class="btn btn-success btn-sm">
+Mostrar respuesta      </button>
+      <button type="button" id="q-5" class="btn btn-primary btn-sm">
+Enviar      </button>
+      <br>
+      </br>
+    </li>
+  </ol>
+  <div id="score" class="score">
+  </div>
+  <div class="btn-footer">
+    <button type="button" id="submit" class="btn btn-primary">
+Enviar    </button>
+    <button type="button" id="reset" class="btn btn-info">
+Reset    </button>
+    <button type="button" id="deleteAnswers" class="btn btn-warning">
+Borrar respuestas    </button>
+    <button type="button" id="deleteStorage" class="btn btn-danger">
+Borrar almacenamiento    </button>
+  </div>
+</form>
+
+      
+        <div id="footer">
+          <div class="row text-muted">
+            <div class="col-md-6">
+              Quiz generated using the RuQL Gem. For more information, visit <a href="https://github.com/jjlabrador/ruql">GitHub
+              <span class="glyphicon glyphicon-link"></span></a>
+            </div>
+            <div class="col-md-3"></div>
+            <div class="col-md-3">
+              Universidad de La Laguna 2014
+            </div>
+          </div>
+        </div>
+      
+    </div>
+    <!-- JavaScripts -->
+    <!-- jQuery -->
+    
+        <script type=text/javascript src=http://code.jquery.com/jquery-2.1.0.min.js></script>
+        <script type='text/javascript' src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+        <!--[if lt IE 8]>
+          <script type=text/javascript src=http://code.jquery.com/jquery-1.11.0.min.js></script>
+        <![endif]-->
+      
+    <!-- Internationalization -->
+    <script>      i18n = {"es":{"quiz":{"title":"Cuestionario"},"questions":{"correct":"Correcto","incorrect":"Incorrecto","points":"puntos","score":"Puntuaci&oacute;n total"},"answers":"Respuestas","buttons":{"submit":"Enviar","reset":"Reset","delete":"Borrar respuestas","deleteAll":"Borrar almacenamiento","show":"Mostrar respuesta","hide":"Ocultar respuesta"},"alerts":{"answers":"Respuestas borradas","storage":"Almacenamiento borrado","noStorage":"El navegador no soporta almacenamiento de respuestas"},"exceptions":{"syntax":"Bloque incompleto en un método del fichero Ruby procesado."}}}
+</script>
+    <!-- Drag and Drop -->
+    <script>      function allowDrop(ev) {
+        ev.preventDefault();
+      }
+      
+      function drag(ev) {
+        ev.dataTransfer.setData("Text",ev.target.id);
+      }
+      
+      function drop(ev, id) {
+        ev.preventDefault();
+        var data=ev.dataTransfer.getData("Text");
+        ev.target.appendChild(document.getElementById(data));
+        var val=document.getElementById(id);
+        val.value=document.getElementById(data).innerText;
+      }
+</script>
+    <!-- XRegexp -->
+    <script type=text/javascript src=http://cdnjs.cloudflare.com/ajax/libs/xregexp/2.0.0/xregexp-min.js></script>
+    <!-- Form validation -->
+    <script>      data = {"question-0":{"question_text":"\nDado un conjunto $A$, se define $A^*$ el cierre de Kleene de $A$ como:\n\\( A^* = \\cup_{n=1}^{\\infty} A^n \\)\nSe admite que $A^0 = { \\epsilon }$, donde $\\epsilon$ denota la\n------ ------, esto es\nla palabra que tiene longitud cero, formada por cero símbolos del conjunto base $A$.","answers":{"qfi1-1":{"answer_text":"/palabra/i","correct":true,"explanation":null,"type":"Regexp"},"qfi1-2":{"answer_text":"/vac[ií]a/i","correct":true,"explanation":null,"type":"Regexp"}},"points":1,"order":true,"question_comment":""},"question-1":{"question_text":"\nUna producción de la forma $A \\rightarrow A \\alpha$.\nse dice que es ------- por la --------\n","answers":{"qfi2-1":{"answer_text":"/recursiva/i","correct":true,"explanation":null,"type":"Regexp"},"qfi2-2":{"answer_text":"/izquierda/i","correct":true,"explanation":null,"type":"Regexp"}},"points":1,"order":true,"question_comment":""},"question-2":{"question_text":"\nRecuerde el <b>analizador sintáctico descendente predictivo recursivo</b> \npara la <a id=\"grammar\">gramática</a>:<br/>\n<ul>\n  <li> $\\Sigma = { ; =, ID, P, ADDOP, MULOP, COMPARISON, (, ), NUM }$, \n  <li> $V = { statements, statement, condition, expression, term, factor }$\n  <li> Productions:\n  <ol>\n    <li>\n    statements  $ \\rightarrow$ statement ';' statements  $\\vert$ statement\n    <li>\n    statement  $ \\rightarrow$ ID '=' expression  $\\vert$ P expression\n $ \\vert$ IF condition THEN statement·\n    <li> condition $ \\rightarrow$ expression COMPARISON expression\n    <li>\n    expression  $ \\rightarrow$ term ADDOP expression  $\\vert$ term\n    <li>\n    term  $ \\rightarrow$ factor MULOP term  $\\vert$ factor\n    <li>\n    factor  $ \\rightarrow$ '(' expression ')' $\\vert$ ID $ \\vert$ NUM\n  </ol>\n  <li> Start symbol: $statements$\n</ul>\nRellene las partes que faltan de código CoffeeScript del \nmétodo que se encarga de reconocer el lenguaje generado\npor <tt>expression</tt>:\n<pre>\n  expression = ->\n    result = term()\n    while ------ and --------- is \"ADDOP\"\n      type = lookahead.value\n      match \"ADDOP\"\n      right = ----\n      result =\n        type: ----\n        left: result\n        right: right\n    result\n</pre>\n","answers":{"qfi3-1":{"answer_text":"lookahead","correct":true,"explanation":null,"type":"String"},"qfi3-2":{"answer_text":"lookahead.type","correct":true,"explanation":null,"type":"String"},"qfi3-3":{"answer_text":"term()","correct":true,"explanation":null,"type":"String"},"qfi3-4":{"answer_text":"type","correct":true,"explanation":null,"type":"String"}},"points":1,"order":true,"question_comment":""},"question-3":{"question_text":"\nRellene las partes que faltan de código CoffeeScript del \nmétodo que se encarga de reconocer el lenguaje generado\npor <tt>statement</tt> para la <a href=\"#grammar\">gramática\ndefinida anteriormente</a>:\n<pre>\n    statement = function() {\n      var left, result, right;\n      result = null;\n      if (------ && ------ === \"ID\") {\n        left = {\n          type: \"---\",\n          value: ------.value\n        };\n        match(\"ID\");\n        match(\"=\");\n        right = ------();\n        result = {\n          type: \"=\",\n          left: left,\n          right: right\n        };\n      } else if (------ && ------.------ === \"P\") {\n        match(\"P\");\n        right = expression();\n        result = {\n          type: \"P\",\n          value: ------\n        };\n      } else if (------ && ------.------ === \"IF\") {\n        match(\"---\");\n        left = ------;\n        match(\"THEN\");\n        right = ------;\n        result = {\n          type: \"IF\",\n          left: ----,\n          right: ----\n        };\n      } else {\n        throw \"Syntax Error. Expected identifier but found \" + \n         (lookahead ? lookahead.value : \"end of input\") + \n         (\" near '\" + (input.substr(lookahead.from)) + \"'\");\n      }\n      return result;\n    };\n</pre>\n","answers":{"qfi4-1":{"answer_text":"lookahead","correct":true,"explanation":null,"type":"String"},"qfi4-2":{"answer_text":"lookahead.type","correct":true,"explanation":null,"type":"String"},"qfi4-3":{"answer_text":"id","correct":true,"explanation":null,"type":"String"},"qfi4-4":{"answer_text":"lookahead","correct":true,"explanation":null,"type":"String"},"qfi4-5":{"answer_text":"expression","correct":true,"explanation":null,"type":"String"},"qfi4-6":{"answer_text":"lookahead","correct":true,"explanation":null,"type":"String"},"qfi4-7":{"answer_text":"lookahead","correct":true,"explanation":null,"type":"String"},"qfi4-8":{"answer_text":"type","correct":true,"explanation":null,"type":"String"},"qfi4-9":{"answer_text":"right","correct":true,"explanation":null,"type":"String"},"qfi4-10":{"answer_text":"lookahead","correct":true,"explanation":null,"type":"String"},"qfi4-11":{"answer_text":"lookahead","correct":true,"explanation":null,"type":"String"},"qfi4-12":{"answer_text":"type","correct":true,"explanation":null,"type":"String"},"qfi4-13":{"answer_text":"if","correct":true,"explanation":null,"type":"String"},"qfi4-14":{"answer_text":"/expression|condition/","correct":true,"explanation":null,"type":"Regexp"},"qfi4-15":{"answer_text":"/statement/","correct":true,"explanation":null,"type":"Regexp"},"qfi4-16":{"answer_text":"/left/","correct":true,"explanation":null,"type":"Regexp"},"qfi4-17":{"answer_text":"/right/","correct":true,"explanation":null,"type":"Regexp"}},"points":1,"order":true,"question_comment":""},"question-4":{"question_text":"Rellene las partes que faltan del código CoffeeScript\nque reconoce el sublenguaje generado por <i>condition</i>:\n  <pre>\n  condition = ->\n    left = ----------()\n    type = ---------.-----\n    match \"COMPARISON\"\n    right = ----------()\n    result =\n      type: type\n      left: left\n      right: right\n    result\n  </pre>\n","answers":{"qdd5-1":{"answer_text":"expression","correct":true,"explanation":null,"type":"String"},"qdd5-2":{"answer_text":"lookahead","correct":true,"explanation":null,"type":"String"},"qdd5-3":{"answer_text":"value","correct":true,"explanation":null,"type":"String"},"qdd5-4":{"answer_text":"expression","correct":true,"explanation":null,"type":"String"}},"points":1,"order":true,"question_comment":""},"question-5":{"question_text":"\nComplete este fragmento de <tt>slim</tt> que establece el favicon de \nla página HTML:\n<pre>\n    link rel=\"------\" type=\"image/jpg\" href=\"images/favicon.jpg\"\n</pre>","answers":{"qfi6-1":{"answer_text":"/(shortcut\\s+)?icon/i","correct":true,"explanation":null,"type":"Regexp"}},"points":1,"order":true,"question_comment":""}};
+      timestamp = 1398093349
+      timestamp = timestamp.toString();
+      language = 'es';
+      totalPoints = 6;
+      userPoints = 0;
+      
+      function findCorrectAnswer(idQuestion, questionType) {
+        correctIds = [];
+        for (id in data[idQuestion]['answers']) {
+          if(data[idQuestion]['answers'][id.toString()]['correct'] == true)
+            if (questionType == 0)
+              return id.toString();
+            else {
+              correctIds.push(id.toString());
+            } 
+        }
+        return correctIds;
+      }
+      
+      function checkSelectMultiple(x, checkedIds, correctIds) {
+        results = [];
+        
+        $.each(checkedIds, function(index, value){
+          if (correctIds.indexOf(value) == -1) {
+            results.push(false);
+            printResults(value, 0, data[x.toString()]['answers'][value]['explanation'], 0);
+          }
+          else {
+            results.push(true);
+            printResults(value, 1, data[x.toString()]['answers'][value]['explanation'], 0);
+          }
+        });
+        
+        nCorrects = 0;
+        nIncorrects = 0;
+        $.each(results, function(index, value){
+          if (value == true)
+            nCorrects += 1;
+          else
+            nIncorrects += 1;
+        });
+        
+        userPoints += calculateMark(data[x.toString()], x.toString(), null, 3, nCorrects, nIncorrects);
+      }
+      
+      function printResults(id, type, explanation, typeQuestion) {
+        if (typeQuestion == 0) {                                        // MultipleChoice and SelectMultiple
+          $("br[class=" + id + "br" + "]").detach();
+          if (type == 1) {
+            if ((explanation == "") || (explanation == null))
+              $("div[id ~= " + id + "r" + "]").html("<strong class=correct> " + i18n[language]['questions']['correct'] + "</strong></br>");
+            else
+              $("div[id ~= " + id + "r" + "]").html("<strong class=correct> " + i18n[language]['questions']['correct'] + " - " + explanation + "</strong></br>");
+          }
+          else {
+            if ((explanation == "") || (explanation == null))
+              $("div[id ~= " + id + "r" + "]").html("<strong class=incorrect> " + i18n[language]['questions']['incorrect'] + "</strong></br>");
+            else
+              $("div[id ~= " + id + "r" + "]").html("<strong class=incorrect> " + i18n[language]['questions']['incorrect'] + " - " + explanation + "</strong></br>");
+          }
+        }
+        else {          // FillIn
+          for (r in id) {
+            input = $("#" + r.toString());
+            if (id[r] == true) {
+              input.attr('class', input.attr('class') + ' correct');
+            }
+            else { 
+              if ((id[r] == false) || (id[r] != "n/a")) {
+                input.attr('class', input.attr('class') + ' incorrect');
+              }
+            }
+            
+            if ((id[r] != true) && (id[r] != false) && (id[r] != "n/a")) {
+              if (explanation[id[r].toString()] != null)
+                $("div[id ~= " + r.toString() + "r" + "]").html(" <div class=explanation>" + explanation[id[r].toString()] + "</div>");
+            }
+            else {
+              if (explanation[r] != null)
+                $("div[id ~= " + r + "r" + "]").html(" <div class=explanation>" + explanation[r] + "</div>");
+            }
+          }
+        }
+      }
+      
+      function calculateMark(question, id, result, typeQuestion, numberCorrects, numberIncorrects) {
+        stringPoints = i18n[language]['questions']['points'];
+        if (typeQuestion == 2) {
+          if (result) {
+            $("#" + id).append("<strong class=mark> " + question['points'].toFixed(2) + "/" + question['points'].toFixed(2) + " " + stringPoints + "</strong></br></br>");
+            
+            return parseFloat(question['points']);
+          }
+          else {
+            $("#" + id).append("<strong class=mark> 0.00/" + question['points'].toFixed(2) + " " + stringPoints + "</strong></br></br>");
+            
+            return parseFloat(0);
+          }
+        }
+        else if (typeQuestion == 1) {
+          size = 0;
+          for (y in question['answers'])
+            if (question['answers'][y]['correct'] == true)
+              size += 1;
+              
+          pointsUser = ((question['points'] / size) * numberCorrects).toFixed(2);
+          $("#" + id).append("<strong class=mark> " + pointsUser + "/" + question['points'].toFixed(2) + " " + stringPoints + "</strong></br></br>");
+         
+          return parseFloat(pointsUser);
+        }
+        else {
+          totalCorrects = 0;
+          for (y in question['answers']) {
+            if (question['answers'][y]['correct'] == true)
+              totalCorrects += 1;
+          }
+          
+          correctAnswerPoints = question['points'] / totalCorrects;
+          penalty = correctAnswerPoints * numberIncorrects;
+          mark = (correctAnswerPoints * numberCorrects) - penalty;
+          
+          if (mark < 0)
+            mark = 0;
+            
+          $("#" + id).append("<strong class=mark> " + mark.toFixed(2) + "/" + question['points'].toFixed(2) + " " + stringPoints + "</strong></br></br>");        
+          
+          return parseFloat(mark);
+        }
+      }
+      
+      function checkFillin(correctAnswers, userAnswers, distractorAnswers, typeCorrection) {
+        correction = {};
+        checkedAnswers = {};
+        
+        if (typeCorrection == 0) {          // Order doesn't matter
+          for (u in userAnswers) {
+            if (userAnswers[u] != undefined) {    // No empty field
+              matchedCorrect = false;
+              for (y in correctAnswers) {
+                if (checkAnswers[u] == undefined) {
+                  if ((typeof(correctAnswers[y]) == "string") || (typeof(correctAnswers[y]) == "number")) {    // Answer is a String or a Number
+                    if (userAnswers[u] == correctAnswers[y]) {
+                      correction[u] = true;
+                      checkedAnswers[u] = userAnswers[u];
+                      matchedCorrect = true;
+                      break;
+                    }
+                  }
+                  else {  // Answer is a Regexp
+                    if (XRegExp.exec(userAnswers[u], correctAnswers[y])) {
+                      correction[u] = true;
+                      checkedAnswers[u] = userAnswers[u];
+                      matchedCorrect = true;
+                      break;
+                    }
+                  }
+                }
+              }
+              if (!matchedCorrect)
+                correction[u] = false;
+            }
+            else
+              correction[u] = "n/a";
+          }
+        }
+        else {                            // Order matters
+          for (u in userAnswers) {
+            if (userAnswers[u] != undefined) {
+              if ((typeof(correctAnswers[u]) == "string") || (typeof(correctAnswers[u]) == "number")) {
+                if (userAnswers[u] == correctAnswers[u])
+                  correction[u] = true;
+                else
+                  correction[u] = false;
+              }
+              else {
+                if (XRegExp.exec(userAnswers[u], correctAnswers[u]))
+                  correction[u] = true;
+                else
+                  correction[u] = false;
+              }
+            }
+            else
+              correction[u] = "n/a";
+          }
+        }
+        
+        if (Object.keys(userAnswers).length == 1) {
+          for (u in userAnswers) {
+            if (correction[u] == false) {
+              for (y in distractorAnswers) {
+                if ((typeof(distractorAnswers[y]) == "string") || (typeof(distractorAnswers[y]) == "number")) {
+                  if (userAnswers[u] == distractorAnswers[y])
+                    correction[u] = y.toString();
+                }
+                else {
+                  if (XRegExp.exec(userAnswers[u], distractorAnswers[y]))
+                    correction[u] = y.toString();
+                }
+              }
+            }
+          }
+        }
+        return correction;
+      }
+      
+      function checkAnswer(x) {
+        
+        if ($("#" + x.toString() + " strong").length == 0) {
+          correct = false;
+          answers = $("#" + x.toString() + " input");
+          
+          if ((answers.attr('class').match("fillin")) || (answers.attr('class').match("dragdrop"))) {
+            correctAnswers = {};
+            distractorAnswers = {};
+            explanation = {};
+            stringAnswer = false;
+            flag_js = false;
+            
+            for (ans in data[x.toString()]['answers']) {
+              if (data[x.toString()]['answers'][ans]['correct'] == true) {
+                if (data[x.toString()]['answers'][ans]['type'] == "Regexp") {
+                  string = data[x.toString()]['answers'][ans]['answer_text'].split('/');
+                  regexp = string[1];
+                  options = string[2];
+                  correctAnswers[ans.toString()] = XRegExp(regexp, options);
+                }
+                else if (data[x.toString()]['answers'][ans]['type'] == "JS") {
+                  flag_js = true;
+                }
+                else { // String or Number
+                  correctAnswers[ans.toString()] = data[x.toString()]['answers'][ans]['answer_text'];
+                  stringAnswer = true;
+                }
+              }
+              else {
+                if (data[x.toString()]['answers'][ans]['type'] == "Regexp") {
+                  string = data[x.toString()]['answers'][ans]['answer_text'].split('/');
+                  regexp = string[1];
+                  options = string[2];
+                  distractorAnswers[ans.toString()] = XRegExp(regexp, options);
+                }
+                else if (data[x.toString()]['answers'][ans]['type'] == "JS") {
+                  //
+                }
+                else {// String or Number
+                  distractorAnswers[ans.toString()] = data[x.toString()]['answers'][ans]['answer_text'];
+                  stringAnswer = true;
+                }
+              }
+              explanation[ans] = data[x.toString()]['answers'][ans]['explanation'];
+            }
+            
+            userAnswers = {};
+            for (i = 0; i < answers.length; i++) {
+              if (answers[i].value == '')
+                userAnswers[answers[i].id.toString()] = undefined;
+              else
+                if (stringAnswer)
+                  userAnswers[answers[i].id.toString()] = answers[i].value.toLowerCase();
+                else
+                  userAnswers[answers[i].id.toString()] = answers[i].value;
+            }
+            
+            if (flag_js == false) {
+              if (data[x.toString()]['order'] == false)
+                results = checkFillin(correctAnswers, userAnswers, distractorAnswers, 0);
+              else
+                results = checkFillin(correctAnswers, userAnswers, distractorAnswers, 1);
+              
+              allEmpty = true;
+              nCorrects = 0;
+              
+              for (r in results) {
+                if (results[r] == true)
+                  nCorrects += 1;
+                if (results[r] != "n/a")
+                  allEmpty = false;
+              }
+              
+              if (!allEmpty) {
+                printResults(results, null, explanation, 1);
+                userPoints += calculateMark(data[x.toString()], x.toString(), null, 1, nCorrects, null);
+              }
+            }
+            else {
+              nQuestion = parseInt(x.toString().split('-')[1]) + 1;
+              id_answer_js = 'qfi' + nQuestion.toString() + '-1';
+              result_function = eval(data[x.toString()]['answers'][id_answer_js]['answer_text']);
+              
+              values = [];
+              ids = {};
+              $.each(userAnswers, function(k,v) {
+                ids[k] = false;
+                values.push(eval(v));
+              });
+              
+              result = result_function.apply(this, values);     // Execution of the function
+              
+              if (result) {
+                $.each(ids, function(k,v) {
+                  ids[k] = true;
+                });
+              }
+              
+              printResults(ids, null, explanation, 1);
+              userPoints += calculateMark(data[x.toString()], x.toString(), result, 2, null, null);
+            }
+          }
+          
+          else if (answers.attr('class') == "select") {
+            idCorrectAnswer = findCorrectAnswer(x.toString(), 0);
+            
+            if ($("#" + x.toString() + " :checked").size() != 0) {
+              if ($("#" + x.toString() + " :checked").attr('id') == idCorrectAnswer) {
+                printResults($("#" + x.toString() + " :checked").attr('id'), 1, "", 0);
+                correct = true;
+              }
+              else {
+                id = $("#" + x.toString() + " :checked").attr('id');
+                printResults(id, 0, data[x.toString()]['answers'][id]['explanation'], 0);
+              }
+              userPoints += calculateMark(data[x.toString()], x.toString(), correct, 2, null, null);
+            }
+          }
+          
+          else {
+            if ($("#" + x.toString() + " :checked").size() != 0) {
+              answers = $("#" + x.toString() + " :checked");
+              checkedIds = [];
+              
+              $.each(answers, function(index, value){
+                checkedIds.push(value['id']);
+              });
+              
+              correctIds = [];
+              correctIds = findCorrectAnswer(x.toString(), 1);
+              checkSelectMultiple(x, checkedIds, correctIds);
+            }
+          }
+        }
+      }
+      
+      function checkAnswers() {
+        for (x in data) {
+          checkAnswer(x);
+        }
+      }
+      
+      function storeAnswers() {
+        if(typeof(Storage) !== undefined) {
+          tmp = {}
+          
+          inputText = $('input:text').filter(function() { return $(this).val() != ""; });
+          for (i = 0; i < inputText.length; i++) {
+            idAnswer = inputText[i].id;
+            tmp[idAnswer] = inputText[i].value;
+          }
+          
+          inputRadioCheckBox = $('input:checked');
+          for (i = 0; i < inputRadioCheckBox.length; i++) {
+            idAnswer = inputRadioCheckBox[i].id;
+            nquestion = parseInt(idAnswer.split('-')[0].substr(3)) - 1;
+            tmp[idAnswer] = data["question-" + nquestion.toString()]['answers'][idAnswer]['answer_text'];
+          }
+          localStorage.setItem(timestamp, JSON.stringify(tmp));
+        }
+        else {
+          alert(i18n[language]['alerts']['noStorage']);
+        }
+      }
+      
+      function loadAnswers() {
+        if ((localStorage.length != 0) && (localStorage[timestamp] !== undefined)) {
+          tmp = JSON.parse(localStorage[timestamp]);
+          for (x in tmp) {
+            if ((x.match(/qfi/)) || (x.match(/qdd/)))
+              $("#" + x.toString()).val(tmp[x.toString()]);
+            else
+              $("#" + x.toString()).attr('checked', 'checked');
+          }
+        }
+      }
+      
+      function deleteAnswers(all) {
+        if (all) {
+          localStorage.clear();
+          alert(i18n[language]['alerts']['storage']);
+        }
+        else {
+          localStorage.removeItem(timestamp);
+          alert(i18n[language]['alerts']['answers']);
+        }
+      }
+      
+      function showTotalScore() {
+        $("#score").html(i18n[language]['questions']['score'] + ": " + userPoints.toFixed(2) + "/" + totalPoints.toFixed(2) + " " + i18n[language]['questions']['points'])
+      }
+      
+      function reload() {
+        window.location.reload();
+      }
+      
+      function changeButton(button, numQuestion) {
+        if (button.attr('class').match('success')) {
+          button.attr('class', button.attr('class').replace('success', 'danger'));
+          button.html(i18n[language]['buttons']['hide']);
+          showOrHideAnswer(numQuestion, 1);
+        }
+        else if (button.attr('class').match('danger')){
+          button.attr('class', button.attr('class').replace('danger', 'success'));
+          button.html(i18n[language]['buttons']['show']);
+          showOrHideAnswer(numQuestion, 0);
+        }
+      }
+      
+      function showOrHideAnswer(numQuestion, flag) {
+        answers = data['question-' + numQuestion.toString()]['answers'];
+        typeQuestion = Object.keys(answers)[0].split('-')[0].slice(0, 3);
+        numQuestion = (++numQuestion).toString();
+        
+        if (typeQuestion.match(/^qfi$/)) {
+          inputs = $("input[id^=qfi" + numQuestion + "-");
+          
+          $.each(inputs, function(index, value) {
+            if (flag == 1)
+              $("input[id=" + value.id).val(answers[value.id]['answer_text']);
+            else
+              $("input[id=" + value.id).val('');
+          });
+        }
+        else if (typeQuestion.match(/^qmc$/)){
+          inputs = $("input[id^=qmc" + numQuestion + "-");
+          correct = '';
+          
+          $.each(answers, function(key, value) {
+            if (value['correct'] == true)
+              correct = key;
+          })
+          
+          if (flag == 1)
+            $("input[id=" + correct).prop('checked', true);
+          else
+            $("input[id=" + correct).prop('checked', false);
+        }
+        else {
+          inputs = $("input[id^=qsm" + numQuestion + "-");
+          corrects = [];
+          $.each(answers, function(key, value) {
+            if (answers[key]['correct'] == true)
+              corrects.push(key);
+          }); 
+          
+          $.each(corrects, function(index, value) {
+            if (flag == 1)
+              $("input[id=" + value).prop('checked', true);
+            else
+              $("input[id=" + value).prop('checked', false);
+          });
+        }
+      }
+      
+      $("#submit").click(function() {
+        checkAnswers();
+        filledAllQuiz = true;
+        
+        for (x in data) {
+          if ($("#" + x.toString() + " strong").length == 0)
+            filledAllQuiz = false; 
+        }
+        if (filledAllQuiz)
+          $("#submit").detach();
+        
+        storeAnswers();
+        showTotalScore();
+      });
+
+      $("#reset").click(function() {
+        reload();
+      });
+      
+      $("#deleteAnswers").click(function() {
+        deleteAnswers(false);
+        reload();
+      });
+      
+      $("#deleteStorage").click(function() {
+        deleteAnswers(true);
+        reload();
+      });
+      
+      $("button[id^=show-answer-q-").click(function() {
+        numQuestion = parseInt($(this).attr('id').split('-')[3]);
+        changeButton($(this), numQuestion);
+      });
+      
+      $("button[id^=q-").click(function() {
+        nQuestion = $(this).attr('id').split('-')[1];
+        checkAnswer('question-' + nQuestion);
+        storeAnswers();
+        showTotalScore();
+      });
+      
+      $(document).ready(function() {
+        loadAnswers();
+      });
+</script>
+    <!-- Any JavaScript included by the user -->
+    
+    <!-- Latest compiled and minified JavaScript for Bootstrap -->
+    <script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+    <!-- -->
+  </body>
+</html>

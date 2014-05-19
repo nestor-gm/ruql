@@ -1,4 +1,5 @@
 require 'spec_helper'
+ENV['environment'] = 'test'
 
 describe Html5Renderer do
   describe 'when created' do
@@ -52,7 +53,7 @@ describe Html5Renderer do
     end
     before :each do
       @atts = {:title => 'My Quiz', :points => 20, :num_questions => 5} 
-      @quiz = mock('quiz', @atts.merge(:questions => []))
+      @quiz = double('quiz', @atts.merge(:questions => []))
     end
     %w(title total_points num_questions).each do |var|
       it "should set '#{var}'" do

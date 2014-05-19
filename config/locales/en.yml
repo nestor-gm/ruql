@@ -1,0 +1,26 @@
+---
+en:
+  quiz:
+    title: Quiz
+  questions:
+    correct: Correct
+    incorrect: Incorrect
+    points: points
+    score: Total score
+    placeholder: Your code here
+  answers: Answers
+  buttons:
+    submit: Submit
+    reset: Reset
+    delete: Delete answers
+    deleteAll: Delete storage
+    show: Show answer
+    hide: Hide answer
+  alerts:
+    answers: Answers deleted
+    storage: Storage deleted
+    noStorage: Your browser doesn't support answers storage
+  exceptions:
+    question: Question
+    text: There isn't question text specified
+    answer: There aren't any answer specified

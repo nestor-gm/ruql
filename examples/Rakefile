@@ -1,0 +1,16 @@
+task :default => :s090414
+
+desc "Run Ruql with HtmlForm renderer (with a template). 090414 example."
+task :s090414 do
+  sh "ruby -I../lib ../bin/ruql 090414.rb HtmlForm -t plform.html.erb > quiz_pl_syntax_analysis/index.html"
+end
+
+desc "Compile quiz and commit html"
+task :ci => :s090414 do
+  sh %q{cd quiz_pl_syntax_analysis && git commit -am 'more questions'}
+end
+
+desc "Open http:crguezl.github.io/quiz_pl_syntax_analysis"
+task  :open do
+  sh "open http:crguezl.github.io/quiz_pl_syntax_analysis"
+end

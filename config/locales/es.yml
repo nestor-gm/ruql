@@ -1,0 +1,26 @@
+---
+es:
+  quiz:
+    title: Cuestionario
+  questions:
+    correct: Correcto
+    incorrect: Incorrecto
+    points: puntos
+    score: Puntuaci&oacute;n total
+    placeholder: Escribe tu código aquí
+  answers: Respuestas
+  buttons:
+    submit: Enviar
+    reset: Reset
+    delete: Borrar respuestas
+    deleteAll: Borrar almacenamiento
+    show: Mostrar respuesta
+    hide: Ocultar respuesta
+  alerts:
+    answers: Respuestas borradas
+    storage: Almacenamiento borrado
+    noStorage: El navegador no soporta almacenamiento de respuestas
+  exceptions:
+    question: Pregunta
+    text: No se ha especificado el texto de la pregunta
+    answer: No se ha especificado ninguna respuesta
