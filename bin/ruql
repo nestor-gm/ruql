@@ -101,12 +101,17 @@ def main
     ['-s', '--solutions', Getopt::BOOLEAN],
     ['-n', '--name', Getopt::REQUIRED],
     ['-l', '--log', Getopt::REQUIRED],
+    ['-r', '--sinatra', Getopt::BOOLEAN]
     )
   begin
     Quiz.instance_eval "#{IO.read(filename)}", filename, 1
     Quiz.quizzes.each { |quiz| puts quiz.render_with(renderer, opts)  }
   rescue Exception => e
     $stderr.puts "#{e.message}"
+  end
+  if (opts['sinatra'])
+    server = Server.new
+    server.make_server
   end
 end
 

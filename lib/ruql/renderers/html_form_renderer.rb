@@ -16,6 +16,7 @@ class HtmlFormRenderer
     @html = options.delete('h') || options.delete('html')
     @show_solutions = options.delete('s') || options.delete('solutions')
     @template = options.delete('t') || options.delete('template')
+    @sinatra = options.delete('r') || options.delete('sinatra')
     @output = ''
     @quiz = quiz
     @h = Builder::XmlMarkup.new(:target => @output, :indent => 2)
