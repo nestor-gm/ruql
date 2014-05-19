@@ -366,10 +366,15 @@ function checkAnswer(x) {
       idAnswer = 'qp' + numAnswer.toString() + '-1';
       
       answer = eval("fn = " + data[x.toString()]['answers'][idAnswer]['answer_text']);    // Teacher's code
-      eval(id_textareas[idAnswer]['editor'].getValue());                                  // Student's code
-      
       try {
-        result = answer.call();
+        eval(id_textareas[idAnswer]['editor'].getValue());                                  // Student's code
+        
+        try {
+          result = answer.call();
+        }
+        catch(err) {
+          result = false;
+        }
       }
       catch(err) {
         result = false;
