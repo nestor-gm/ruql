@@ -15,8 +15,7 @@ class HtmlFormRenderer
     @js = options.delete('j') || options.delete('js')
     @html = options.delete('h') || options.delete('html')
     @show_solutions = options.delete('s') || options.delete('solutions')
-    @template = options.delete('t')  ||
-      options.delete('template')
+    @template = options.delete('t') || options.delete('template')
     @output = ''
     @quiz = quiz
     @h = Builder::XmlMarkup.new(:target => @output, :indent => 2)
@@ -750,11 +749,18 @@ class HtmlFormRenderer
   def load_yml
     I18n.enforce_available_locales = false if I18n.respond_to?('enforce_available_locales')
     files = []
-    Dir['config/locales/*.yml'].each do |path|
+    relative_path = 'config/locales/'
+    if (install_gem == nil)
+      new_path = relative_path
+    else
+      new_path = File.join(Gem.loaded_specs['ruql'].full_gem_path, relative_path)
+    end
+    
+    Dir[new_path + '*.yml'].each do |path|
       if (install_gem == nil)
         files << File.expand_path(Dir.pwd, '../../..') + "/#{path}" 
       else
-        files << File.join(Gem.loaded_specs['ruql'].full_gem_path, "#{path}") 
+        files << path
       end
     end
     I18n.load_path = files
