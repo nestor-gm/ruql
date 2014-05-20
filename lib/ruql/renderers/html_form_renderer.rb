@@ -76,32 +76,40 @@ class HtmlFormRenderer
     output = ERB.new(IO.read(File.expand_path @template)).result(binding)
     @output = output
   end
-    
+  
+  def content_form
+    @h.ol :class => 'questions' do
+      @quiz.questions.each_with_index do |q,i|
+        raise "#{translate(:question, 'exceptions')}-#{i+1}: #{translate(:text, 'exceptions')}" if q.question_text == nil
+        raise "#{translate(:question, 'exceptions')}-#{i+1}: #{translate(:answer, 'exceptions')}" if q.answers.length == 0
+        case q
+        when SelectMultiple then render_select_multiple(q,i)
+        when MultipleChoice, TrueFalse then render_multiple_choice(q,i)
+        when FillIn then render_fill_in(q, i)
+        when Programming then render_programming(q, i)
+        else
+          raise "Unknown question type: #{q}"
+        end
+      end
+    end
+    @h.div :id => 'score', :class => 'score' do
+    end
+    @h.div :class => 'btn-footer' do
+      if (self.class == HtmlFormRenderer)
+        insert_button('submit', translate(:submit, 'buttons'), 'btn btn-primary')
+      else
+        insert_button('submit', translate(:submit, 'buttons'), 'btn btn-primary', true)
+      end
+      insert_button('reset', translate(:reset, 'buttons'), 'btn btn-info')
+      insert_button('deleteAnswers', translate(:delete, 'buttons'), 'btn btn-warning')
+      insert_button('deleteStorage', translate(:deleteAll, 'buttons'), 'btn btn-danger')
+    end
+  end
+  
   def render_questions
     render_random_seed
     @h.form(:id => 'form') do
-      @h.ol :class => 'questions' do
-        @quiz.questions.each_with_index do |q,i|
-          raise "#{translate(:question, 'exceptions')}-#{i+1}: #{translate(:text, 'exceptions')}" if q.question_text == nil
-          raise "#{translate(:question, 'exceptions')}-#{i+1}: #{translate(:answer, 'exceptions')}" if q.answers.length == 0
-          case q
-          when SelectMultiple then render_select_multiple(q,i)
-          when MultipleChoice, TrueFalse then render_multiple_choice(q,i)
-          when FillIn then render_fill_in(q, i)
-          when Programming then render_programming(q, i)
-          else
-            raise "Unknown question type: #{q}"
-          end
-        end
-      end
-      @h.div :id => 'score', :class => 'score' do
-      end
-      @h.div :class => 'btn-footer' do
-        insert_button('submit', translate(:submit, 'buttons'), 'btn btn-primary')
-        insert_button('reset', translate(:reset, 'buttons'), 'btn btn-info')
-        insert_button('deleteAnswers', translate(:delete, 'buttons'), 'btn btn-warning')
-        insert_button('deleteStorage', translate(:deleteAll, 'buttons'), 'btn btn-danger')
-      end
+      content_form
     end
   end
 
@@ -424,9 +432,15 @@ class HtmlFormRenderer
     end if (q.question_comment != "")
   end
   
-  def insert_button(id, name, type)
-    @h.a(:id => id, :class => type) do |b|
-      b << name
+  def insert_button(id, name, type, server=false)
+    if (server)
+      @h.button(:type => 'submit', :id => id, :class => type) do |b|
+        b << name
+      end
+    else
+      @h.a(:id => id, :class => type) do |b|
+        b << name
+      end
     end
   end
   

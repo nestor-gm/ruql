@@ -48,7 +48,7 @@ class Quiz
     srand @seed
     @renderer = Quiz.get_renderer(renderer).send(:new,self,options)
     @renderer.render_quiz
-    @data = @renderer.data
+    @data = @renderer.data if renderer == 'Sinatra'
     @output = @renderer.output
   end
   
