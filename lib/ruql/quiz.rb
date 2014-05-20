@@ -1,4 +1,3 @@
-
 class Quiz
   @@quizzes = []
   def self.quizzes ; @@quizzes ;  end
@@ -24,12 +23,14 @@ class Quiz
   attr_reader :questions
   attr_reader :options
   attr_reader :output
+  attr_reader :data
   attr_reader :seed
   attr_reader :logger
   attr_accessor :title
 
   def initialize(title, options={})
     @output = ''
+    @data = {}
     @questions = options[:questions] || []
     @title = title
     @options = @@default_options.merge(options)
@@ -47,6 +48,7 @@ class Quiz
     srand @seed
     @renderer = Quiz.get_renderer(renderer).send(:new,self,options)
     @renderer.render_quiz
+    @data = @renderer.data
     @output = @renderer.output
   end
   

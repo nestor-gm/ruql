@@ -1,6 +1,11 @@
 require 'fileutils'
 
 class Server
+  attr_accessor :quizzes
+  
+  def initialize(quizzes)
+    @quizzes = quizzes
+  end
   
   def install_gem
     Gem.loaded_specs['ruql']
@@ -9,6 +14,7 @@ class Server
   def make_server
     make_directories
     make_layout
+    #$stderr.puts @quizzes[0].data
   end
   
   def make_directories

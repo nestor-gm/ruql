@@ -101,7 +101,6 @@ def main
     ['-s', '--solutions', Getopt::BOOLEAN],
     ['-n', '--name', Getopt::REQUIRED],
     ['-l', '--log', Getopt::REQUIRED],
-    ['-r', '--sinatra', Getopt::BOOLEAN]
     )
   begin
     Quiz.instance_eval "#{IO.read(filename)}", filename, 1
@@ -109,8 +108,8 @@ def main
   rescue Exception => e
     $stderr.puts "#{e.message}"
   end
-  if (opts['sinatra'])
-    server = Server.new
+  if (renderer == 'Sinatra')
+    server = Server.new(Quiz.quizzes)
     server.make_server
   end
 end
