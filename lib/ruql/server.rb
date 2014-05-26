@@ -2,20 +2,20 @@ require 'fileutils'
 
 class Server
   attr_accessor :quizzes
+  attr_reader :title
   
   def initialize(quizzes)
-    @quizzes = quizzes
+    @quizzes = quizzes[0]
+    @title = @quizzes.title
   end
   
   def make_server
     make_directories
     make_gemfile
-    make_gemfile_lock
+    make_rakefile
     make_app_rb
     make_config_ru
-    #create_repository
-    #deploy
-    #$stderr.puts @quizzes[0].data
+    #$stderr.puts @quizzes[0]
   end
   
   def make_directories
@@ -61,25 +61,32 @@ gem 'sinatra'}
     make_file(content, name)
   end
   
-  def make_gemfile_lock
-    content = %q{GEM
-  remote: http://rubygems.org/
-  specs:
-    rack (1.5.2)
-    rack-protection (1.5.3)
-      rack
-    sinatra (1.4.5)
-      rack (~> 1.4)
-      rack-protection (~> 1.4)
-      tilt (~> 1.3, >= 1.3.4)
-    tilt (1.4.1)
-      
-PLATFORMS
-  ruby
-  
-DEPENDENCIES
-  sinatra}
-    name = 'app/Gemfile.lock'
+  def make_rakefile
+    content = %Q{task :default => :build
+    
+desc "Generate Gemfile.lock"
+task :bundle do
+  sh "bundle install"
+end
+
+desc "Create local git repository"
+task :git do
+  sh "git init"
+  sh "git add ."
+  sh %q{git commit -m "Creating quiz"}
+end
+
+desc "Deploy to Heroku"
+task :heroku do
+  sh "heroku create --stack cedar #{@title.downcase.gsub(' ', '-')}"
+  sh "git push heroku master"
+end
+
+desc "Build all"
+task :build do
+  [:bundle, :git, :heroku].each { |task| Rake::Task[task].execute }
+end}
+    name = 'app/Rakefile'
     make_file(content, name)
   end
   
@@ -88,22 +95,6 @@ DEPENDENCIES
       f.write(content)
       f.close
     end
-  end
-  
-  def create_repository
-    FileUtils::cd('app')
-    `git init`
-    `git add .`
-    `git commit -m "first commit"`
-    `git remote add origin git@github.com:jjlabrador/test_repo.git`
-    `git push origin master`
-  end
-  
-  def deploy
-     #`heroku login`
-    `heroku create --stack cedar`
-    `git push heroku master`
-    # http://infinite-retreat-9099.herokuapp.com/
   end
   
 end
