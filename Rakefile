@@ -6,12 +6,12 @@ task :ruql do
 end
 
 desc "Run Ruql with HtmlForm renderer (with a template)"
-task :example do
+task :example_html do
   sh "ruby -Ilib bin/ruql examples/example.rb HtmlForm -t templates/htmlform.html.erb > examples/output.html"
 end
 
 desc "Run Ruql with HtmlForm renderer and Sinatra option"
-task :server do
+task :example_sinatra do
   sh "ruby -Ilib bin/ruql examples/example.rb Sinatra -t templates/htmlform.html.erb"
 end
 

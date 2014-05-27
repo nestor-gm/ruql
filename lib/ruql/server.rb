@@ -2,15 +2,16 @@ require 'fileutils'
 
 class Server
   attr_accessor :quizzes
-  attr_reader :title, :students, :teachers, :schedule
+  attr_reader :title, :students, :teachers, :schedule, :heroku
   
   def initialize(quizzes)
     @quiz = quizzes[0]
     @html = @quiz.output
-    @title = @quiz.title
     @students = @quiz.users
     @teachers = @quiz.admins
     @schedule = @quiz.time
+    @heroku = @quiz.heroku_config || {}
+    @title = @heroku[:domain] || @quiz.title
   end
   
   def make_server
@@ -20,11 +21,10 @@ class Server
     make_rakefile
     make_app_rb
     make_config_ru
-    # http://example-quiz.herokuapp.com/
   end
   
   def make_directories
-    FileUtils::cd('../')              # Arreglar path para ejecutar desde la gema
+    #FileUtils::cd('../')              # Arreglar path para ejecutar desde la gema
     FileUtils::mkdir_p 'app/views'
   end
   
@@ -87,7 +87,7 @@ end
 
 desc "Deploy to Heroku"
 task :heroku do
-  sh "heroku create --stack cedar #{@title.downcase.gsub(' ', '-')}"
+  sh "heroku create --stack cedar #{@title.downcase.gsub(/\W/, '-')}"
   sh "git push heroku master"
 end
 

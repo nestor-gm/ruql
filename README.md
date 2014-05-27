@@ -337,7 +337,7 @@ Besides, this renderer has the following features:
 Use a slash for the braces if you use a single quote ('\\{\\}') or two slashes for double quotes ("\\\\{\\\\}").
 
 In the [examples' directory](http://github.com/jjlabrador/ruql/blob/develop/examples/example.rb) there's an example quiz that contains all the features of this renderer.
-Use `rake example` to generate it (executing the source code).
+Use `rake example_html` to generate it (executing the source code).
 
 To a local installation of the gem, use `rake install`.
 

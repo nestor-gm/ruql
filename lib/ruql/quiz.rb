@@ -23,7 +23,7 @@ class Quiz
   attr_reader :questions
   attr_reader :options
   attr_reader :output
-  attr_reader :data, :users, :admins, :time
+  attr_reader :data, :users, :admins, :time, :heroku_config
   attr_reader :seed
   attr_reader :logger
   attr_accessor :title
@@ -47,9 +47,13 @@ class Quiz
     srand @seed
     @renderer = Quiz.get_renderer(renderer).send(:new,self,options)
     @renderer.render_quiz
-    @data = @renderer.data if renderer == 'Sinatra'
-    @output = @renderer.output
-    nil if renderer == 'Sinatra'
+    if (renderer == 'Sinatra')
+      @output = @renderer.output
+      @data = @renderer.data
+      nil
+    else
+      @output = @renderer.output
+    end
   end
   
   def points ; questions.map(&:points).inject { |sum,points| sum + points } ; end
@@ -169,6 +173,10 @@ class Quiz
   
   def schedule(arg)
     @time = arg
+  end
+  
+  def heroku(arg)
+    @heroku_config = arg
   end
   
   def self.quiz(*args,&block)
