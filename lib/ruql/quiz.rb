@@ -23,14 +23,13 @@ class Quiz
   attr_reader :questions
   attr_reader :options
   attr_reader :output
-  attr_reader :data
+  attr_reader :data, :users, :admins, :time
   attr_reader :seed
   attr_reader :logger
   attr_accessor :title
 
   def initialize(title, options={})
     @output = ''
-    @data = {}
     @questions = options[:questions] || []
     @title = title
     @options = @@default_options.merge(options)
@@ -50,6 +49,7 @@ class Quiz
     @renderer.render_quiz
     @data = @renderer.data if renderer == 'Sinatra'
     @output = @renderer.output
+    nil if renderer == 'Sinatra'
   end
   
   def points ; questions.map(&:points).inject { |sum,points| sum + points } ; end
@@ -117,12 +117,16 @@ class Quiz
     @questions << q
   end
   
-  def head(arg)
+  def head_foot(arg)
     if (arg.class == String)
-      @head = arg
+      arg
     elsif (arg.class == Symbol)
-      @head = File.read(File.expand_path(arg.to_s))
+      File.read(File.expand_path(arg.to_s))
     end
+  end
+  
+  def head(arg)
+    @head = head_foot(arg)
   end
   
   def get_header
@@ -130,15 +134,41 @@ class Quiz
   end
   
   def foot(arg)
-    if (arg.class == String)
-      @foot = arg
-    elsif (arg.class == Symbol)
-      @foot = File.read(File.expand_path(arg.to_s))
-    end
+    @foot = head_foot(arg)
   end
   
   def get_footer
     @foot
+  end
+  
+  def store_people(arg)
+    if (arg.class == String)
+      arg
+    else
+      people = []
+      if (arg.class == Array)
+        arg.each { |item| persons << item }
+      elsif (arg.class == Symbol)
+        File.open(File.expand_path(arg.to_s), 'r') do |f|
+          while line = f.gets
+            people << line
+          end
+        end
+      end
+      people
+    end
+  end
+  
+  def teachers(arg)
+    @admins = store_people(arg)
+  end
+  
+  def students(arg)
+    @users = store_people(arg)
+  end
+  
+  def schedule(arg)
+    @time = arg
   end
   
   def self.quiz(*args,&block)

@@ -1,5 +1,9 @@
 quiz 'Example quiz' do
 
+  teachers 'casiano.rodriguez.leon@gmail.com'
+  students :'examples/students.txt'
+  schedule :date_start => '27-05-2014', :date_finish => '28-05-2014', :time_start => '09:00', :time_finish => '11:00'
+  
   #head :'examples/header.html'
   
   tag = '<a href="www.google.es"></a> '

@@ -14,7 +14,6 @@ class SinatraRenderer < HtmlFormRenderer
   end
   
   def insert_buttons_each_question(index, flag=false)
-    insert_button("show-answer-q-#{index}", translate(:show, 'buttons'), 'btn btn-success btn-sm') if flag
     @h.br do
     end
   end

@@ -2,29 +2,38 @@ require 'fileutils'
 
 class Server
   attr_accessor :quizzes
-  attr_reader :title
+  attr_reader :title, :students, :teachers, :schedule
   
   def initialize(quizzes)
-    @quizzes = quizzes[0]
-    @title = @quizzes.title
+    @quiz = quizzes[0]
+    @html = @quiz.output
+    @title = @quiz.title
+    @students = @quiz.users
+    @teachers = @quiz.admins
+    @schedule = @quiz.time
   end
   
   def make_server
     make_directories
+    make_html
     make_gemfile
     make_rakefile
     make_app_rb
     make_config_ru
-    #$stderr.puts @quizzes[0]
+    # http://example-quiz.herokuapp.com/
   end
   
   def make_directories
-    FileUtils::cd('../')
+    FileUtils::cd('../')              # Arreglar path para ejecutar desde la gema
     FileUtils::mkdir_p 'app/views'
   end
   
+  def make_html
+    make_file(@html, "app/views/#{@title}.html")
+  end
+  
   def make_app_rb
-    content = %q{require 'sinatra/base'
+    content = %Q{require 'sinatra/base'
 
 class MyApp < Sinatra::Base
   
@@ -36,7 +45,7 @@ class MyApp < Sinatra::Base
   end
 
   get '/' do
-    "Hello World!"
+    send_file 'views/#{@title}.html'
   end
   
   # Start the server if the ruby file is executed
@@ -85,6 +94,11 @@ end
 desc "Build all"
 task :build do
   [:bundle, :git, :heroku].each { |task| Rake::Task[task].execute }
+end
+
+desc "Run local server"
+task :run do
+  sh "ruby app.rb"
 end}
     name = 'app/Rakefile'
     make_file(content, name)
