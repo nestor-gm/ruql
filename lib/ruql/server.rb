@@ -1,8 +1,10 @@
 require 'fileutils'
+require 'io/console'
+require 'google_drive'
 
 class Server
   attr_accessor :quizzes
-  attr_reader :title, :students, :teachers, :schedule, :heroku
+  attr_reader :title, :students, :teachers, :schedule, :heroku, :google_drive
   
   def initialize(quizzes)
     @quiz = quizzes[0]
@@ -12,6 +14,7 @@ class Server
     @schedule = @quiz.time
     @heroku = @quiz.heroku_config || {}
     @title = @heroku[:domain] || @quiz.title
+    @google_drive = @quiz.drive || {}
   end
   
   def make_server
@@ -21,6 +24,7 @@ class Server
     make_rakefile
     make_app_rb
     make_config_ru
+    write_spreadsheet
   end
   
   def make_directories
@@ -109,6 +113,29 @@ end}
       f.write(content)
       f.close
     end
+  end
+  
+  def google_login
+    puts "Enter your Google credentials."
+    print "Email: "
+    email = STDIN.gets.chomp!
+    print "Password (typing will be hidden): "
+    password = STDIN.noecho(&:gets)
+    puts
+    GoogleDrive.login(email, password)
+  end
+  
+  def get_spreadsheet
+    session = google_login
+    session.spreadsheet_by_key(@google_drive[:spreadsheet_id]).worksheets[0]
+  end
+  
+  def write_spreadsheet
+    spreadsheet = get_spreadsheet
+    spreadsheet[1, 1] ="Email"
+    @students.each_with_index { |student, index| spreadsheet[index + 2, 1] = student }
+    spreadsheet.save()
+    spreadsheet.reload()
   end
   
 end

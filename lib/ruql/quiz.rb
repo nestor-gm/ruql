@@ -23,7 +23,7 @@ class Quiz
   attr_reader :questions
   attr_reader :options
   attr_reader :output
-  attr_reader :data, :users, :admins, :time, :heroku_config
+  attr_reader :data, :users, :admins, :time, :heroku_config, :drive
   attr_reader :seed
   attr_reader :logger
   attr_accessor :title
@@ -177,6 +177,10 @@ class Quiz
   
   def heroku(arg)
     @heroku_config = arg
+  end
+  
+  def google_drive(arg)
+    @drive = arg
   end
   
   def self.quiz(*args,&block)

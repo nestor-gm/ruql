@@ -8,6 +8,8 @@ quiz 'Example quiz' do
   
   heroku :domain => 'My Quiz'
   
+  google_drive :spreadsheet_id => '1uUO8nlQ-WrHvqUNPMOK0sx17-hOG4JhkgjeFVb8SDKE'
+  
   #head :'examples/header.html'
   
   tag = '<a href="www.google.es"></a> '
