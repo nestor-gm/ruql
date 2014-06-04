@@ -8,7 +8,7 @@ class SinatraRenderer < HtmlFormRenderer
   
   def render_questions
     render_random_seed
-    @h.form(:method => 'post', :action => '/', :id => 'form') do
+    @h.form(:method => 'post', :action => '/quiz', :id => 'form') do
       content_form
     end
   end

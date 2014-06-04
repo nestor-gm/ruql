@@ -145,7 +145,7 @@ class Quiz
     @foot
   end
   
-  def store_people(arg)
+  def store_teachers(arg)
     if (arg.class == String)
       arg
     else
@@ -163,12 +163,27 @@ class Quiz
     end
   end
   
+  def store_students(arg)
+    if (arg.class == Symbol)
+      hash = {}
+      File.open(File.expand_path(arg.to_s), 'r') do |f|
+        while line = f.gets
+          data = line.split(',')
+          hash[data[0].to_sym] = {:surname => data[1].lstrip, :name => data[2].lstrip.chomp}
+        end
+      end
+      hash
+    elsif (arg.class == Hash)
+      arg
+    end
+  end
+  
   def teachers(arg)
-    @admins = store_people(arg)
+    @admins = store_teachers(arg)
   end
   
   def students(arg)
-    @users = store_people(arg)
+    @users = store_students(arg)
   end
   
   def schedule(arg)
