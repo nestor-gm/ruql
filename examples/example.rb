@@ -2,7 +2,7 @@ quiz 'Example quiz' do
 
   teachers 'casiano.rodriguez.leon@gmail.com'
   
-  students :'examples/students.txt'
+  students :'examples/students.csv'
   #students :'jjlabradorglez@gmail.com' => {:surname => 'Labrador González', :name => 'Juan José'}, :'tutu@gmail.com' => {:surname => 'Chuchu', :name => 'Tutu'}
   
   schedule :date_start => '27-05-2014', :date_finish => '28-05-2014', :time_start => '09:00', :time_finish => '11:00'
