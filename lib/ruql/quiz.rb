@@ -1,3 +1,5 @@
+require 'csv'
+
 class Quiz
   @@quizzes = []
   def self.quizzes ; @@quizzes ;  end
@@ -166,11 +168,8 @@ class Quiz
   def store_students(arg)
     if (arg.class == Symbol)
       hash = {}
-      File.open(File.expand_path(arg.to_s), 'r') do |f|
-        while line = f.gets
-          data = line.split(',')
-          hash[data[0].to_sym] = {:surname => data[1].lstrip, :name => data[2].lstrip.chomp}
-        end
+      CSV.foreach(File.expand_path(arg.to_s)) do |row|
+        hash[row[0].to_sym] = {:surname => row[1].lstrip, :name => row[2].lstrip.chomp}
       end
       hash
     elsif (arg.class == Hash)
