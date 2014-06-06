@@ -623,14 +623,14 @@ class HtmlFormRenderer
     end
     if (template)
       code = %Q{
-        <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+        <script type="text/javascript" src="https://c328740.ssl.cf1.rackcdn.com/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
         </script>
         <script type="text/javascript">
          #{config}
         </script>
       }
     else
-      @h.script(:type => 'text/javascript', :src => "http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML") do
+      @h.script(:type => 'text/javascript', :src => "https://c328740.ssl.cf1.rackcdn.com/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML") do
       end
       @h.script(:type => 'text/javascript') do |j|
         j << config
