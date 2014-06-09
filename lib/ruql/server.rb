@@ -35,7 +35,7 @@ class Server
     make_login
     make_results
     make_available
-    drive if !@google_drive.empty?
+    #drive if !@google_drive.empty?
   end
   
   def make_directories
@@ -93,7 +93,6 @@ class MyApp < Sinatra::Base
   
   students = #{@students}
   quiz_name = '#{@title}'
-  completed_quiz = []
   schedule = #{@schedule}
   
   get '/' do
@@ -116,15 +115,11 @@ class MyApp < Sinatra::Base
   
   post '/' do
     user_email = params[:email]
-    if ((students.key?(user_email.to_sym)) && (!completed_quiz.include?(user_email.to_s)))
+    if (students.key?(user_email.to_sym))
       session[:current_user] = user_email.to_s
       redirect '/quiz'
     else
-      if (!students.key?(user_email.to_sym))
-        erb :login, :locals => {:title => "Autenticación", :error => {:code => 'not exists', :msg => 'no dispone de permisos para realizar este cuestionario.', :type => 'danger'}}
-      elsif (completed_quiz.include?(user_email.to_s))
-        erb :login, :locals => {:title => "Autenticación", :error => {:code => 'completed', :msg => 'usted ya ha realizado el cuestionario.', :type => 'warning'}}
-      end
+      erb :login, :locals => {:title => "Autenticación", :error => {:code => 'not exists', :msg => 'no dispone de permisos para realizar este cuestionario.', :type => 'danger'}}
     end
   end
 
@@ -137,16 +132,10 @@ class MyApp < Sinatra::Base
   end
   
   post '/quiz' do
-    if (session[:completed] == nil)
-      session[:completed] = true
-      erb :results, :locals => {:title => "Resultado", :quiz_name => quiz_name, :email => session[:current_user], :full_name => students[session[:current_user].to_sym]}
-    else
-      redirect '/logout'
-    end
+    erb :results, :locals => {:title => "Resultado", :quiz_name => quiz_name, :email => session[:current_user], :full_name => students[session[:current_user].to_sym]}
   end
   
   get '/logout' do
-    completed_quiz << session[:current_user]
     session.clear
     redirect '/'
   end
