@@ -34,7 +34,7 @@ class Server
     make_layout
     make_login
     make_results
-    write_spreadsheet if !@google_drive.empty?
+    drive if !@google_drive.empty?
   end
   
   def make_directories
@@ -56,7 +56,7 @@ class MyApp < Sinatra::Base
     enable :logging, :dump_errors
     disable :show_exceptions
     set :raise_errors, false
-    set :session_secret, '#{@google_drive[:spreadsheet_id].gsub('-', ('a'..'z').to_a[rand(26)])}'
+    set :session_secret, '#{@title.crypt(@title)}'
     enable :protection
   end
 
@@ -271,13 +271,12 @@ end}
     end
   end
   
-  def get_spreadsheet
-    session = google_login
-    session.spreadsheet_by_key(@google_drive[:spreadsheet_id]).worksheets[0]
+  def get_spreadsheet(session, file)
+    session.spreadsheet_by_url(file.worksheets_feed_url).worksheets[0]
   end
   
-  def write_spreadsheet
-    spreadsheet = get_spreadsheet
+  def write_spreadsheet(session, file)
+    spreadsheet = get_spreadsheet(session, file)
     %w{Email Surname Name Mark}.each_with_index { |value, index| spreadsheet[1, index + 1] = value }
     @students.each_with_index do |k, i|
       key = k[0]
@@ -288,6 +287,34 @@ end}
     end
     spreadsheet.save()
     spreadsheet.reload()
+  end
+  
+  def create_folder(session)
+    root_folder = session.root_collection
+    if (@google_drive.key?(:path))
+      local_root = root_folder
+      folders = @google_drive[:path].split('/')
+      folders.each do |folder|
+        if (local_root.subcollection_by_title(folder) == nil)
+          local_root.create_subcollection(folder)
+          local_root = local_root.subcollection_by_title(folder)
+        else
+          local_root = local_root.subcollection_by_title(folder)
+        end
+      end
+      local_root.create_subcollection(@google_drive[:folder])
+    else
+      root_folder.create_subcollection(@google_drive[:folder])
+    end
+  end
+  
+  def drive
+    session = google_login
+    dest = create_folder(session)
+    file = session.create_spreadsheet(@google_drive[:spreadsheet_name])
+    dest.add(file)
+    session.root_collection.remove(file)
+    write_spreadsheet(session, file)
   end
   
 end

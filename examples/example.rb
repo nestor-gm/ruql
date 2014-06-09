@@ -9,7 +9,7 @@ quiz 'Example quiz' do
   
   heroku :domain => 'My Quiz'
   
-  google_drive :spreadsheet_id => '1uUO8nlQ-WrHvqUNPMOK0sx17-hOG4JhkgjeFVb8SDKE', :login => 'examples/credentials.yml'
+  google_drive :spreadsheet_name => 'Test', :login => 'examples/credentials.yml', :folder => 'Example Quiz', :path => 'JuanJose/RuQL'
   
   #head :'examples/header.html'
   
