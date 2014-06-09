@@ -2,10 +2,11 @@
 require 'fileutils'
 require 'io/console'
 require 'google_drive'
+require 'yaml'
 
 class Server
   attr_accessor :quizzes
-  attr_reader :title, :students, :teachers, :schedule, :heroku, :google_drive
+  attr_reader :title, :students, :teachers, :schedule, :heroku, :google_drive, :credentials
   
   def initialize(quizzes)
     @quiz = quizzes[0]
@@ -16,6 +17,11 @@ class Server
     @heroku = @quiz.heroku_config || {}
     @title = @heroku[:domain] || @quiz.title
     @google_drive = @quiz.drive || {}
+    begin
+      @credentials = YAML.load_file(File.expand_path(@google_drive[:login]))
+    rescue Exception => e
+      $stderr.puts "#{e.message}"
+    end
   end
   
   def make_server
@@ -255,13 +261,14 @@ end}
   end
   
   def google_login
-    puts "Enter your Google credentials."
-    print "Email: "
-    email = STDIN.gets.chomp!
-    print "Password (typing will be hidden): "
-    password = STDIN.noecho(&:gets)
-    puts
-    GoogleDrive.login(email, password)
+    email = @credentials['email']
+    password = @credentials['password']
+    begin
+      GoogleDrive.login(email, password)
+    rescue Exception => e
+      $stderr.puts e.message
+      exit
+    end
   end
   
   def get_spreadsheet
