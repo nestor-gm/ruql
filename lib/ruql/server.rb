@@ -34,6 +34,7 @@ class Server
     make_layout
     make_login
     make_results
+    make_available
     drive if !@google_drive.empty?
   end
   
@@ -62,15 +63,54 @@ class MyApp < Sinatra::Base
 
   use Rack::Session::Pool, :expire_after => 1800
   
+  helpers do
+    def calculate_time(type, schedule)
+      date = schedule[("date_" + type).to_sym].split('-')
+      time = schedule[("time_" + type).to_sym].split(':')
+      Time.new(date[0], date[1], date[2], time[0], time[1]).getutc.to_i
+    end
+    
+    def before_available(schedule)
+      start_utc_seconds = calculate_time('start', schedule)
+      
+      if (Time.now.getutc.to_i < start_utc_seconds)
+        return true
+      else
+        return false
+      end
+    end
+    
+    def after_available(schedule)
+      finish_utc_seconds = calculate_time('finish', schedule)
+      
+      if (Time.now.getutc.to_i > finish_utc_seconds)
+        return true
+      else
+        return false
+      end
+    end
+  end
+  
   students = #{@students}
   quiz_name = '#{@title}'
   completed_quiz = []
+  schedule = #{@schedule}
   
   get '/' do
-    if (session[:current_user])
-      send_file 'views/#{@title}.html'
+    if (before_available(schedule))
+      date = schedule[:date_start].split('-')
+      time = schedule[:time_start]
+      erb :available, :locals => {:state => 'not started', :title => quiz_name, :date => [date[2], date[1], date[0]].join('/'), :time => time}
+    elsif (after_available(schedule))
+      date = schedule[:date_finish].split('-')
+      time = schedule[:time_finish]
+      erb :available, :locals => {:state => 'finished', :title => quiz_name, :date => [date[2], date[1], date[0]].join('/'), :time => time}
     else
-      erb :login, :locals => {:title => "Autenticación", :error => {}}
+      if (session[:current_user])
+        send_file 'views/My Quiz.html'
+      else
+        erb :login, :locals => {:title => "Autenticación", :error => {}}
+      end
     end
   end
   
@@ -250,6 +290,26 @@ end}
 <br><br><br>
 <a href="/logout" class="btn btn-primary">Finalizar revisi&oacute;n</a>}
     name = 'app/views/results.erb'
+    make_file(content, name)
+  end
+  
+  def make_available
+    content = %q{<div class="jumbotron">
+  <h1><%= title %></h1>
+  <br />
+  <% if (state == 'not started') %>
+    <div class="alert alert-warning">
+      El cuestionario se abrir&aacute; el <%= date %> a las <%= time %> horas.
+      Vuelva en ese momento para poder realizarlo.
+    </div>
+  <% else %>
+    <div class="alert alert-danger">
+      El cuestionario se cerr&oacute; el <%= date %> a las <%= time %> horas.
+      Ya no es posible realizar ning&uacute;n env&iacute;o.
+    </div>
+  <% end %>
+</div>}
+    name = 'app/views/available.erb'
     make_file(content, name)
   end
   

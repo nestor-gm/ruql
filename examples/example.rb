@@ -5,7 +5,7 @@ quiz 'Example quiz' do
   students :'examples/students.csv'
   #students :'jjlabradorglez@gmail.com' => {:surname => 'Labrador González', :name => 'Juan José'}, :'tutu@gmail.com' => {:surname => 'Chuchu', :name => 'Tutu'}
   
-  schedule :date_start => '27-05-2014', :date_finish => '28-05-2014', :time_start => '09:00', :time_finish => '11:00'
+  schedule :date_start => '2014-06-09', :date_finish => '2014-06-09', :time_start => '21:00', :time_finish => '22:00'
   
   heroku :domain => 'My Quiz'
   
