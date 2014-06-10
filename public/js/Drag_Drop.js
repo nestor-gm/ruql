@@ -17,4 +17,9 @@ function drop(ev, id, clone) {
   
   var val = document.getElementById(id);
   val.value = document.getElementById(data).innerHTML;
+  
+  if (id.match(/qddsm/)) {
+    if (!document.getElementsByName(id)[0].value.match(val.value + ","))
+      document.getElementsByName(id)[0].value += val.value + ","
+  }
 }

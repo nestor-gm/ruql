@@ -201,7 +201,7 @@ function checkAnswer(x) {
   
   if ($("#" + x.toString() + " strong").length == 0) {
     correct = false;
-    answers = $("#" + x.toString() + " input");
+    answers = $("#" + x.toString() + " input[type!='hidden']");
     
     if (answers.length != 0) {
       if ((answers.attr('class').match("fillin")) || (answers.attr('class').match("dragdropfi")) || (answers.attr('class').match("dragdropmc"))) {

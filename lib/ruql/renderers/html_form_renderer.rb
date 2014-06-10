@@ -114,7 +114,7 @@ class HtmlFormRenderer
   end
 
   def insert_input(type, id, name, klass, answer)
-    @h.input(:type => type, :id => id, :name => name, :class => klass) { |p| 
+    @h.input(:type => type, :id => id, :name => id, :class => klass) { |p| 
       p << answer.answer_text
       p << %Q{<br class="#{id}br">}
     }
@@ -158,10 +158,12 @@ class HtmlFormRenderer
     @h.div(:id => "col2-q#{q}-#{id}", :class => 'col2') do 
       keys.length.times do |i|
         if (id =~ /qddmc/)
-          @h.input(:id => "#{id}#{index + 1}-#{i + 1}", :type => 'text', :class => klass, :ondrop => "drop(event, '#{id}#{index + 1}-#{i + 1}', #{clone})", :ondragover => "allowDrop(event)")
+          @h.input(:id => "#{id}#{index + 1}-#{i + 1}", :name => "#{id}#{index + 1}-#{i + 1}", :type => 'text', :class => klass, :ondrop => "drop(event, '#{id}#{index + 1}-#{i + 1}', #{clone})", 
+:ondragover => "allowDrop(event)")
           @h.br
         elsif (id =~ /qddsm/)
           @h.div(:id => "#{id}#{index + 1}-#{i + 1}", :type => 'text', :class => klass, :ondrop => "drop(event, '#{id}#{index + 1}-#{i + 1}', #{clone})", :ondragover => "allowDrop(event)") do end
+          @h.input(:type => 'hidden', :name => "#{id}#{index + 1}-#{i + 1}")
         end
       end
     end
@@ -171,7 +173,8 @@ class HtmlFormRenderer
     counter = 1
     d << translate(:answers, '') + ": " if id =~ /qddsm/
     values.each do |v|
-      @h.a(:id => "#{id}a#{index + 1}-#{counter}", :class => "btn btn-default btn-sm button-#{id}", :draggable => 'true', :ondragstart => 'drag(event)') do |b|
+      @h.a(:id => "#{id}a#{index + 1}-#{counter}", :name => "#{id}a#{index + 1}-#{counter}", :class => "btn btn-default btn-sm button-#{id}", :draggable => 'true', :ondragstart => 'drag(event)') do 
+|b|
         b << v           
       end
       counter += 1
@@ -341,7 +344,8 @@ class HtmlFormRenderer
         # Store answers for question-index
         @data[:"question-#{index}"][:answers]["qp#{index + 1}-1".to_sym] = {:answer_text => answer.answer_text.to_javascript, :correct => answer.correct, 
                                                                             :explanation => answer.explanation}
-        @h.textarea(:id => "qp#{index + 1}-1", :class =>'programming', :rows => 5, :cols => 80, :height => q.height, :width => q.width, :placeholder => "#{translate(:placeholder, 'questions')}...") do
+        @h.textarea(:id => "qp#{index + 1}-1", :name => "qp#{index + 1}-1", :class =>'programming', :rows => 5, :cols => 80, :height => q.height, :width => q.width, :placeholder => 
+"#{translate(:placeholder, 'questions')}...") do
         end
         @h.br
         @h.br
@@ -357,8 +361,9 @@ class HtmlFormRenderer
     hyphen.length.times { |i|
                           nHyphen = hyphen[i].count('-')
                           @size_inputs << nHyphen
-                          input = %Q{<input type="text" id="qfi#{index + 1}-#{i + 1}" class="fillin size-#{nHyphen}"></input>} if question.class == FillIn
-                          input = %Q{<input id="qddfi#{index + 1}-#{i + 1}" class="dragdropfi size-#{nHyphen}" ondrop="drop(event,'qddfi#{index + 1}-#{i + 1}', true)" 
+                          input = %Q{<input type="text" id="qfi#{index + 1}-#{i + 1}" name="qfi#{index + 1}-#{i + 1}" class="fillin size-#{nHyphen}"></input>} if question.class == FillIn
+                          input = %Q{<input id="qddfi#{index + 1}-#{i + 1}" name="qddfi#{index + 1}-#{i + 1}" class="dragdropfi size-#{nHyphen}" ondrop="drop(event,'qddfi#{index + 1}-#{i + 1}', 
+true)" 
                           ondragover="allowDrop(event)"></input>} if question.class == DragDrop_FI
                           question.question_text.sub!(/(?<!\\)---+/, input)
                         }

@@ -6,11 +6,12 @@ require 'yaml'
 
 class Server
   attr_accessor :quizzes
-  attr_reader :title, :students, :teachers, :schedule, :heroku, :google_drive, :credentials
+  attr_reader :title, :data, :students, :teachers, :schedule, :heroku, :google_drive, :credentials
   
   def initialize(quizzes)
     @quiz = quizzes[0]
     @html = @quiz.output
+    @data = @quiz.data
     @students = @quiz.users
     @teachers = @quiz.admins
     @schedule = @quiz.time
@@ -29,13 +30,13 @@ class Server
     make_html
     make_gemfile
     make_rakefile
-    make_app_rb
     make_config_ru
     make_layout
     make_login
-    make_results
+    make_finish
     make_available
-    #drive if !@google_drive.empty?
+    drive if !@google_drive.empty?
+    make_app_rb
   end
   
   def make_directories
@@ -50,6 +51,7 @@ class Server
   def make_app_rb
     content = %Q{#encoding: utf-8
 require 'sinatra/base'
+require 'google_drive'
 
 class MyApp < Sinatra::Base
   
@@ -89,11 +91,62 @@ class MyApp < Sinatra::Base
         return false
       end
     end
+    
+    def deep_keys(h, a)
+      if (h.respond_to?('keys'))
+        h.each_key do |k|
+          a << k.to_s if ((k.to_s =~ /^qfi/) || (k.to_s =~ /^qmc/) || (k.to_s =~ /^qsm/) || (k.to_s =~ /^qdd/) || (k.to_s =~ /^qp/))
+          deep_keys(h[k], a)
+        end
+      end
+    end
+    
+    def google_login(credentials)
+      email = credentials['email']
+      password = credentials['password']
+      GoogleDrive.login(email, password)
+    end
+    
+    def write_spreadsheet(session, file, data)
+      ids_answers = []
+      deep_keys(data, ids_answers)
+      spreadsheet =  session.spreadsheet_by_url(file.worksheets_feed_url).worksheets[0]
+      %w{ID_Respuesta Respuesta}.each_with_index { |value, index| spreadsheet[1, index + 1] = value }
+      ids_answers.each_with_index { |value, index| spreadsheet[index + 2, 1] = value }
+      spreadsheet.save()
+      spreadsheet.reload()
+    end
+    
+    def create_spreadsheet_user(credentials, user, path, folder, data)
+      session = google_login(credentials)
+      root = session
+      full_path = "session.root_collection"
+      
+      path.each do |f|
+        full_path += ".subcollection_by_title('" + f + "')"
+      end
+      
+      full_path += ".subcollection_by_title('" + folder + "')"
+      dest = eval(full_path)
+      
+      if (session.spreadsheet_by_title(user) == nil)
+        file = session.create_spreadsheet(user)
+        dest.add(file)
+        root.root_collection.remove(file)
+      else
+        file = session.spreadsheet_by_title(user)
+        write_spreadsheet(session, file, data)
+      end
+    end
   end
   
   students = #{@students}
+  data = #{@data}
   quiz_name = '#{@title}'
   schedule = #{@schedule}
+  credentials = #{@credentials}
+  folder = '#{@google_drive[:folder]}'
+  path = #{@google_drive[:path].split('/')}
   
   get '/' do
     if (before_available(schedule))
@@ -132,7 +185,11 @@ class MyApp < Sinatra::Base
   end
   
   post '/quiz' do
-    erb :results, :locals => {:title => "Resultado", :quiz_name => quiz_name, :email => session[:current_user], :full_name => students[session[:current_user].to_sym]}
+    user = session[:current_user].split('@')[0]
+    create_spreadsheet_user(credentials, user, path, folder, data)
+    date = schedule[:date_finish].split('-')
+    time = schedule[:time_finish]
+    erb :finish, :locals => {:title => "Finalizar", :quiz_name => quiz_name, :date => [date[2], date[1], date[0]].join('/'), :time => time}
   end
   
   get '/logout' do
@@ -157,7 +214,8 @@ run MyApp}
   
   def make_gemfile
     content = %q{source "http://rubygems.org"
-gem 'sinatra'}
+gem 'sinatra'
+gem 'google_drive'}
     name = 'app/Gemfile'
     make_file(content, name)
   end
@@ -258,27 +316,18 @@ end}
     make_file(content, name)
   end
   
-  def make_results
-    content = %q{<h1>Resultados</h1>
-
-<h3>Cuestionario</h3>
-<%= quiz_name %>
-
-<h3>Alumno</h3>
-<ul>
-<li>Nombre: <%= full_name[:name] %></li>
-<li>Apellidos: <%= full_name[:surname] %></li>
-<li>Email: <%= email %></li>
-</ul>
-
-<h3>Informaci&oacute;n del ex&aacute;men</h3>
-.
-.
-.
-.
-<br><br><br>
-<a href="/logout" class="btn btn-primary">Finalizar revisi&oacute;n</a>}
-    name = 'app/views/results.erb'
+  def make_finish
+    content = %q{<div class="jumbotron">
+  <h2>Respuestas guardadas</h2>
+  <div class="alert alert-success">
+    Ha finalizado el cuestionario y sus respuestas han sido guardadas correctamente.
+    El cuestionario seguir&aacute; abierto hasta el <%= date %> a las <%= time %>. 
+    Puede reintentar el mismo todas las veces que desee antes de la fecha l&iacute;mite.
+  </div>
+  <br>
+  <a href="/logout" class="btn btn-primary">Cerrar sesi&oacute;n</a>
+</div>}
+    name = 'app/views/finish.erb'
     make_file(content, name)
   end
   
@@ -351,18 +400,22 @@ end}
           local_root = local_root.subcollection_by_title(folder)
         end
       end
-      local_root.create_subcollection(@google_drive[:folder])
+      local_root.create_subcollection(@google_drive[:folder]) if local_root.subcollection_by_title(@google_drive[:folder]) == nil
     else
-      root_folder.create_subcollection(@google_drive[:folder])
+      root_folder.create_subcollection(@google_drive[:folder]) if root_folder.subcollection_by_title(@google_drive[:folder]) == nil
     end
   end
   
   def drive
     session = google_login
     dest = create_folder(session)
-    file = session.create_spreadsheet(@google_drive[:spreadsheet_name])
-    dest.add(file)
-    session.root_collection.remove(file)
+    if (session.spreadsheet_by_title(@google_drive[:spreadsheet_name]) == nil)
+      file = session.create_spreadsheet(@google_drive[:spreadsheet_name])
+      dest.add(file)
+      session.root_collection.remove(file)
+    else
+      file = session.spreadsheet_by_title(@google_drive[:spreadsheet_name])
+    end
     write_spreadsheet(session, file)
   end
   
