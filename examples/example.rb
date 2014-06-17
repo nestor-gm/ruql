@@ -1,15 +1,17 @@
 quiz 'Example quiz' do
 
-  teachers 'casiano.rodriguez.leon@gmail.com'
+  teachers 'jjlabradorglez@gmail.com'
   
   students :'examples/students.csv'
   #students :'jjlabradorglez@gmail.com' => {:surname => 'Labrador González', :name => 'Juan José'}, :'tutu@gmail.com' => {:surname => 'Chuchu', :name => 'Tutu'}
   
-  schedule :date_start => '2014-06-09', :date_finish => '2014-06-10', :time_start => '20:00', :time_finish => '23:00'
+  schedule :date_start => '2014-06-09', :date_finish => '2014-06-19', :time_start => '20:00', :time_finish => '23:00'
   
   heroku :domain => 'My Quiz'
+  # Must be equal to the subdomain specified in the redirect URI of the Google Developers Console
   
-  google_drive :spreadsheet_name => 'Test', :login => 'examples/credentials.yml', :folder => 'Example Quiz', :path => 'JuanJose/RuQL'
+  google_drive :spreadsheet_name => 'Test', :folder => 'Example Quiz', :path => 'JuanJose/RuQL', :google_key => '350555787239-pvci2icb51hvomdos7jcde9dbg5c500h.apps.googleusercontent.com', 
+               :google_secret => 'uzp-5eEXO5RMZfays0kpqH1U'
   
   #head :'examples/header.html'
   

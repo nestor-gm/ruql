@@ -148,10 +148,10 @@ class Quiz
   end
   
   def store_teachers(arg)
+    people = []
     if (arg.class == String)
-      arg
+      people << arg
     else
-      people = []
       if (arg.class == Array)
         arg.each { |item| persons << item }
       elsif (arg.class == Symbol)

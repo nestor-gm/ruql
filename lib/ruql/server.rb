@@ -2,11 +2,10 @@
 require 'fileutils'
 require 'io/console'
 require 'google_drive'
-require 'yaml'
 
 class Server
   attr_accessor :quizzes
-  attr_reader :title, :data, :students, :teachers, :schedule, :heroku, :google_drive, :credentials
+  attr_reader :title, :data, :students, :teachers, :schedule, :heroku, :google_drive
   
   def initialize(quizzes)
     @quiz = quizzes[0]
@@ -18,11 +17,6 @@ class Server
     @heroku = @quiz.heroku_config || {}
     @title = @heroku[:domain] || @quiz.title
     @google_drive = @quiz.drive || {}
-    begin
-      @credentials = YAML.load_file(File.expand_path(@google_drive[:login]))
-    rescue Exception => e
-      $stderr.puts "#{e.message}"
-    end
   end
   
   def make_server
@@ -35,7 +29,9 @@ class Server
     make_login
     make_finish
     make_available
-    drive if !@google_drive.empty?
+    make_initialized
+    make_not_initialized
+    make_not_allowed
     make_app_rb
   end
   
@@ -51,6 +47,8 @@ class Server
   def make_app_rb
     content = %Q{#encoding: utf-8
 require 'sinatra/base'
+require 'omniauth'
+require 'omniauth-google-oauth2'
 require 'google_drive'
 
 class MyApp < Sinatra::Base
@@ -63,7 +61,7 @@ class MyApp < Sinatra::Base
     enable :protection
   end
 
-  use Rack::Session::Pool, :expire_after => 1800
+  use Rack::Session::Pool
   
   helpers do
     def calculate_time(type, schedule)
@@ -92,22 +90,114 @@ class MyApp < Sinatra::Base
       end
     end
     
-    def deep_keys(h, a)
+    def find(h, ids, answers)
       if (h.respond_to?('keys'))
         h.each_key do |k|
-          a << k.to_s if ((k.to_s =~ /^qfi/) || (k.to_s =~ /^qmc/) || (k.to_s =~ /^qsm/) || (k.to_s =~ /^qdd/) || (k.to_s =~ /^qp/))
-          deep_keys(h[k], a)
+          ids << k.to_s if ((k.to_s =~ /^qfi/) || (k.to_s =~ /^qmc/) || (k.to_s =~ /^qsm/) || (k.to_s =~ /^qdd/) || (k.to_s =~ /^qp/))
+          answers << h[k] if (k.to_s == 'answer_text')
+          find(h[k], ids, answers)
         end
       end
     end
     
-    def google_login(credentials)
-      email = credentials['email']
-      password = credentials['password']
-      GoogleDrive.login(email, password)
+    def google_login(token)
+      begin
+        GoogleDrive.login_with_oauth(token)
+      rescue Exception => e
+        $stderr.puts e.message
+        exit
+      end
     end
     
-    def write_spreadsheet(session, file, data)
+    def get_spreadsheet(session, file)
+      session.spreadsheet_by_url(file.worksheets_feed_url)
+    end
+    
+    def write_spreadsheet_teacher(session, file)
+      spreadsheet = get_spreadsheet(session, file)
+      worksheet = spreadsheet.worksheets[0]
+      worksheet.title = $google_drive[:spreadsheet_name]
+      %w{Email Apellidos Nombre Nota Examen}.each_with_index { |value, index| worksheet[1, index + 1] = value }
+      $students.each_with_index do |k, i|
+        key = k[0]
+        value = k[1]
+        worksheet[i + 2, 1] = key.to_s
+        worksheet[i + 2, 2] = value[:surname]
+        worksheet[i + 2, 3] = value[:name]
+      end
+      
+      # Save changes and reload spreadsheet
+      worksheet.save()
+      worksheet.reload()
+      
+      # New worksheet (questions' id and questions' text)
+      spreadsheet.add_worksheet("Preguntas", 1000, 24)
+      worksheet = spreadsheet.worksheets[1]
+      %w{ID_Pregunta Pregunta}.each_with_index { |value, index| worksheet[1, index + 1] = value }
+      $data.keys.each_with_index do |value, index| 
+        worksheet[index + 2, 1] = value
+        worksheet[index + 2, 2] = $data[value][:question_text]
+      end
+      
+      # Save changes and reload spreadsheet
+      worksheet.save()
+      worksheet.reload()
+      
+      # New worksheet (answers' id and answers' text)
+      spreadsheet.add_worksheet("Respuestas", 1000, 24)
+      worksheet = spreadsheet.worksheets[2]
+      %w{ID_Respuesta Respuesta}.each_with_index { |value, index| worksheet[1, index + 1] = value }
+      ids_answers, answers = [], []
+      find($data, ids_answers, answers)
+      ids_answers.each_with_index { |value, index| worksheet[index + 2, 1] = value }
+      answers.each_with_index { |value, index| worksheet[index + 2, 2] = value }
+      
+      # Save changes and reload spreadsheet
+      worksheet.save()
+      worksheet.reload()
+      
+      # Return human URL of Google Drive Spreadsheet
+      spreadsheet.human_url
+    end
+    
+    def create_folder(session)
+      root_folder = session.root_collection
+      if ($google_drive.key?(:path))
+        local_root = root_folder
+        folders = $google_drive[:path].split('/')
+        folders.each do |folder|
+          if (local_root.subcollection_by_title(folder) == nil)
+            local_root.create_subcollection(folder)
+            local_root = local_root.subcollection_by_title(folder)
+          else
+            local_root = local_root.subcollection_by_title(folder)
+          end
+        end
+        if (local_root.subcollection_by_title($google_drive[:folder]) == nil)
+          local_root.create_subcollection($google_drive[:folder])
+        else
+          local_root = local_root.subcollection_by_title($google_drive[:folder])
+        end
+      else
+        root_folder.create_subcollection($google_drive[:folder]) if root_folder.subcollection_by_title($google_drive[:folder]) == nil
+      end
+    end
+    
+    def drive(token)
+      session = google_login(token)
+      dest = create_folder(session)
+      $id_folder = dest.resource_id.to_s.split(':')[1]
+      if (session.spreadsheet_by_title($google_drive[:spreadsheet_name]) == nil)
+        file = session.create_spreadsheet($google_drive[:spreadsheet_name])
+        dest.add(file)
+        session.root_collection.remove(file)
+      else
+        file = session.spreadsheet_by_title($google_drive[:spreadsheet_name])
+      end
+      write_spreadsheet_teacher(session, file)
+    end
+    
+    def write_spreadsheet_user(session, file, data)
       ids_answers = []
       deep_keys(data, ids_answers)
       spreadsheet =  session.spreadsheet_by_url(file.worksheets_feed_url).worksheets[0]
@@ -135,49 +225,42 @@ class MyApp < Sinatra::Base
         root.root_collection.remove(file)
       else
         file = session.spreadsheet_by_title(user)
-        write_spreadsheet(session, file, data)
+        write_spreadsheet_user(session, file, data)
       end
     end
   end
   
-  students = #{@students}
-  data = #{@data}
-  quiz_name = '#{@title}'
+  $teachers = #{@teachers}
+  $students = #{@students}
+  $data = #{@data}
+  $quiz_name = '#{@title}'
   schedule = #{@schedule}
-  credentials = #{@credentials}
-  folder = '#{@google_drive[:folder]}'
-  path = #{@google_drive[:path].split('/')}
+  $google_drive = #{@google_drive}
+  $folder = $google_drive[:folder]
+  $path = $google_drive[:path].split('/')
+  $initialized = false
+  $active = false
   
   get '/' do
     if (before_available(schedule))
       date = schedule[:date_start].split('-')
       time = schedule[:time_start]
-      erb :available, :locals => {:state => 'not started', :title => quiz_name, :date => [date[2], date[1], date[0]].join('/'), :time => time}
+      erb :available, :locals => {:state => 'not started', :title => $quiz_name, :date => [date[2], date[1], date[0]].join('/'), :time => time}
     elsif (after_available(schedule))
       date = schedule[:date_finish].split('-')
       time = schedule[:time_finish]
-      erb :available, :locals => {:state => 'finished', :title => quiz_name, :date => [date[2], date[1], date[0]].join('/'), :time => time}
+      erb :available, :locals => {:state => 'finished', :title => $quiz_name, :date => [date[2], date[1], date[0]].join('/'), :time => time}
     else
-      if (session[:current_user])
+      if ((session[:student]) || (session[:teacher]))
         send_file 'views/My Quiz.html'
       else
-        erb :login, :locals => {:title => "Autenticación", :error => {}}
+        erb :login, :locals => {:title => "Autenticación"}
       end
-    end
-  end
-  
-  post '/' do
-    user_email = params[:email]
-    if (students.key?(user_email.to_sym))
-      session[:current_user] = user_email.to_s
-      redirect '/quiz'
-    else
-      erb :login, :locals => {:title => "Autenticación", :error => {:code => 'not exists', :msg => 'no dispone de permisos para realizar este cuestionario.', :type => 'danger'}}
     end
   end
 
   get '/quiz' do
-    if (session[:current_user])
+    if ((session[:teacher]) || (session[:student]))
       send_file 'views/My Quiz.html'
     else
       redirect '/'
@@ -185,18 +268,83 @@ class MyApp < Sinatra::Base
   end
   
   post '/quiz' do
-    user = session[:current_user].split('@')[0]
-    create_spreadsheet_user(credentials, user, path, folder, data)
+    if (session[:student])
+      teacher = false
+      user = session[:student].split('@')[0]
+      #create_spreadsheet_user(credentials, user, path, folder, data)
+    else
+      teacher = true
+    end
     date = schedule[:date_finish].split('-')
     time = schedule[:time_finish]
-    erb :finish, :locals => {:title => "Finalizar", :quiz_name => quiz_name, :date => [date[2], date[1], date[0]].join('/'), :time => time}
+    erb :finish, :locals => {:title => "Finalizar", :quiz_name => $quiz_name, :date => [date[2], date[1], date[0]].join('/'), :time => time, :teacher => teacher, :id_folder => $id_folder}
   end
   
   get '/logout' do
     session.clear
     redirect '/'
   end
+ 
+  get '/chuchu' do
+    "Soy un alumno"
+  end
   
+  get '/initialized' do
+    if (($initialized) && (!$active))
+      $active = true
+      url = drive($token)
+      erb :initialized, :locals => {:title => "Cuestionario inicializado", :url => url, :name => $google_drive[:spreadsheet_name]}
+    else
+      redirect '/'
+    end
+  end
+  
+  get '/not_initialized' do
+    erb :not_initialized, :locals => {:title => "Cuestionario no disponible"}
+  end
+  
+  get '/auth/:provider/callback' do
+    response = request.env['omniauth.auth'].to_hash
+    if (!$initialized)
+      if ($teachers.include?(response['info']['email']))
+        session[:teacher] = response['info']['email']
+        $token = response['credentials']['token']
+        $initialized = true
+        redirect '/initialized'
+      else
+        redirect '/not_initialized'
+      end
+    else
+      if ($teachers.include?(response['info']['email']))
+        session[:teacher] = response['info']['email']
+        redirect '/quiz'
+      else
+        if ($students.key?(response['info']['email'].to_sym))
+          session[:student] = response['info']['email']
+          redirect '/quiz'
+        else
+          erb :not_allowed, :locals => {:title => "No permitido"}
+        end
+      end
+    end
+  end
+
+  get '/auth/failure' do
+    content_type 'text/plain'
+    request.env['omniauth.auth'].to_hash.inspect rescue "No Data"
+  end
+  
+  use OmniAuth::Builder do
+    provider :google_oauth2, '#{@google_drive[:google_key]}', '#{@google_drive[:google_secret]}', {
+      :scope => 
+        "email " +
+        "profile " +
+        "https://docs.google.com/feeds/ " +
+        "https://docs.googleusercontent.com/ " +
+        "https://spreadsheets.google.com/feeds/"
+    }
+  end
+
   # Start the server if the ruby file is executed
   run! if app_file == $0
   
@@ -215,7 +363,9 @@ run MyApp}
   def make_gemfile
     content = %q{source "http://rubygems.org"
 gem 'sinatra'
-gem 'google_drive'}
+gem 'google_drive'
+gem 'omniauth'
+gem 'omniauth-google-oauth2'}
     name = 'app/Gemfile'
     make_file(content, name)
   end
@@ -255,7 +405,7 @@ end}
   end
   
   def make_layout
-    content = %q{<html>
+    content = %q{<html lang="es">
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -293,23 +443,12 @@ end}
   
   def make_login
     content = %q{<div class="jumbotron">
-  <% if (!error.empty?) %>
-    <div class="alert alert-<%= error[:type] %> alert-dismissable">
-      <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-      <strong>Error</strong>: <%= error[:msg] %>
-    </div>
-  <% end %>
-   
   <h1>Autenticaci&oacute;n</h1>
   <div class="alert alert-info">
-    Para poder realizar el cuestionario, por favor, introduzca el email de su cuenta de <strong>Google</strong>. 
-    Si no dispone de uno, haga click <strong><a href="http://accounts.google.com/SignUp?service=mail" target="_blank">aqu&iacute;</a></strong> para crearlo.
+    Para acceder al cuestionario, por favor, inicie sesi&oacute;n con su cuenta de <strong>Google</strong>.
+    Si no dispone de una, haga click <strong><a href="http://accounts.google.com/SignUp?service=mail" target="_blank">aqu&iacute;</a></strong> para crearla.
   </div>
-  <form class="form-signin" role="form" method="post" action="/">
-    <input type="email" class="form-control" placeholder="Email" name="email" required autofocus>
-    <br>
-    <button class="btn btn-lg btn-primary btn-block" type="submit">Continuar</button>
-  </form>
+  <a href='/auth/google_oauth2' class="btn btn-primary">Iniciar sesi&oacute;n</a>
   <br>
 </div>}
     name = 'app/views/login.erb'
@@ -318,14 +457,21 @@ end}
   
   def make_finish
     content = %q{<div class="jumbotron">
-  <h2>Respuestas guardadas</h2>
-  <div class="alert alert-success">
-    Ha finalizado el cuestionario y sus respuestas han sido guardadas correctamente.
-    El cuestionario seguir&aacute; abierto hasta el <%= date %> a las <%= time %>. 
-    Puede reintentar el mismo todas las veces que desee antes de la fecha l&iacute;mite.
-  </div>
-  <br>
-  <a href="/logout" class="btn btn-primary">Cerrar sesi&oacute;n</a>
+  <% if (teacher) %>
+    <h2>Finalizar revisi&oacute;n</h2>
+    <br />
+    <a href="/" class="btn btn-info">Volver al cuestionario</a>
+    <a href="https://drive.google.com/?usp=chrome_app#folders/<%= id_folder %>" class="btn btn-success" target="_blank">Ver Google Drive</a>
+  <% else %>
+    <h2>Respuestas guardadas</h2>
+    <div class="alert alert-success">
+      Ha finalizado el cuestionario y sus respuestas han sido guardadas correctamente.
+      El cuestionario seguir&aacute; abierto hasta el <%= date %> a las <%= time %>. 
+      Puede reintentar el mismo todas las veces que desee antes de la fecha l&iacute;mite.
+    </div>
+    <br />
+    <a href="/logout" class="btn btn-danger">Cerrar sesi&oacute;n</a>
+  <% end %>
 </div>}
     name = 'app/views/finish.erb'
     make_file(content, name)
@@ -351,72 +497,47 @@ end}
     make_file(content, name)
   end
   
+  def make_initialized
+    content = %q{<div class="jumbotron">
+  <h1><%= title %></h1>
+  <br />
+  <div class="alert alert-success">
+    El cuestionario ha sido inicializado correctamente. Puede consultar la hoja de
+    c&aacute;lculo generada pulsando en el siguente enlace: <a href="<%= url %>" target="_blank"><%= name %></a>.
+  </div>
+  <a href="/" class="btn btn-primary">Volver al cuestionario</a>
+</div>}
+    name = 'app/views/initialized.erb'
+    make_file(content, name)
+  end
+  
+  def make_not_initialized
+    content = %q{<div class="jumbotron">
+  <h1><%= title %></h1>
+  <br />
+  <div class="alert alert-danger">
+    El cuestionario a&uacute;n no est&aacute; configurado. Por favor, vuelva m&aacute;s tarde. 
+</div>}
+    name = 'app/views/not_initialized.erb'
+    make_file(content, name)
+  end
+  
+  def make_not_allowed
+    content = %q{<div class="jumbotron">
+  <h1><%= title %></h1>
+  <br />
+  <div class="alert alert-danger">
+    No dispone de permisos para realizar este cuestionario. Para m&aacute;s informaci&oacute;n, contacte con su profesor.
+</div>}
+    name = 'app/views/not_allowed.erb'
+    make_file(content, name)
+  end
+  
   def make_file(content, name)
     File.open(name, 'w') do |f|
       f.write(content)
       f.close
     end
-  end
-  
-  def google_login
-    email = @credentials['email']
-    password = @credentials['password']
-    begin
-      GoogleDrive.login(email, password)
-    rescue Exception => e
-      $stderr.puts e.message
-      exit
-    end
-  end
-  
-  def get_spreadsheet(session, file)
-    session.spreadsheet_by_url(file.worksheets_feed_url).worksheets[0]
-  end
-  
-  def write_spreadsheet(session, file)
-    spreadsheet = get_spreadsheet(session, file)
-    %w{Email Surname Name Mark}.each_with_index { |value, index| spreadsheet[1, index + 1] = value }
-    @students.each_with_index do |k, i|
-      key = k[0]
-      value = k[1]
-      spreadsheet[i + 2, 1] = key.to_s
-      spreadsheet[i + 2, 2] = value[:surname]
-      spreadsheet[i + 2, 3] = value[:name]
-    end
-    spreadsheet.save()
-    spreadsheet.reload()
-  end
-  
-  def create_folder(session)
-    root_folder = session.root_collection
-    if (@google_drive.key?(:path))
-      local_root = root_folder
-      folders = @google_drive[:path].split('/')
-      folders.each do |folder|
-        if (local_root.subcollection_by_title(folder) == nil)
-          local_root.create_subcollection(folder)
-          local_root = local_root.subcollection_by_title(folder)
-        else
-          local_root = local_root.subcollection_by_title(folder)
-        end
-      end
-      local_root.create_subcollection(@google_drive[:folder]) if local_root.subcollection_by_title(@google_drive[:folder]) == nil
-    else
-      root_folder.create_subcollection(@google_drive[:folder]) if root_folder.subcollection_by_title(@google_drive[:folder]) == nil
-    end
-  end
-  
-  def drive
-    session = google_login
-    dest = create_folder(session)
-    if (session.spreadsheet_by_title(@google_drive[:spreadsheet_name]) == nil)
-      file = session.create_spreadsheet(@google_drive[:spreadsheet_name])
-      dest.add(file)
-      session.root_collection.remove(file)
-    else
-      file = session.spreadsheet_by_title(@google_drive[:spreadsheet_name])
-    end
-    write_spreadsheet(session, file)
   end
   
 end
