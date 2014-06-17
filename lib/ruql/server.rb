@@ -29,6 +29,7 @@ class Server
     make_login
     make_finish
     make_available
+    make_initialize_quiz
     make_initialized
     make_not_initialized
     make_not_allowed
@@ -59,8 +60,10 @@ class MyApp < Sinatra::Base
     set :raise_errors, false
     set :session_secret, '#{@title.crypt(@title)}'
     enable :protection
+    set :server, 'webrick'
+    set :timeout, 300
   end
-
+  
   use Rack::Session::Pool
   
   helpers do
@@ -90,12 +93,12 @@ class MyApp < Sinatra::Base
       end
     end
     
-    def find(h, ids, answers)
+    def find(h, answers)
       if (h.respond_to?('keys'))
         h.each_key do |k|
-          ids << k.to_s if ((k.to_s =~ /^qfi/) || (k.to_s =~ /^qmc/) || (k.to_s =~ /^qsm/) || (k.to_s =~ /^qdd/) || (k.to_s =~ /^qp/))
+          $ids_answers << k.to_s if ((k.to_s =~ /^qfi/) || (k.to_s =~ /^qmc/) || (k.to_s =~ /^qsm/) || (k.to_s =~ /^qdd/) || (k.to_s =~ /^qp/))
           answers << h[k] if (k.to_s == 'answer_text')
-          find(h[k], ids, answers)
+          find(h[k], answers)
         end
       end
     end
@@ -109,21 +112,25 @@ class MyApp < Sinatra::Base
       end
     end
     
-    def get_spreadsheet(session, file)
-      session.spreadsheet_by_url(file.worksheets_feed_url)
+    def get_spreadsheet(file)
+      $session.spreadsheet_by_url(file.worksheets_feed_url)
     end
     
-    def write_spreadsheet_teacher(session, file)
-      spreadsheet = get_spreadsheet(session, file)
-      worksheet = spreadsheet.worksheets[0]
-      worksheet.title = $google_drive[:spreadsheet_name]
+    def write_spreadsheet_teacher(file)
+      $spreadsheet = get_spreadsheet(file)
+      worksheet = $spreadsheet.worksheets[0]
+      worksheet.title = '#{@google_drive[:spreadsheet_name]}'
       %w{Email Apellidos Nombre Nota Examen}.each_with_index { |value, index| worksheet[1, index + 1] = value }
+      $id_students = {}
       $students.each_with_index do |k, i|
         key = k[0]
         value = k[1]
         worksheet[i + 2, 1] = key.to_s
         worksheet[i + 2, 2] = value[:surname]
         worksheet[i + 2, 3] = value[:name]
+        
+        username = key.to_s.split('@')[0]
+        $id_students[username.to_sym] = i
       end
       
       # Save changes and reload spreadsheet
@@ -131,8 +138,10 @@ class MyApp < Sinatra::Base
       worksheet.reload()
       
       # New worksheet (questions' id and questions' text)
-      spreadsheet.add_worksheet("Preguntas", 1000, 24)
-      worksheet = spreadsheet.worksheets[1]
+      if ($spreadsheet.worksheet_by_title("Preguntas") == nil)
+        $spreadsheet.add_worksheet("Preguntas", 1000, 24)
+      end
+      worksheet = $spreadsheet.worksheets[1]
       %w{ID_Pregunta Pregunta}.each_with_index { |value, index| worksheet[1, index + 1] = value }
       $data.keys.each_with_index do |value, index| 
         worksheet[index + 2, 1] = value
@@ -144,12 +153,14 @@ class MyApp < Sinatra::Base
       worksheet.reload()
       
       # New worksheet (answers' id and answers' text)
-      spreadsheet.add_worksheet("Respuestas", 1000, 24)
-      worksheet = spreadsheet.worksheets[2]
+      if ($spreadsheet.worksheet_by_title("Respuestas") == nil)
+        $spreadsheet.add_worksheet("Respuestas", 1000, 24)
+      end
+      worksheet = $spreadsheet.worksheets[2]
       %w{ID_Respuesta Respuesta}.each_with_index { |value, index| worksheet[1, index + 1] = value }
-      ids_answers, answers = [], []
-      find($data, ids_answers, answers)
-      ids_answers.each_with_index { |value, index| worksheet[index + 2, 1] = value }
+      $ids_answers, answers = [], []
+      find($data, answers)
+      $ids_answers.each_with_index { |value, index| worksheet[index + 2, 1] = value }
       answers.each_with_index { |value, index| worksheet[index + 2, 2] = value }
       
       # Save changes and reload spreadsheet
@@ -157,14 +168,14 @@ class MyApp < Sinatra::Base
       worksheet.reload()
       
       # Return human URL of Google Drive Spreadsheet
-      spreadsheet.human_url
+      $spreadsheet.human_url
     end
     
-    def create_folder(session)
-      root_folder = session.root_collection
+    def create_folder
+      root_folder = $session.root_collection
       if ($google_drive.key?(:path))
         local_root = root_folder
-        folders = $google_drive[:path].split('/')
+        folders = '#{@google_drive[:path]}'.split('/')
         folders.each do |folder|
           if (local_root.subcollection_by_title(folder) == nil)
             local_root.create_subcollection(folder)
@@ -173,71 +184,95 @@ class MyApp < Sinatra::Base
             local_root = local_root.subcollection_by_title(folder)
           end
         end
-        if (local_root.subcollection_by_title($google_drive[:folder]) == nil)
-          local_root.create_subcollection($google_drive[:folder])
+        if (local_root.subcollection_by_title('#{@google_drive[:folder]}') == nil)
+          local_root.create_subcollection('#{@google_drive[:folder]}')
         else
-          local_root = local_root.subcollection_by_title($google_drive[:folder])
+          local_root = local_root.subcollection_by_title('#{@google_drive[:folder]}')
         end
       else
-        root_folder.create_subcollection($google_drive[:folder]) if root_folder.subcollection_by_title($google_drive[:folder]) == nil
+        root_folder.create_subcollection('#{@google_drive[:folder]}') if root_folder.subcollection_by_title('#{@google_drive[:folder]}') == nil
       end
+    end
+    
+    def upload_copy_quiz(user=nil)
+      if (user == nil)
+        name = "#{@title}.html"
+      else
+        name = "#{@title} - " + user + ".html"
+      end
+      
+      # If a student already post a quiz, it will be removed
+      if ($session.file_by_title(name) != nil)
+        $session.file_by_title(name).delete(true)
+      end
+      
+      # Upload a HTML quiz with the students answers
+      file = $session.upload_from_file("views/#{@title}.html", name, :convert => false)
+      $dest.add(file)
+      $session.root_collection.remove(file)
     end
     
     def drive(token)
-      session = google_login(token)
-      dest = create_folder(session)
-      $id_folder = dest.resource_id.to_s.split(':')[1]
-      if (session.spreadsheet_by_title($google_drive[:spreadsheet_name]) == nil)
-        file = session.create_spreadsheet($google_drive[:spreadsheet_name])
-        dest.add(file)
-        session.root_collection.remove(file)
+      $session = google_login(token)
+      $dest = create_folder
+      $id_folder = $dest.resource_id.to_s.split(':')[1]
+      
+      # Upload a copy of the HTML Quiz to the specified folder ($dest)
+      upload_copy_quiz
+      
+      # Create or get spreadsheet
+      if ($session.spreadsheet_by_title('#{@google_drive[:spreadsheet_name]}') == nil)
+        file = $session.create_spreadsheet('#{@google_drive[:spreadsheet_name]}')
+        $dest.add(file)
+        $session.root_collection.remove(file)
       else
-        file = session.spreadsheet_by_title($google_drive[:spreadsheet_name])
+        file = $session.spreadsheet_by_title('#{@google_drive[:spreadsheet_name]}')
       end
-      write_spreadsheet_teacher(session, file)
+      write_spreadsheet_teacher(file)
     end
     
-    def write_spreadsheet_user(session, file, data)
-      ids_answers = []
-      deep_keys(data, ids_answers)
-      spreadsheet =  session.spreadsheet_by_url(file.worksheets_feed_url).worksheets[0]
-      %w{ID_Respuesta Respuesta}.each_with_index { |value, index| spreadsheet[1, index + 1] = value }
-      ids_answers.each_with_index { |value, index| spreadsheet[index + 2, 1] = value }
-      spreadsheet.save()
-      spreadsheet.reload()
+    def write_worksheet_student(user)
+      # Get or create student worksheet
+      worksheet = $spreadsheet.worksheet_by_title(user)
+      if (worksheet == nil)
+        worksheet = $spreadsheet.add_worksheet(user, 1000, 24)
+      end
+      
+      # Write student worksheet
+      %w{ID_Pregunta Puntuación}.each_with_index { |value, index| worksheet[1, index + 1] = value }
+      $ids_answers.each_with_index { |value, index| worksheet[index + 2, 1] = value }
+      
+      # Save changes and reload worksheet
+      worksheet.save()
+      worksheet.reload()
     end
     
-    def create_spreadsheet_user(credentials, user, path, folder, data)
-      session = google_login(credentials)
-      root = session
-      full_path = "session.root_collection"
+    def write_mark_worksheet_teacher(user)
+      # Get the teacher worksheet
+      worksheet = $spreadsheet.worksheet_by_title('#{@google_drive[:spreadsheet_name]}')
       
-      path.each do |f|
-        full_path += ".subcollection_by_title('" + f + "')"
-      end
+      # Write the mark and the URL of the student's quiz
+      worksheet[$id_students[user.to_sym] + 2, 4] = "NOTA"
+      worksheet[$id_students[user.to_sym] + 2, 5] = $session.file_by_title("#{@title} - " + user + ".html").human_url
       
-      full_path += ".subcollection_by_title('" + folder + "')"
-      dest = eval(full_path)
-      
-      if (session.spreadsheet_by_title(user) == nil)
-        file = session.create_spreadsheet(user)
-        dest.add(file)
-        root.root_collection.remove(file)
-      else
-        file = session.spreadsheet_by_title(user)
-        write_spreadsheet_user(session, file, data)
-      end
+      # Save changes and reload worksheet
+      worksheet.save()
+      worksheet.reload()
+    end
+    
+    def evaluate(user, answers)
+      # Validar respuestas (pendiente)
+      write_worksheet_student(user)
+      upload_copy_quiz(user)
+      write_mark_worksheet_teacher(user)
     end
   end
   
   $teachers = #{@teachers}
   $students = #{@students}
   $data = #{@data}
-  $quiz_name = '#{@title}'
   schedule = #{@schedule}
   $google_drive = #{@google_drive}
-  $folder = $google_drive[:folder]
-  $path = $google_drive[:path].split('/')
   $initialized = false
   $active = false
   
@@ -245,11 +280,11 @@ class MyApp < Sinatra::Base
     if (before_available(schedule))
       date = schedule[:date_start].split('-')
       time = schedule[:time_start]
-      erb :available, :locals => {:state => 'not started', :title => $quiz_name, :date => [date[2], date[1], date[0]].join('/'), :time => time}
+      erb :available, :locals => {:state => 'not started', :title => '#{@title}', :date => [date[2], date[1], date[0]].join('/'), :time => time}
     elsif (after_available(schedule))
       date = schedule[:date_finish].split('-')
       time = schedule[:time_finish]
-      erb :available, :locals => {:state => 'finished', :title => $quiz_name, :date => [date[2], date[1], date[0]].join('/'), :time => time}
+      erb :available, :locals => {:state => 'finished', :title => '#{@title}', :date => [date[2], date[1], date[0]].join('/'), :time => time}
     else
       if ((session[:student]) || (session[:teacher]))
         send_file 'views/My Quiz.html'
@@ -271,29 +306,25 @@ class MyApp < Sinatra::Base
     if (session[:student])
       teacher = false
       user = session[:student].split('@')[0]
-      #create_spreadsheet_user(credentials, user, path, folder, data)
+      evaluate(user, params)
     else
       teacher = true
     end
     date = schedule[:date_finish].split('-')
     time = schedule[:time_finish]
-    erb :finish, :locals => {:title => "Finalizar", :quiz_name => $quiz_name, :date => [date[2], date[1], date[0]].join('/'), :time => time, :teacher => teacher, :id_folder => $id_folder}
+    erb :finish, :locals => {:title => "Finalizar", :quiz_name => '#{@title}', :date => [date[2], date[1], date[0]].join('/'), :time => time, :teacher => teacher, :id_folder => $id_folder}
   end
   
   get '/logout' do
     session.clear
     redirect '/'
   end
- 
-  get '/chuchu' do
-    "Soy un alumno"
-  end
   
   get '/initialized' do
     if (($initialized) && (!$active))
       $active = true
       url = drive($token)
-      erb :initialized, :locals => {:title => "Cuestionario inicializado", :url => url, :name => $google_drive[:spreadsheet_name]}
+      erb :initialized, :locals => {:title => "Cuestionario inicializado", :url => url, :name => '#{@google_drive[:spreadsheet_name]}'}
     else
       redirect '/'
     end
@@ -310,7 +341,7 @@ class MyApp < Sinatra::Base
         session[:teacher] = response['info']['email']
         $token = response['credentials']['token']
         $initialized = true
-        redirect '/initialized'
+        erb :initialize_quiz, :locals => {:title => "Activar cuestionario"}
       else
         redirect '/not_initialized'
       end
@@ -327,11 +358,6 @@ class MyApp < Sinatra::Base
         end
       end
     end
-  end
-
-  get '/auth/failure' do
-    content_type 'text/plain'
-    request.env['omniauth.auth'].to_hash.inspect rescue "No Data"
   end
   
   use OmniAuth::Builder do
@@ -516,9 +542,24 @@ end}
   <h1><%= title %></h1>
   <br />
   <div class="alert alert-danger">
-    El cuestionario a&uacute;n no est&aacute; configurado. Por favor, vuelva m&aacute;s tarde. 
+    El cuestionario a&uacute;n no est&aacute; activado. Por favor, vuelva m&aacute;s tarde. 
+  </div>
 </div>}
     name = 'app/views/not_initialized.erb'
+    make_file(content, name)
+  end
+  
+  def make_initialize_quiz
+    content = %q{<div class="jumbotron">
+  <h1><%= title %></h1>
+  <br />
+  <div class="alert alert-warning">
+    Para activar el cuestionario haga click en el siguiente bot&oacute;n. 
+    Tenga en cuenta que esta tarea puede tardar unos minutos.
+  </div>
+  <a href="/initialized" class="btn btn-warning">Activar cuestionario</a>
+</div>}
+    name = 'app/views/initialize_quiz.erb'
     make_file(content, name)
   end
   
@@ -528,6 +569,7 @@ end}
   <br />
   <div class="alert alert-danger">
     No dispone de permisos para realizar este cuestionario. Para m&aacute;s informaci&oacute;n, contacte con su profesor.
+  </div>
 </div>}
     name = 'app/views/not_allowed.erb'
     make_file(content, name)
