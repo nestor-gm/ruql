@@ -96,8 +96,12 @@ class MyApp < Sinatra::Base
     def find(h, answers)
       if (h.respond_to?('keys'))
         h.each_key do |k|
-          $ids_answers << k.to_s if ((k.to_s =~ /^qfi/) || (k.to_s =~ /^qmc/) || (k.to_s =~ /^qsm/) || (k.to_s =~ /^qdd/) || (k.to_s =~ /^qp/))
-          answers << h[k] if (k.to_s == 'answer_text')
+          if ((k.to_s =~ /^qfi/) || (k.to_s =~ /^qmc/) || (k.to_s =~ /^qsm/) || (k.to_s =~ /^qdd/) || (k.to_s =~ /^qp/))
+            if (h[k][:correct] == true)
+              $ids_answers << k.to_s
+              answers << h[k][:answer_text]
+            end
+          end
           find(h[k], answers)
         end
       end
@@ -114,6 +118,24 @@ class MyApp < Sinatra::Base
     
     def get_spreadsheet(file)
       $session.spreadsheet_by_url(file.worksheets_feed_url)
+    end
+    
+    def type_question(key)
+      if (key =~ /qfi/)
+        type = "FillIn" 
+      elsif (key =~ /qddfi/)
+        type = "Drag and Drop FillIn"
+      elsif (key =~ /qp/)
+        type = "Programming"
+      elsif (key =~ /qmc/)
+        type = "Multiple Choice"
+      elsif (key =~ /qddmc/)
+        type = "Drag and Drop Multiple Choice"
+      elsif (key =~ /qsm/)
+        type = "Select Multiple"
+      elsif (key =~ /qddsm/)
+        type = "Drag and Drop Select Multiple"
+      end
     end
     
     def write_spreadsheet_teacher(file)
@@ -142,10 +164,11 @@ class MyApp < Sinatra::Base
         $spreadsheet.add_worksheet("Preguntas", 1000, 24)
       end
       worksheet = $spreadsheet.worksheets[1]
-      %w{ID_Pregunta Pregunta}.each_with_index { |value, index| worksheet[1, index + 1] = value }
+      %w{ID_Pregunta Tipo_Pregunta Pregunta}.each_with_index { |value, index| worksheet[1, index + 1] = value }
       $data.keys.each_with_index do |value, index| 
         worksheet[index + 2, 1] = value
-        worksheet[index + 2, 2] = $data[value][:question_text]
+        worksheet[index + 2, 2] = type_question($data[value][:answers].keys[0].to_s)
+        worksheet[index + 2, 3] = $data[value][:question_text]
       end
       
       # Save changes and reload spreadsheet
@@ -240,8 +263,8 @@ class MyApp < Sinatra::Base
       
       # Write student worksheet
       %w{ID_Pregunta Puntuación}.each_with_index { |value, index| worksheet[1, index + 1] = value }
-      $ids_answers.each_with_index { |value, index| worksheet[index + 2, 1] = value }
-      
+      $data.keys.each_with_index { |value, index| worksheet[index + 2, 1] = value }
+    
       # Save changes and reload worksheet
       worksheet.save()
       worksheet.reload()
@@ -262,6 +285,12 @@ class MyApp < Sinatra::Base
     
     def evaluate(user, answers)
       # Validar respuestas (pendiente)
+      # html -> split('<form ')[1]
+      # -> split('</form>')[0]
+      # Ahora tenemos todo el form
+      # -> scan(/<input .*/) || scan(/<input(\s?.*)/)
+      # Faltaria obtener preguntas de codigo
+      
       write_worksheet_student(user)
       upload_copy_quiz(user)
       write_mark_worksheet_teacher(user)
