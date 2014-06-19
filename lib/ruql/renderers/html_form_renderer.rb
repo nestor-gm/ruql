@@ -114,7 +114,7 @@ class HtmlFormRenderer
   end
 
   def insert_input(type, id, name, klass, answer)
-    @h.input(:type => type, :id => id, :name => id, :class => klass) { |p| 
+    @h.input(:type => type, :id => id, :name => name, :class => klass) { |p| 
       p << answer.answer_text
       p << %Q{<br class="#{id}br">}
     }
@@ -140,7 +140,7 @@ class HtmlFormRenderer
       if ((klass == DragDrop_MC) || (klass == DragDrop_SM))
         @data[:"question-#{index}"][:answers]["#{id_klass}#{index + 1}-#{id_answer}".to_sym][:type] = "Hash"
       else
-        insert_input(type_input, "#{id_klass}#{index + 1}-#{id_answer}", "#{id_klass}#{index + 1}", klass_input, answer)
+        insert_input(type_input, "#{id_klass}#{index + 1}-#{id_answer}", "#{id_klass}", klass_input, answer)
       end
       id_answer += 1
     end

@@ -74,7 +74,7 @@ quiz 'Example quiz' do
       <br/>
       ----
     }
-    answer -1
+    answer -2
   end
   
   fill_in do

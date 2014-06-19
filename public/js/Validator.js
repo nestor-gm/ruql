@@ -542,10 +542,12 @@ function showOrHideAnswer(numQuestion, flag) {
     $.each(answers, function(key, value) {
       if (value['correct'] == true)
         correct = key;
-    })
+    });
     
-    if (flag == 1)
+    if (flag == 1) {
+      $.each(inputs, function(key, value) { value.checked = false });
       $("input[id=" + correct + "]").prop('checked', true);
+    }
     else
       $("input[id=" + correct + "]").prop('checked', false);
   }
@@ -556,6 +558,9 @@ function showOrHideAnswer(numQuestion, flag) {
       if (answers[key]['correct'] == true)
         corrects.push(key);
     }); 
+    
+    if (flag == 1)
+      $.each(inputs, function(key, value) { value.checked = false });
     
     $.each(corrects, function(index, value) {
       if (flag == 1)
