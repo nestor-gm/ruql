@@ -224,10 +224,12 @@ class MyApp < Sinatra::Base
         name = "#{@title} - " + user + ".html"
       end
       
-      # If a student already post a quiz, it will be removed
+      # If a student already post a quiz or a teacher generate again the quiz, it will be removed
       if ($session.file_by_title(name) != nil)
         $session.file_by_title(name).delete(true)
       end
+      
+      # if de si sera un html con las respuestas del alumno (para tratarlo) o la copia original del profesor
       
       # Upload a HTML quiz with the students answers
       file = $session.upload_from_file("views/#{@title}.html", name, :convert => false)
@@ -316,7 +318,7 @@ class MyApp < Sinatra::Base
       erb :available, :locals => {:state => 'finished', :title => '#{@title}', :date => [date[2], date[1], date[0]].join('/'), :time => time}
     else
       if ((session[:student]) || (session[:teacher]))
-        send_file 'views/My Quiz.html'
+        send_file 'views/#{@title}.html'
       else
         erb :login, :locals => {:title => "Autenticación"}
       end
@@ -325,7 +327,7 @@ class MyApp < Sinatra::Base
 
   get '/quiz' do
     if ((session[:teacher]) || (session[:student]))
-      send_file 'views/My Quiz.html'
+      send_file 'views/#{@title}.html'
     else
       redirect '/'
     end
