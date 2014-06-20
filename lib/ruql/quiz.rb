@@ -25,7 +25,7 @@ class Quiz
   attr_reader :questions
   attr_reader :options
   attr_reader :output
-  attr_reader :data, :users, :admins, :time, :heroku_config, :drive
+  attr_reader :data, :users, :admins, :path_config
   attr_reader :seed
   attr_reader :logger
   attr_accessor :title
@@ -147,54 +147,16 @@ class Quiz
     @foot
   end
   
-  def store_teachers(arg)
-    people = []
-    if (arg.class == String)
-      people << arg
-    else
-      if (arg.class == Array)
-        arg.each { |item| persons << item }
-      elsif (arg.class == Symbol)
-        File.open(File.expand_path(arg.to_s), 'r') do |f|
-          while line = f.gets
-            people << line
-          end
-        end
-      end
-      people
-    end
-  end
-  
-  def store_students(arg)
-    if (arg.class == Symbol)
-      hash = {}
-      CSV.foreach(File.expand_path(arg.to_s)) do |row|
-        hash[row[0].to_sym] = {:surname => row[1].lstrip, :name => row[2].lstrip.chomp}
-      end
-      hash
-    elsif (arg.class == Hash)
-      arg
-    end
-  end
-  
   def teachers(arg)
-    @admins = store_teachers(arg)
+    @admins = arg
   end
   
   def students(arg)
-    @users = store_students(arg)
+    @users = arg
   end
   
-  def schedule(arg)
-    @time = arg
-  end
-  
-  def heroku(arg)
-    @heroku_config = arg
-  end
-  
-  def google_drive(arg)
-    @drive = arg
+  def config(path)
+    @path_config = path
   end
   
   def self.quiz(*args,&block)

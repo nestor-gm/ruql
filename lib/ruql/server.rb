@@ -1,11 +1,11 @@
 #encoding: utf-8
 require 'fileutils'
-require 'io/console'
+require 'yaml'
 require 'google_drive'
 
 class Server
   attr_accessor :quizzes
-  attr_reader :title, :data, :students, :teachers, :schedule, :heroku, :google_drive
+  attr_reader :title, :data, :students, :teachers, :path_config
   
   def initialize(quizzes)
     @quiz = quizzes[0]
@@ -13,14 +13,15 @@ class Server
     @data = @quiz.data
     @students = @quiz.users
     @teachers = @quiz.admins
-    @schedule = @quiz.time
-    @heroku = @quiz.heroku_config || {}
-    @title = @heroku[:domain] || @quiz.title
-    @google_drive = @quiz.drive || {}
+    @path_config = @quiz.path_config
   end
   
   def make_server
     make_directories
+    make_students_csv_rb
+    make_teachers_rb
+    make_config_yml
+    make_data
     make_html
     make_gemfile
     make_rakefile
@@ -39,6 +40,40 @@ class Server
   def make_directories
     #FileUtils::cd('../')              # Arreglar path para ejecutar desde la gema
     FileUtils::mkdir_p 'app/views'
+    FileUtils::mkdir_p 'app/config'
+  end
+  
+  def make_students_csv_rb
+    if (@students.class == Symbol)
+      FileUtils::cp File.expand_path(@students.to_s), 'app/config'
+    elsif (@students.class == Hash)
+      make_file(@students, 'app/config/students.rb')
+    end
+  end
+  
+  def make_teachers_rb
+    if (@teachers.class == String)
+      make_file(@teachers, 'app/config/teachers.rb')
+    elsif (@teachers.class == Array)
+      File.open('app/config/teachers.rb', 'w') do |f|
+        @teachers.each { |teacher| f.puts(teacher)}
+        f.close
+      end
+    end
+  end
+  
+  def make_config_yml
+    FileUtils::cp File.expand_path(@path_config.to_s), 'app/config'
+    load_config_yml
+  end
+  
+  def load_config_yml
+    @config = YAML.load_file('app/config/config.yml')
+    @title = @config["quiz"]["heroku"]["domain"] || @quiz.title
+  end
+  
+  def make_data
+    make_file(@data, 'app/config/data.rb')
   end
   
   def make_html
@@ -50,6 +85,8 @@ class Server
 require 'sinatra/base'
 require 'omniauth'
 require 'omniauth-google-oauth2'
+require 'yaml'
+require 'csv'
 require 'google_drive'
 
 class MyApp < Sinatra::Base
@@ -67,14 +104,42 @@ class MyApp < Sinatra::Base
   use Rack::Session::Pool
   
   helpers do
-    def calculate_time(type, schedule)
-      date = schedule[("date_" + type).to_sym].split('-')
-      time = schedule[("time_" + type).to_sym].split(':')
+    
+    def store_students(path, type)
+      if (type == 'csv')
+        hash = {}
+        CSV.foreach(path) do |row|
+          hash[row[0].to_sym] = {:surname => row[1].lstrip, :name => row[2].lstrip.chomp}
+        end
+        hash
+      elsif (type == 'rb')
+        eval(path)
+      end
+    end
+    
+    def store_teachers(path)
+      people = []
+      File.open(path, 'r') do |f|
+        while line = f.gets
+          people << line
+        end
+        f.close
+      end
+      people
+    end
+    
+    def load_config_yml
+      $config = YAML.load_file('config/config.yml')
+    end
+    
+    def calculate_time(type)
+      date = $config["quiz"]["schedule"][("date_" + type)].split('-')
+      time = $config["quiz"]["schedule"][("time_" + type)].split(':')
       Time.new(date[0], date[1], date[2], time[0], time[1]).getutc.to_i
     end
     
-    def before_available(schedule)
-      start_utc_seconds = calculate_time('start', schedule)
+    def before_available
+      start_utc_seconds = calculate_time('start')
       
       if (Time.now.getutc.to_i < start_utc_seconds)
         return true
@@ -83,8 +148,8 @@ class MyApp < Sinatra::Base
       end
     end
     
-    def after_available(schedule)
-      finish_utc_seconds = calculate_time('finish', schedule)
+    def after_available
+      finish_utc_seconds = calculate_time('finish')
       
       if (Time.now.getutc.to_i > finish_utc_seconds)
         return true
@@ -141,7 +206,7 @@ class MyApp < Sinatra::Base
     def write_spreadsheet_teacher(file)
       $spreadsheet = get_spreadsheet(file)
       worksheet = $spreadsheet.worksheets[0]
-      worksheet.title = '#{@google_drive[:spreadsheet_name]}'
+      worksheet.title = $config["quiz"]["google_drive"]["spreadsheet_name"]
       %w{Email Apellidos Nombre Nota Examen}.each_with_index { |value, index| worksheet[1, index + 1] = value }
       $id_students = {}
       $students.each_with_index do |k, i|
@@ -196,9 +261,9 @@ class MyApp < Sinatra::Base
     
     def create_folder
       root_folder = $session.root_collection
-      if ($google_drive.key?(:path))
+      if ($config["quiz"]["google_drive"].key?("path"))
         local_root = root_folder
-        folders = '#{@google_drive[:path]}'.split('/')
+        folders = $config["quiz"]["google_drive"]["path"].split('/')
         folders.each do |folder|
           if (local_root.subcollection_by_title(folder) == nil)
             local_root.create_subcollection(folder)
@@ -207,13 +272,13 @@ class MyApp < Sinatra::Base
             local_root = local_root.subcollection_by_title(folder)
           end
         end
-        if (local_root.subcollection_by_title('#{@google_drive[:folder]}') == nil)
-          local_root.create_subcollection('#{@google_drive[:folder]}')
+        if (local_root.subcollection_by_title($config["quiz"]["google_drive"]["folder"]) == nil)
+          local_root.create_subcollection($config["quiz"]["google_drive"]["folder"])
         else
-          local_root = local_root.subcollection_by_title('#{@google_drive[:folder]}')
+          local_root = local_root.subcollection_by_title($config["quiz"]["google_drive"]["folder"])
         end
       else
-        root_folder.create_subcollection('#{@google_drive[:folder]}') if root_folder.subcollection_by_title('#{@google_drive[:folder]}') == nil
+        root_folder.create_subcollection($config["quiz"]["google_drive"]["folder"]) if root_folder.subcollection_by_title($config["quiz"]["google_drive"]["folder"]) == nil
       end
     end
     
@@ -246,12 +311,12 @@ class MyApp < Sinatra::Base
       upload_copy_quiz
       
       # Create or get spreadsheet
-      if ($session.spreadsheet_by_title('#{@google_drive[:spreadsheet_name]}') == nil)
-        file = $session.create_spreadsheet('#{@google_drive[:spreadsheet_name]}')
+      if ($session.spreadsheet_by_title($config["quiz"]["google_drive"]["spreadsheet_name"]) == nil)
+        file = $session.create_spreadsheet($config["quiz"]["google_drive"]["spreadsheet_name"])
         $dest.add(file)
         $session.root_collection.remove(file)
       else
-        file = $session.spreadsheet_by_title('#{@google_drive[:spreadsheet_name]}')
+        file = $session.spreadsheet_by_title($config["quiz"]["google_drive"]["spreadsheet_name"])
       end
       write_spreadsheet_teacher(file)
     end
@@ -274,7 +339,7 @@ class MyApp < Sinatra::Base
     
     def write_mark_worksheet_teacher(user)
       # Get the teacher worksheet
-      worksheet = $spreadsheet.worksheet_by_title('#{@google_drive[:spreadsheet_name]}')
+      worksheet = $spreadsheet.worksheet_by_title($config["quiz"]["google_drive"]["spreadsheet_name"])
       
       # Write the mark and the URL of the student's quiz
       worksheet[$id_students[user.to_sym] + 2, 4] = "NOTA"
@@ -299,22 +364,19 @@ class MyApp < Sinatra::Base
     end
   end
   
-  $teachers = #{@teachers}
-  $students = #{@students}
-  $data = #{@data}
-  schedule = #{@schedule}
-  $google_drive = #{@google_drive}
+  $data = eval(File.read('config/data.rb'))
   $initialized = false
   $active = false
   
   get '/' do
-    if (before_available(schedule))
-      date = schedule[:date_start].split('-')
-      time = schedule[:time_start]
+    load_config_yml if ((!$initialized) && (!$active))
+    if (before_available)
+      date = $config["quiz"]["schedule"]["date_start"].split('-')
+      time = $config["quiz"]["schedule"]["time_start"]
       erb :available, :locals => {:state => 'not started', :title => '#{@title}', :date => [date[2], date[1], date[0]].join('/'), :time => time}
-    elsif (after_available(schedule))
-      date = schedule[:date_finish].split('-')
-      time = schedule[:time_finish]
+    elsif (after_available)
+      date = $config["quiz"]["schedule"]["date_finish"].split('-')
+      time = $config["quiz"]["schedule"]["time_finish"]
       erb :available, :locals => {:state => 'finished', :title => '#{@title}', :date => [date[2], date[1], date[0]].join('/'), :time => time}
     else
       if ((session[:student]) || (session[:teacher]))
@@ -341,8 +403,8 @@ class MyApp < Sinatra::Base
     else
       teacher = true
     end
-    date = schedule[:date_finish].split('-')
-    time = schedule[:time_finish]
+    date = $config["quiz"]["schedule"]["date_finish"].split('-')
+    time = $config["quiz"]["schedule"]["time_finish"]
     erb :finish, :locals => {:title => "Finalizar", :quiz_name => '#{@title}', :date => [date[2], date[1], date[0]].join('/'), :time => time, :teacher => teacher, :id_folder => $id_folder}
   end
   
@@ -355,7 +417,7 @@ class MyApp < Sinatra::Base
     if (($initialized) && (!$active))
       $active = true
       url = drive($token)
-      erb :initialized, :locals => {:title => "Cuestionario inicializado", :url => url, :name => '#{@google_drive[:spreadsheet_name]}'}
+      erb :initialized, :locals => {:title => "Cuestionario inicializado", :url => url, :name => $config["quiz"]["google_drive"]["spreadsheet_name"]}
     else
       redirect '/'
     end
@@ -368,6 +430,13 @@ class MyApp < Sinatra::Base
   get '/auth/:provider/callback' do
     response = request.env['omniauth.auth'].to_hash
     if (!$initialized)
+      load_config_yml
+      $teachers = store_teachers('config/teachers.rb')
+      if (File.exist?('config/students.csv'))
+        $students = store_students('config/students.csv', 'csv')
+      elsif (File.exist?('config/students.rb'))
+        $students = store_students('config/students.rb', 'rb')
+      end
       if ($teachers.include?(response['info']['email']))
         session[:teacher] = response['info']['email']
         $token = response['credentials']['token']
@@ -392,7 +461,8 @@ class MyApp < Sinatra::Base
   end
   
   use OmniAuth::Builder do
-    provider :google_oauth2, '#{@google_drive[:google_key]}', '#{@google_drive[:google_secret]}', {
+    config = YAML.load_file('config/config.yml')
+    provider :google_oauth2, config["quiz"]["google_drive"]["google_key"], config["quiz"]["google_drive"]["google_secret"], {
       :scope => 
         "email " +
         "profile " +
