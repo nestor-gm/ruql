@@ -7,7 +7,6 @@ gem 'json'
 gem 'i18n'
 gem 'locale'
 gem 'htmlentities'
-gem 'google_drive'
 
 group :development, :test do
   gem 'ruby-debug19' if RUBY_VERSION <= '1.9.3'

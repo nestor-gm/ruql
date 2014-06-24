@@ -22,7 +22,6 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'i18n', '~> 0.6'
   s.add_runtime_dependency 'locale', '~> 2.1'
   s.add_runtime_dependency 'htmlentities', '~> 4.3'
-  s.add_runtime_dependency 'google_drive', '~> 0.3'
   s.homepage    = 'http://github.com/saasbook/ruql'
   s.license       = 'CC By-SA'
 end
