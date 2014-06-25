@@ -11,7 +11,7 @@ quiz 'Example quiz' do
   
   tag = '<a href="www.google.es"></a> '
   fill_in do
-    text "<i>Example of escaped HTML and three hyphens not evaluated:</i><br> #{escape(tag)}" + "<b>is</b> a \\-\\-\\- ---- " + '\-\-\-'
+    text "<i>Example of escaped HTML and three hyphens not evaluated:</i><br> #{escape(tag)}" + "is a \\-\\-\\- ---- " + '\-\-\-'
     answer /^link$/
   end
  

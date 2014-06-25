@@ -8,8 +8,9 @@ class Server
   attr_reader :title, :data, :students, :teachers, :path_config
   
   def initialize(quizzes)
-    @quiz = quizzes[0]
+    @quiz = quizzes[0]          # Only the first quiz
     @html = @quiz.output
+    @erb = @quiz.output_erb
     @data = @quiz.data
     @students = @quiz.users
     @teachers = @quiz.admins
@@ -23,6 +24,7 @@ class Server
     make_config_yml
     make_data
     make_html
+    make_erb
     make_gemfile
     make_rakefile
     make_config_ru
@@ -80,11 +82,16 @@ class Server
     make_file(@html, "app/views/#{@title}.html")
   end
   
+  def make_erb
+    make_file(@erb, "app/views/#{@title}.erb")
+  end
+  
   def make_app_rb
     content = %Q{#encoding: utf-8
 require 'sinatra/base'
 require 'omniauth'
 require 'omniauth-google-oauth2'
+require 'erb'
 require 'yaml'
 require 'csv'
 require 'google_drive'
@@ -206,6 +213,8 @@ class MyApp < Sinatra::Base
     def write_spreadsheet_teacher(file)
       $spreadsheet = get_spreadsheet(file)
       worksheet = $spreadsheet.worksheets[0]
+      
+      # Write in the main worksheet
       worksheet.title = $config["quiz"]["google_drive"]["spreadsheet_name"]
       %w{Email Apellidos Nombre Nota Examen}.each_with_index { |value, index| worksheet[1, index + 1] = value }
       $id_students = {}
@@ -283,21 +292,26 @@ class MyApp < Sinatra::Base
     end
     
     def upload_copy_quiz(user=nil)
-      if (user == nil)
-        name = "#{@title}.html"
-      else
-        name = "#{@title} - " + user + ".html"
-      end
+      name = "#{@title}.html"
       
-      # If a student already post a quiz or a teacher generate again the quiz, it will be removed
-      if ($session.file_by_title(name) != nil)
-        $session.file_by_title(name).delete(true)
-      end
-      
-      # if de si sera un html con las respuestas del alumno (para tratarlo) o la copia original del profesor
-      
-      # Upload a HTML quiz with the students answers
+      # If a teacher generate again the quiz, the previous quiz will be removed
+      $session.file_by_title(name).delete(true) if $session.file_by_title(name) != nil
+     
+      # Upload a HTML copy quiz
       file = $session.upload_from_file("views/#{@title}.html", name, :convert => false)
+      $dest.add(file)
+      $session.root_collection.remove(file)
+    end
+    
+    def upload_student_copy_quiz(user, answers)
+      name = "#{@title} - " + user + ".html"
+      student_html = ERB.new((File.read("views/#{@title}.erb")).to_s).result(answers.instance_eval { binding })
+      
+      # If a student post again the quiz, the previous quiz will be removed
+      $session.file_by_title(name).delete(true) if $session.file_by_title(name) != nil
+      
+      # Upload a HTML quiz with the student's answers
+      file = $session.upload_from_string(student_html, name, :content_type => 'text/html', :convert => false)
       $dest.add(file)
       $session.root_collection.remove(file)
     end
@@ -351,15 +365,8 @@ class MyApp < Sinatra::Base
     end
     
     def evaluate(user, answers)
-      # Validar respuestas (pendiente)
-      # html -> split('<form ')[1]
-      # -> split('</form>')[0]
-      # Ahora tenemos todo el form
-      # -> scan(/<input .*/) || scan(/<input(\s?.*)/)
-      # Faltaria obtener preguntas de codigo
-      
+      upload_student_copy_quiz(user, answers)
       write_worksheet_student(user)
-      upload_copy_quiz(user)
       write_mark_worksheet_teacher(user)
     end
   end

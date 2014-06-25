@@ -95,11 +95,7 @@ class HtmlFormRenderer
     @h.div :id => 'score', :class => 'score' do
     end
     @h.div :class => 'btn-footer' do
-      if (self.class == HtmlFormRenderer)
-        insert_button('submit', translate(:submit, 'buttons'), 'btn btn-primary')
-      else
-        insert_button('submit', translate(:submit, 'buttons'), 'btn btn-primary', true)
-      end
+      insert_button('submit', translate(:submit, 'buttons'), 'btn btn-primary')
       insert_button('reset', translate(:reset, 'buttons'), 'btn btn-info')
       insert_button('deleteAnswers', translate(:delete, 'buttons'), 'btn btn-warning')
       insert_button('deleteStorage', translate(:deleteAll, 'buttons'), 'btn btn-danger')
@@ -437,15 +433,9 @@ true)"
     end if (q.question_comment != "")
   end
   
-  def insert_button(id, name, type, server=false)
-    if (server)
-      @h.button(:type => 'submit', :id => id, :class => type) do |b|
-        b << name
-      end
-    else
-      @h.a(:id => id, :class => type) do |b|
-        b << name
-      end
+  def insert_button(id, name, type)
+    @h.a(:id => id, :class => type) do |b|
+      b << name
     end
   end
   

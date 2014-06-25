@@ -1,5 +1,3 @@
-require 'csv'
-
 class Quiz
   @@quizzes = []
   def self.quizzes ; @@quizzes ;  end
@@ -24,7 +22,7 @@ class Quiz
   attr_reader :renderer
   attr_reader :questions
   attr_reader :options
-  attr_reader :output
+  attr_reader :output, :output_erb
   attr_reader :data, :users, :admins, :path_config
   attr_reader :seed
   attr_reader :logger
@@ -32,6 +30,7 @@ class Quiz
 
   def initialize(title, options={})
     @output = ''
+    @output_erb = ''
     @questions = options[:questions] || []
     @title = title
     @options = @@default_options.merge(options)
@@ -51,6 +50,7 @@ class Quiz
     @renderer.render_quiz
     if (renderer == 'Sinatra')
       @output = @renderer.output
+      @output_erb = @renderer.output_erb
       @data = @renderer.data
       nil
     else
