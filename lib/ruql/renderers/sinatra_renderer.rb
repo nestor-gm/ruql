@@ -340,13 +340,8 @@ class SinatraRenderer
   
   def type_answer_fill_in(answer, item, idx, id_answer, class_question) 
     if (item.class == Regexp)
-      ans = item.source
+      ans = item
       type = 'Regexp'
-      [0, -1].each {|index| ans.insert(index, '/')}
-      opts = item.options
-      ans << 'i' if (opts & 1 == 1)
-      ans << 'x' if (opts & 2 == 2)
-      ans << 'm' if (opts & 4 == 4)
     elsif (item.class == String)
       ans = item.downcase
       type = 'String'
@@ -403,7 +398,7 @@ class SinatraRenderer
       obj.ol :class => 'answers' do
         # Store answers for question-index
         @data[:"question-#{index}"][:answers]["qp#{index + 1}-1".to_sym] = {:answer_text => answer.answer_text.to_javascript, :correct => answer.correct, 
-                                                                            :explanation => answer.explanation}
+                                                                            :explanation => answer.explanation, :type => q.language}
         if (erb)
           erb_interpolation("qp#{index + 1}-1")
         else

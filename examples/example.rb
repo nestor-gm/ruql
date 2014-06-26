@@ -46,14 +46,14 @@ quiz 'Example quiz' do
     answer :santa => /Santa/i, :tenerife => /Tenerife/i
   end
   
-  fill_in do
+  fill_in :language => 'JavaScript' do
     text %q{
       Diga dos números x = ---- e  y = ---- que multiplicados den 100
     }
     answer JS.new(%q{result = function(x,y) { return (x * y === 100); }})
   end
 
-  programming :language => :javascript, :height => 150, :width => 800  do
+  programming :language => 'JavaScript', :height => 150, :width => 800  do
     text %q{Write a JavaScript function named `suma` with two arguments that return the sum of them}
     answer JS.new(:'examples/test_suma.js')
   end

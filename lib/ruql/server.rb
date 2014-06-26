@@ -193,20 +193,14 @@ class MyApp < Sinatra::Base
     end
     
     def type_question(key)
-      if (key =~ /qfi/)
-        type = "FillIn" 
-      elsif (key =~ /qddfi/)
-        type = "Drag and Drop FillIn"
-      elsif (key =~ /qp/)
-        type = "Programming"
-      elsif (key =~ /qmc/)
-        type = "Multiple Choice"
-      elsif (key =~ /qddmc/)
-        type = "Drag and Drop Multiple Choice"
-      elsif (key =~ /qsm/)
-        type = "Select Multiple"
-      elsif (key =~ /qddsm/)
-        type = "Drag and Drop Select Multiple"
+      case key
+        when /qfi/ then type = "FillIn"
+        when /qddfi/ then type = "Drag and Drop FillIn"
+        when /qp/ then type = "Programming"
+        when /qmc/ then type = "Multiple Choice"
+        when /qddmc/ then type = "Drag and Drop Multiple Choice"
+        when /qsm/ then type = "Select Multiple"
+        when /qddsm/ then type = "Drag and Drop Select Multiple"
       end
     end
     
@@ -216,7 +210,7 @@ class MyApp < Sinatra::Base
       
       # Write in the main worksheet
       worksheet.title = $config["quiz"]["google_drive"]["spreadsheet_name"]
-      %w{Email Apellidos Nombre Nota Examen}.each_with_index { |value, index| worksheet[1, index + 1] = value }
+      %w{Email Apellidos Nombre Puntuación Examen}.each_with_index { |value, index| worksheet[1, index + 1] = value }
       $id_students = {}
       $students.each_with_index do |k, i|
         key = k[0]
@@ -335,7 +329,7 @@ class MyApp < Sinatra::Base
       write_spreadsheet_teacher(file)
     end
     
-    def write_worksheet_student(user)
+    def write_worksheet_student(user, mark)
       # Get or create student worksheet
       worksheet = $spreadsheet.worksheet_by_title(user)
       if (worksheet == nil)
@@ -345,18 +339,19 @@ class MyApp < Sinatra::Base
       # Write student worksheet
       %w{ID_Pregunta Puntuación}.each_with_index { |value, index| worksheet[1, index + 1] = value }
       $data.keys.each_with_index { |value, index| worksheet[index + 2, 1] = value }
-    
+      mark.each_with_index { |m, i| worksheet[i + 2, 2] = m }
+      
       # Save changes and reload worksheet
       worksheet.save()
       worksheet.reload()
     end
     
-    def write_mark_worksheet_teacher(user)
+    def write_mark_worksheet_teacher(user, final_mark)
       # Get the teacher worksheet
       worksheet = $spreadsheet.worksheet_by_title($config["quiz"]["google_drive"]["spreadsheet_name"])
       
       # Write the mark and the URL of the student's quiz
-      worksheet[$id_students[user.to_sym] + 2, 4] = "NOTA"
+      worksheet[$id_students[user.to_sym] + 2, 4] = final_mark
       worksheet[$id_students[user.to_sym] + 2, 5] = $session.file_by_title("#{@title} - " + user + ".html").human_url
       
       # Save changes and reload worksheet
@@ -364,10 +359,159 @@ class MyApp < Sinatra::Base
       worksheet.reload()
     end
     
+    def store_mark(marks, index, question_mark)
+      marks[index] = question_mark
+    end
+    
+    def answer_point(points, num_answers)
+      (points / num_answers).round(2)
+    end
+    
+    def evaluate_string_fixnum(correct_answer, user_answer, points_by_answer, order=true)
+      if (order)
+        correct_answer == user_answer ? points_by_answer : 0.0
+      else
+        user_answer.has_value?(correct_answer) ? points_by_answer : 0.0
+      end
+    end
+    
+    def evaluate_regexp(correct_answer, user_answer, points_by_answer, order=true)
+      if (order)
+        user_answer =~ correct_answer ? points_by_answer : 0.0
+      else
+        user_answer.values.any? do |v| v =~ correct_answer end ? points_by_answer : 0.0
+      end
+    end
+    
+    def evaluate_code(points_by_answer, order=true)
+      points_by_answer
+    end
+    
+    def validate_qfi(correct_answers, user_answers, marks, index_question, options={})
+      points_by_answer = answer_point(options[:points], correct_answers.keys.length)
+      question_mark = 0
+      
+      if (options[:order])
+        correct_answers.each_key do |id|
+          case correct_answers[id][:type]
+            when "String" then question_mark += evaluate_string_fixnum(correct_answers[id][:answer_text], user_answers[id.to_s], points_by_answer)
+            when "Fixnum" then question_mark += evaluate_string_fixnum(correct_answers[id][:answer_text], user_answers[id.to_s].to_i, points_by_answer)
+            when "Regexp" then question_mark += evaluate_regexp(correct_answers[id][:answer_text], user_answers[id.to_s], points_by_answer)
+            when "JS" then question_mark += evaluate_code(points_by_answer)
+          end
+        end
+      else
+        user_answers = user_answers.invert.invert
+        correct_answers.each_key do |id|
+          case correct_answers[id][:type]
+            when "String", "Fixnum" then question_mark += evaluate_string_fixnum(correct_answers[id][:answer_text], user_answers, points_by_answer, options[:order])
+            when "Regexp" then question_mark += evaluate_regexp(correct_answers[id][:answer_text], user_answers, points_by_answer, options[:order])
+            when "JS" then question_mark += evaluate_code(points_by_answer, options[:order])
+          end
+        end
+      end
+      store_mark(marks, index_question, question_mark.round(1))
+    end
+    
+    def validate_qp(correct_answers, user_answers, marks, index_question, options={})
+      store_mark(marks, index_question, options[:points])
+    end
+    
+    def validate_qmc(correct_answers, user_answers, marks, index_question, options={})
+      question_mark = correct_answers[correct_answers.keys[0]][:answer_text] == user_answers[user_answers.keys[0]] ? options[:points] : 0.0
+      store_mark(marks, index_question, question_mark.round(1))
+    end
+    
+    def evaluate_hash(correct_answer, user_answer, points_by_answer)
+      correct_answer.values[0] == user_answer ? points_by_answer : 0.0
+    end
+    
+    def validate_qddmc(correct_answers, user_answers, marks, index_question, options={})
+      points_by_answer = answer_point(options[:points], correct_answers.keys.length)
+      question_mark = 0
+      
+      correct_answers.each_key do |id|
+        question_mark += evaluate_hash(correct_answers[id][:answer_text], user_answers[id.to_s], points_by_answer)
+      end
+      
+      store_mark(marks, index_question, question_mark.round(1))
+    end
+    
+    def evaluate_qsm(correct_answers, id, points_by_answer, order=true)
+      correct_answers.has_key?(id.to_sym) ? points_by_answer : -points_by_answer
+    end
+    
+    def validate_qsm(correct_answers, user_answers, marks, index_question, options={})
+      points_by_answer = answer_point(options[:points], correct_answers.keys.length)
+      question_mark = 0
+      
+      user_answers.each_key do |id|
+        question_mark += evaluate_qsm(correct_answers, id, points_by_answer)
+      end
+      
+      question_mark = 0.0 if question_mark < 0
+      store_mark(marks, index_question, question_mark.round(1))
+    end
+    
+    def evaluate_qddsm(correct_answer, user_answer, points_by_answer, order=true)
+      local_score = 0
+      begin
+        user_answer = user_answer.split(',')
+      rescue
+        user_answer = []
+      end
+      
+      correct_answer.values.flatten.each do |v|
+        user_answer.include?(v) ? local_score += points_by_answer : local_score -= points_by_answer
+      end
+      
+      local_score
+    end
+    
+    def validate_qddsm(correct_answers, user_answers, marks, index_question, options={})
+      points_by_answer = answer_point(options[:points], correct_answers.keys.length)
+      question_mark = 0
+      
+      correct_answers.each_key do |id|
+        question_mark += evaluate_qddsm(correct_answers[id][:answer_text], user_answers[id.to_s], points_by_answer)
+      end
+      
+      question_mark = 0.0 if question_mark < 0
+      question_mark = 1.0 if question_mark > 1
+      store_mark(marks, index_question, question_mark.round(1))
+    end
+    
+    def validate_answers(answers)
+      marks = Array.new($data.keys.length)
+      index_question = 0
+      
+      $data.each_key do |question|
+        type = $data[question][:answers].keys[0].to_s
+        id_question = Regexp.new type.split('-')[0]
+        correct_answers, user_answers = {}, {}
+        
+        $data[question][:answers].each_key do |key| correct_answers[key] = $data[question][:answers][key] if $data[question][:answers][key][:correct] end
+        answers.each_key do |key| user_answers[key] = answers[key] if key =~ id_question end     # User answers of each question from params
+        
+        case type
+          when /qfi/, /qddfi/ then validate_qfi(correct_answers, user_answers, marks, index_question, :points => ($data[question][:points]).to_f, :order => $data[question][:order])
+          when /qp/ then validate_qp(correct_answers, user_answers, marks, index_question, :points => ($data[question][:points]).to_f)
+          when /qmc/ then validate_qmc(correct_answers, user_answers, marks, index_question, :points => ($data[question][:points]).to_f)
+          when /qddmc/ then validate_qddmc(correct_answers, user_answers, marks, index_question, :points => ($data[question][:points]).to_f)
+          when /qsm/ then validate_qsm(correct_answers, user_answers, marks, index_question, :points => ($data[question][:points]).to_f)
+          when /qddsm/ then validate_qddsm(correct_answers, user_answers, marks, index_question, :points => ($data[question][:points]).to_f)
+        end
+        index_question += 1
+      end
+      marks
+    end
+    
     def evaluate(user, answers)
       upload_student_copy_quiz(user, answers)
-      write_worksheet_student(user)
-      write_mark_worksheet_teacher(user)
+      mark = validate_answers(answers)
+      final_mark = mark.inject { |sum, x| sum + x }
+      write_worksheet_student(user, mark)
+      write_mark_worksheet_teacher(user, final_mark)
     end
   end
   

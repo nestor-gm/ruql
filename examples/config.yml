@@ -2,7 +2,7 @@
 quiz:
   schedule:
     date_start: '2014-06-09'
-    date_finish: '2014-06-25'
+    date_finish: '2014-06-27'
     time_start: '20:00'
     time_finish: '23:00'
   heroku:
