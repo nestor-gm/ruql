@@ -299,7 +299,12 @@ class MyApp < Sinatra::Base
     
     def upload_student_copy_quiz(user, answers)
       name = "#{@title} - " + user + ".html"
+      answers[:na] = %q{<b style="color:red">n/a</b>}
+      answers.collect do |k, v| answers[k] = answers[:na] if answers[k] == "" end
+      
       student_html = ERB.new((File.read("views/#{@title}.erb")).to_s).result(answers.instance_eval { binding })
+      answers.collect do |k, v| answers[k] = "" if answers[k] == answers[:na] end
+      answers.delete(:na)
       
       # If a student post again the quiz, the previous quiz will be removed
       $session.file_by_title(name).delete(true) if $session.file_by_title(name) != nil

@@ -143,7 +143,7 @@ class SinatraRenderer
   def erb_interpolation(id)
     @h_erb.b do
       @h_erb.div do |d|
-        d << "<%= answers[:'#{id}'] %>"
+        d << "<%= answers[:'#{id}'] || answers[:na] %>"
       end
     end
   end
@@ -421,8 +421,8 @@ class SinatraRenderer
       nHyphen = hyphen[i].count('-')
       @size_inputs << nHyphen
       if (erb)
-        input = %Q{<b><%= answers[:'qfi#{index + 1}-#{i + 1}'] %></b>} if question.class == FillIn
-        input = %Q{<b><%= answers[:'qddfi#{index + 1}-#{i + 1}'] %></b>} if question.class == DragDrop_FI
+        input = %Q{<b><%= answers[:'qfi#{index + 1}-#{i + 1}'] || answers[:na] %></b>} if question.class == FillIn
+        input = %Q{<b><%= answers[:'qddfi#{index + 1}-#{i + 1}'] || answers[:na] %></b>} if question.class == DragDrop_FI
       else 
         input = %Q{<input type="text" id="qfi#{index + 1}-#{i + 1}" name="qfi#{index + 1}-#{i + 1}" class="fillin size-#{nHyphen}"></input>} if question.class == FillIn
         input = %Q{<input id="qddfi#{index + 1}-#{i + 1}" name="qddfi#{index + 1}-#{i + 1}" class="dragdropfi size-#{nHyphen}" ondrop="drop(event,'qddfi#{index + 1}-#{i + 1}', 
