@@ -219,7 +219,7 @@ function checkAnswer(x) {
               options = string[2];
               correctAnswers[ans.toString()] = XRegExp(regexp, options);
             }
-            else if (data[x.toString()]['answers'][ans]['type'] == "JS") {
+            else if (data[x.toString()]['answers'][ans]['type'] == "JavaScript") {
               flag_js = true;
             }
             else if (data[x.toString()]['answers'][ans]['type'] == "Hash") {
@@ -238,7 +238,7 @@ function checkAnswer(x) {
               options = string[2];
               distractorAnswers[ans.toString()] = XRegExp(regexp, options);
             }
-            else if (data[x.toString()]['answers'][ans]['type'] == "JS") {
+            else if (data[x.toString()]['answers'][ans]['type'] == "JavaScript") {
               //
             }
             else {// String or Number

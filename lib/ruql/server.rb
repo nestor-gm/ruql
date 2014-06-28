@@ -388,8 +388,11 @@ class MyApp < Sinatra::Base
       end
     end
     
-    def evaluate_code(points_by_answer, order=true)
-      points_by_answer
+    def evaluate_proc(correct_answer, user_answer, points_by_answer, order=true)
+      values = []
+      user_answer.each_value { |v| values << v.to_i }
+      code = eval(correct_answer)
+      code.call(values) == true ? points_by_answer : 0.0
     end
     
     def validate_qfi(correct_answers, user_answers, marks, index_question, options={})
@@ -402,16 +405,16 @@ class MyApp < Sinatra::Base
             when "String" then question_mark += evaluate_string_fixnum(correct_answers[id][:answer_text], user_answers[id.to_s], points_by_answer)
             when "Fixnum" then question_mark += evaluate_string_fixnum(correct_answers[id][:answer_text], user_answers[id.to_s].to_i, points_by_answer)
             when "Regexp" then question_mark += evaluate_regexp(correct_answers[id][:answer_text], user_answers[id.to_s], points_by_answer)
-            when "JS" then question_mark += evaluate_code(points_by_answer)
+            when "Proc" then question_mark += evaluate_proc(correct_answers[id][:answer_text], user_answers, points_by_answer)
           end
         end
       else
         user_answers = user_answers.invert.invert
         correct_answers.each_key do |id|
           case correct_answers[id][:type]
-            when "String", "Fixnum" then question_mark += evaluate_string_fixnum(correct_answers[id][:answer_text], user_answers, points_by_answer, options[:order])
+            when "String" then question_mark += evaluate_string_fixnum(correct_answers[id][:answer_text], user_answers, points_by_answer, options[:order])
+            when "Fixnum" then question_mark += evaluate_string_fixnum(correct_answers[id][:answer_text].to_s, user_answers, points_by_answer, options[:order])
             when "Regexp" then question_mark += evaluate_regexp(correct_answers[id][:answer_text], user_answers, points_by_answer, options[:order])
-            when "JS" then question_mark += evaluate_code(points_by_answer, options[:order])
           end
         end
       end
@@ -419,7 +422,15 @@ class MyApp < Sinatra::Base
     end
     
     def validate_qp(correct_answers, user_answers, marks, index_question, options={})
-      store_mark(marks, index_question, options[:points])
+      correct_answer = correct_answers.values[0][:answer_text]
+      user_answer = user_answers.values[0]
+      begin
+        eval(user_answer)      # Student's input
+        eval(correct_answer) == true ? question_mark = options[:points] : question_mark = 0.0
+        store_mark(marks, index_question, question_mark)
+      rescue
+        store_mark(marks, index_question, 0.0)
+      end
     end
     
     def validate_qmc(correct_answers, user_answers, marks, index_question, options={})

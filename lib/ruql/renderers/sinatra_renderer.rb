@@ -348,9 +348,12 @@ class SinatraRenderer
     elsif (item.class == Fixnum)
       ans = item
       type = 'Fixnum'
+    elsif (item.class == Ruby)
+      ans = item.to_ruby
+      type = 'Proc'
     else
-      ans = item.to_javascript
-      type = 'JS'
+      $stderr.puts "Answer type #{item.class} not supported in this renderer!"
+      exit
     end
     @data[:"question-#{idx}"][:answers]["#{class_question}#{idx + 1}-#{id_answer}".to_sym] = {:answer_text => ans, :correct => answer.correct, 
                                                                                               :explanation => answer.explanation, :type => type}
@@ -397,7 +400,7 @@ class SinatraRenderer
       answer = q.answers[0]
       obj.ol :class => 'answers' do
         # Store answers for question-index
-        @data[:"question-#{index}"][:answers]["qp#{index + 1}-1".to_sym] = {:answer_text => answer.answer_text.to_javascript, :correct => answer.correct, 
+        @data[:"question-#{index}"][:answers]["qp#{index + 1}-1".to_sym] = {:answer_text => answer.answer_text.to_ruby, :correct => answer.correct, 
                                                                             :explanation => answer.explanation, :type => q.language}
         if (erb)
           erb_interpolation("qp#{index + 1}-1")
@@ -474,9 +477,17 @@ class SinatraRenderer
             @data[html_args[:id].to_sym] = {:question_text => questionText, :answers => {}, :points => question.points, 
                                             :order => question.order, :question_comment => question.question_comment}
           elsif (question.class == Programming)
-            @data[html_args[:id].to_sym] = {:question_text => questionText, :answers => {}, :points => question.points, 
-                                            :question_comment => question.question_comment, :language => question.language,
-                                            :height => question.height, :width => question.width}
+            if (question.language == 'Ruby')
+              @data[html_args[:id].to_sym] = {:question_text => questionText, :answers => {}, :points => question.points, 
+                                              :question_comment => question.question_comment, :language => question.language,
+                                              :height => question.height, :width => question.width}
+            elsif (question.language == nil)
+              $stderr.puts "You must specify a programming language for Programming Questions"
+              exit
+            else
+              $stderr.puts "Programming language #{question.language} not supported in this renderer!"
+              exit
+            end
           else
             @data[html_args[:id].to_sym] = {:question_text => questionText, :answers => {}, :points => question.points,
                                             :question_comment => question.question_comment}
@@ -709,13 +720,13 @@ class SinatraRenderer
   
   def insert_codemirror(template, obj=nil)
     if (install_gem == nil)
-      css = File.read(File.expand_path(Dir.pwd, '../../..') + '/vendor/assets/CodeMirror-4.1.0/css/codemirror.css')
-      js = File.read(File.expand_path(Dir.pwd, '../../..') + '/vendor/assets/CodeMirror-4.1.0/js/codemirror.min.js')
-      mode_js = File.read(File.expand_path(Dir.pwd, '../../..') + '/vendor/assets/CodeMirror-4.1.0/mode/javascript/javascript.js')
+      css = File.read(File.expand_path(Dir.pwd, '../../..') + '/vendor/assets/CodeMirror-4.3.0/css/codemirror.css')
+      js = File.read(File.expand_path(Dir.pwd, '../../..') + '/vendor/assets/CodeMirror-4.3.0/js/codemirror.min.js')
+      mode_js = File.read(File.expand_path(Dir.pwd, '../../..') + '/vendor/assets/CodeMirror-4.3.0/mode/ruby/ruby.js')
     else
-      css = File.read(File.join(Gem.loaded_specs['ruql'].full_gem_path, 'vendor/assets/CodeMirror-4.1.0/css/codemirror.css'))
-      js = File.read(File.join(Gem.loaded_specs['ruql'].full_gem_path, 'vendor/assets/CodeMirror-4.1.0/js/codemirror.min.js'))
-      mode_js = File.read(File.join(Gem.loaded_specs['ruql'].full_gem_path, 'vendor/assets/CodeMirror-4.1.0/mode/javascript/javascript.js'))
+      css = File.read(File.join(Gem.loaded_specs['ruql'].full_gem_path, 'vendor/assets/CodeMirror-4.3.0/css/codemirror.css'))
+      js = File.read(File.join(Gem.loaded_specs['ruql'].full_gem_path, 'vendor/assets/CodeMirror-4.3.0/js/codemirror.min.js'))
+      mode_js = File.read(File.join(Gem.loaded_specs['ruql'].full_gem_path, 'vendor/assets/CodeMirror-4.3.0/mode/ruby/ruby.js'))
     end
     if (template)
       tags = %Q{

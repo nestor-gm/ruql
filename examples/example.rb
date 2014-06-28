@@ -8,7 +8,7 @@ quiz 'Example quiz' do
   config :'examples/config.yml'
   
   #head :'examples/header.html'
-  
+
   tag = '<a href="www.google.es"></a> '
   fill_in do
     text "<i>Example of escaped HTML and three hyphens not evaluated:</i><br> #{escape(tag)}" + "is a \\-\\-\\- ---- " + '\-\-\-'
@@ -46,16 +46,28 @@ quiz 'Example quiz' do
     answer :santa => /Santa/i, :tenerife => /Tenerife/i
   end
   
-  fill_in :language => 'JavaScript' do
+  #fill_in do
+  #  text %q{
+  #    Diga dos números x = ---- e  y = ---- que multiplicados den 100
+  #  }
+  #  answer JavaScript.new(%q{result = function(x,y) { return (x * y === 100); }})
+  #end
+
+  fill_in do
     text %q{
       Diga dos números x = ---- e  y = ---- que multiplicados den 100
     }
-    answer JS.new(%q{result = function(x,y) { return (x * y === 100); }})
+    answer Ruby.new(%q{Proc.new do |x,y| x * y == 100 end})     # :order => true always
   end
 
-  programming :language => 'JavaScript', :height => 150, :width => 800  do
-    text %q{Write a JavaScript function named `suma` with two arguments that return the sum of them}
-    answer JS.new(:'examples/test_suma.js')
+  #programming :language => 'JavaScript', :height => 150, :width => 800  do
+  #  text %q{Write a JavaScript function named `suma` with two arguments that return the sum of them}
+  #  answer JavaScript.new(:'examples/test_suma.js')
+  #end
+  
+  programming :language => 'Ruby', :height => 150, :width => 800  do
+    text %q{Write a Ruby function named `suma` with two arguments that return the sum of them}
+    answer Ruby.new(:'examples/test_suma.rb')
   end
   
   fill_in do
@@ -130,7 +142,7 @@ quiz 'Example quiz' do
     distractor 'Throws an exception', :explanation => "Don't be an idiot."
     answer 'Prints a friendly message'
   end
-  
+ 
   #foot :'examples/footer.html'
 
 end

@@ -289,9 +289,12 @@ class HtmlFormRenderer
     elsif (item.class == Fixnum)
       ans = item
       type = 'Fixnum'
-    else
+    elsif (item.class == JavaScript)
       ans = item.to_javascript
-      type = 'JS'
+      type = 'JavaScript'
+    else
+      $stderr.puts "Answer type #{item.class} not supported in this renderer!"
+      exit
     end
     @data[:"question-#{idx}"][:answers]["#{class_question}#{idx + 1}-#{id_answer}".to_sym] = {:answer_text => ans, :correct => answer.correct, 
                                                                                               :explanation => answer.explanation, :type => type}
@@ -402,9 +405,17 @@ true)"
             @data[html_args[:id].to_sym] = {:question_text => questionText, :answers => {}, :points => question.points, 
                                             :order => question.order, :question_comment => question.question_comment}
           elsif (question.class == Programming)
-            @data[html_args[:id].to_sym] = {:question_text => questionText, :answers => {}, :points => question.points, 
-                                            :question_comment => question.question_comment, :language => question.language,
-                                            :height => question.height, :width => question.width}
+            if (question.language == 'JavaScript')
+              @data[html_args[:id].to_sym] = {:question_text => questionText, :answers => {}, :points => question.points, 
+                                              :question_comment => question.question_comment, :language => question.language,
+                                              :height => question.height, :width => question.width}
+            elsif (question.language == nil)
+              $stderr.puts "You must specify a programming language for Programming Questions"
+              exit
+            else
+              $stderr.puts "Programming language #{question.language} not supported in this renderer!"
+              exit
+            end
           else
             @data[html_args[:id].to_sym] = {:question_text => questionText, :answers => {}, :points => question.points,
                                             :question_comment => question.question_comment}
@@ -635,13 +646,13 @@ true)"
   
   def insert_codemirror(template)
     if (install_gem == nil)
-      css = File.read(File.expand_path(Dir.pwd, '../../..') + '/vendor/assets/CodeMirror-4.1.0/css/codemirror.css')
-      js = File.read(File.expand_path(Dir.pwd, '../../..') + '/vendor/assets/CodeMirror-4.1.0/js/codemirror.min.js')
-      mode_js = File.read(File.expand_path(Dir.pwd, '../../..') + '/vendor/assets/CodeMirror-4.1.0/mode/javascript/javascript.js')
+      css = File.read(File.expand_path(Dir.pwd, '../../..') + '/vendor/assets/CodeMirror-4.3.0/css/codemirror.css')
+      js = File.read(File.expand_path(Dir.pwd, '../../..') + '/vendor/assets/CodeMirror-4.3.0/js/codemirror.min.js')
+      mode_js = File.read(File.expand_path(Dir.pwd, '../../..') + '/vendor/assets/CodeMirror-4.3.0/mode/javascript/javascript.js')
     else
-      css = File.read(File.join(Gem.loaded_specs['ruql'].full_gem_path, 'vendor/assets/CodeMirror-4.1.0/css/codemirror.css'))
-      js = File.read(File.join(Gem.loaded_specs['ruql'].full_gem_path, 'vendor/assets/CodeMirror-4.1.0/js/codemirror.min.js'))
-      mode_js = File.read(File.join(Gem.loaded_specs['ruql'].full_gem_path, 'vendor/assets/CodeMirror-4.1.0/mode/javascript/javascript.js'))
+      css = File.read(File.join(Gem.loaded_specs['ruql'].full_gem_path, 'vendor/assets/CodeMirror-4.3.0/css/codemirror.css'))
+      js = File.read(File.join(Gem.loaded_specs['ruql'].full_gem_path, 'vendor/assets/CodeMirror-4.3.0/js/codemirror.min.js'))
+      mode_js = File.read(File.join(Gem.loaded_specs['ruql'].full_gem_path, 'vendor/assets/CodeMirror-4.3.0/mode/javascript/javascript.js'))
     end
     if (template)
       tags = %Q{
@@ -700,7 +711,7 @@ true)"
           if (id_answer.match(/^qfi/)) {
             numQuestion = parseInt(id_answer.split('-')[0].slice(3)) - 1;
             try {
-              if (data["question-" + numQuestion.toString()]['answers'][id_answer]['type'] != "JS") {
+              if (data["question-" + numQuestion.toString()]['answers'][id_answer]['type'] != "JavaScript") {
                 answer = data["question-" + numQuestion.toString()]['answers'][id_answer]['answer_text'];
                 type = data["question-" + numQuestion.toString()]['answers'][id_answer]['type'];
                 context.attach('#' + id_answer, [
