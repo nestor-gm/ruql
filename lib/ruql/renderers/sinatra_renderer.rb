@@ -7,7 +7,7 @@ class SinatraRenderer
   require 'i18n'
   require 'locale'
   
-  attr_reader :output, :output_erb, :data
+  attr_reader :output, :output_erb, :data, :textareas
 
   def initialize(quiz,options={})
     @css = options.delete('c') || options.delete('css')
@@ -21,7 +21,7 @@ class SinatraRenderer
     @quiz_serialized_copy = YAML::load(YAML::dump(@quiz))
     @h = Builder::XmlMarkup.new(:target => @output, :indent => 2)
     @h_erb = Builder::XmlMarkup.new(:target => @output_erb, :indent => 2)
-    @data = {}
+    @data, @textareas = {}, {}
     @size_inputs = []
     @size_divs = []
     @size_dd_divs = []
@@ -481,6 +481,7 @@ class SinatraRenderer
               @data[html_args[:id].to_sym] = {:question_text => questionText, :answers => {}, :points => question.points, 
                                               :question_comment => question.question_comment, :language => question.language,
                                               :height => question.height, :width => question.width}
+              @textareas[html_args[:id].to_sym] = {:height => question.height, :width => question.width}
             elsif (question.language == nil)
               $stderr.puts "You must specify a programming language for Programming Questions"
               exit
@@ -836,12 +837,9 @@ class SinatraRenderer
  
   def insert_defaultJS(totalPoints, template, obj=nil)
     code = %Q{
-      data = #{@data.to_json};
+      data = #{@textareas.to_json}
       timestamp = #{Time.now.getutc.to_i}
       timestamp = timestamp.toString();
-      language = '#{@language.to_s}';
-      totalPoints = #{totalPoints};
-      userPoints = 0;
       
       function storeAnswers() {
         if(typeof(Storage) !== undefined) {
@@ -857,15 +855,15 @@ class SinatraRenderer
           for (i = 0; i < inputRadioCheckBox.length; i++) {
             idAnswer = inputRadioCheckBox[i].id;
             nquestion = parseInt(idAnswer.split('-')[0].substr(3)) - 1;
-            tmp[idAnswer] = data["question-" + nquestion.toString()]['answers'][idAnswer]['answer_text'];
+            tmp[idAnswer] = inputRadioCheckBox[i].value;
           }
           
           $.each(id_textareas, function(k,v) {
             tmp[k] = id_textareas[k]['editor'].getValue();
-        });
+          });
         
-        localStorage.setItem(timestamp, JSON.stringify(tmp));
-  }
+          localStorage.setItem(timestamp, JSON.stringify(tmp));
+        }
         else {
           alert("El navegador no soporta almacenamiento de respuestas");
         }
@@ -885,29 +883,29 @@ class SinatraRenderer
           }
         }
         
-        function deleteAnswers(all, flag) {
-          if (all) {
-            localStorage.clear();
-            if (flag)
-              alert("Almacenamiento borrado");
-            }
-          else {
-            localStorage.removeItem(timestamp);
-            if (flag)
-              alert("Respuestas borradas");
-            }
-          }
-          
-          function reload() {
-            window.location.reload();
+      function deleteAnswers(all, flag) {
+        if (all) {
+          localStorage.clear();
+          if (flag)
+            alert("Almacenamiento borrado");
+        }
+        else {
+          localStorage.removeItem(timestamp);
+          if (flag)
+            alert("Respuestas borradas");
+        }
       }
       
+      function reload() {
+        window.location.reload();
+      }
+    
       function clearTextarea() {
         areas = $('textarea');
         $.each(areas, function(i, v) {
           if (v.value.match(/^\s+$/))
             v.value = '';
-          });
+        });
       }
       
       function trimButtons() {

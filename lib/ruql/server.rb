@@ -40,7 +40,6 @@ class Server
   end
   
   def make_directories
-    #FileUtils::cd('../')              # Arreglar path para ejecutar desde la gema
     FileUtils::mkdir_p 'app/views'
     FileUtils::mkdir_p 'app/config'
   end
@@ -526,6 +525,8 @@ class MyApp < Sinatra::Base
       upload_student_copy_quiz(user, answers)
       mark = validate_answers(answers)
       final_mark = mark.inject { |sum, x| sum + x }
+      mark = mark.collect do |m| m.to_s.sub!('.', ',') end     # Void that Google Drive's spreadsheet formats the mark like a Date
+      final_mark = final_mark.to_s.sub!('.', ',')
       write_worksheet_student(user, mark)
       write_mark_worksheet_teacher(user, final_mark)
     end
