@@ -620,7 +620,11 @@ class MyApp < Sinatra::Base
       else
         if ($students.key?(response['info']['email'].to_sym))
           session[:student] = response['info']['email']
-          redirect '/quiz'
+          if ($active)
+            redirect '/quiz'
+          else
+            redirect '/not_initialized'
+          end
         else
           erb :not_allowed, :locals => {:title => "No permitido"}
         end
