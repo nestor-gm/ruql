@@ -1,7 +1,6 @@
 #encoding: utf-8
 require 'fileutils'
 require 'yaml'
-require 'google_drive'
 
 class Server
   attr_accessor :quizzes
