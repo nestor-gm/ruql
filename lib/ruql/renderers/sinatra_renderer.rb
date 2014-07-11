@@ -45,7 +45,7 @@ class SinatraRenderer
           insert_resources_head(h, @h)
         end
         @h.body do |b|
-          render_questions
+          render_questions(@h)
           insert_resources_body(b, @h)
         end
       end
@@ -56,7 +56,7 @@ class SinatraRenderer
           insert_resources_head(h, @h_erb)
         end
         @h_erb.body do |b|
-          render_questions(true)
+          render_questions(@h_erb, true)
           insert_resources_body(b, @h_erb)
         end
       end
