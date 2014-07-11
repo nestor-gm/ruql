@@ -1,0 +1,1 @@
+suma(3,4) == 7 ? true : false

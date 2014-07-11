@@ -6,7 +6,7 @@ class Programming < Question
     super
     self.question_text = text
     self.case_sensitive = !!opts[:case_sensitive]
-    self.language = opts[:language] || 'javascript'
+    self.language = opts[:language]
     self.height = opts[:height] || 150
     self.width = opts[:width] || 800
   end

@@ -201,7 +201,7 @@ function checkAnswer(x) {
   
   if ($("#" + x.toString() + " strong").length == 0) {
     correct = false;
-    answers = $("#" + x.toString() + " input");
+    answers = $("#" + x.toString() + " input[type!='hidden']");
     
     if (answers.length != 0) {
       if ((answers.attr('class').match("fillin")) || (answers.attr('class').match("dragdropfi")) || (answers.attr('class').match("dragdropmc"))) {
@@ -219,7 +219,7 @@ function checkAnswer(x) {
               options = string[2];
               correctAnswers[ans.toString()] = XRegExp(regexp, options);
             }
-            else if (data[x.toString()]['answers'][ans]['type'] == "JS") {
+            else if (data[x.toString()]['answers'][ans]['type'] == "JavaScript") {
               flag_js = true;
             }
             else if (data[x.toString()]['answers'][ans]['type'] == "Hash") {
@@ -238,7 +238,7 @@ function checkAnswer(x) {
               options = string[2];
               distractorAnswers[ans.toString()] = XRegExp(regexp, options);
             }
-            else if (data[x.toString()]['answers'][ans]['type'] == "JS") {
+            else if (data[x.toString()]['answers'][ans]['type'] == "JavaScript") {
               //
             }
             else {// String or Number
@@ -542,10 +542,12 @@ function showOrHideAnswer(numQuestion, flag) {
     $.each(answers, function(key, value) {
       if (value['correct'] == true)
         correct = key;
-    })
+    });
     
-    if (flag == 1)
+    if (flag == 1) {
+      $.each(inputs, function(key, value) { value.checked = false });
       $("input[id=" + correct + "]").prop('checked', true);
+    }
     else
       $("input[id=" + correct + "]").prop('checked', false);
   }
@@ -556,6 +558,9 @@ function showOrHideAnswer(numQuestion, flag) {
       if (answers[key]['correct'] == true)
         corrects.push(key);
     }); 
+    
+    if (flag == 1)
+      $.each(inputs, function(key, value) { value.checked = false });
     
     $.each(corrects, function(index, value) {
       if (flag == 1)

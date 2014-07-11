@@ -1,4 +1,5 @@
-class JS
+class Language
+  
   def initialize(source)
     if (source.class == Symbol)
       @source = File.read(File.expand_path(source.to_s))
@@ -6,8 +7,5 @@ class JS
       @source = source
     end
   end 
-  
-  def to_javascript
-    @source
-  end 
+ 
 end 
