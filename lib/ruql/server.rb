@@ -53,9 +53,9 @@ class Server
   
   def make_teachers_rb
     if (@teachers.class == String)
-      make_file(@teachers, 'app/config/teachers.rb')
+      make_file(@teachers, 'app/config/teachers.csv')
     elsif (@teachers.class == Array)
-      File.open('app/config/teachers.rb', 'w') do |f|
+      File.open('app/config/teachers.csv', 'w') do |f|
         @teachers.each { |teacher| f.puts(teacher)}
         f.close
       end
@@ -124,13 +124,10 @@ class MyApp < Sinatra::Base
     
     def store_teachers(path)
       people = []
-      File.open(path, 'r') do |f|
-        while line = f.gets
-          people << line
-        end
-        f.close
+      CSV.foreach(path) do |t|
+        people << t
       end
-      people
+      people.flatten
     end
     
     def load_config_yml
@@ -598,7 +595,7 @@ class MyApp < Sinatra::Base
     response = request.env['omniauth.auth'].to_hash
     if (!$initialized)
       load_config_yml
-      $teachers = store_teachers('config/teachers.rb')
+      $teachers = store_teachers('config/teachers.csv')
       if (File.exist?('config/students.csv'))
         $students = store_students('config/students.csv', 'csv')
       elsif (File.exist?('config/students.rb'))
