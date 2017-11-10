@@ -605,6 +605,8 @@ $("a[id^=show-answer-q-]").click(function() {
   changeButton($(this), numQuestion);
 });
 
+$("a[id^=show-answer-q-]").hide();
+
 $("a[id^=q-]").click(function() {
   nQuestion = $(this).attr('id').split('-')[1];
   checkAnswer('question-' + nQuestion);

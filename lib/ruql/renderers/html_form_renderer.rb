@@ -136,7 +136,7 @@ class HtmlFormRenderer
       if ((klass == DragDrop_MC) || (klass == DragDrop_SM))
         @data[:"question-#{index}"][:answers]["#{id_klass}#{index + 1}-#{id_answer}".to_sym][:type] = "Hash"
       else
-        insert_input(type_input, "#{id_klass}#{index + 1}-#{id_answer}", "#{id_klass}", klass_input, answer)
+        insert_input(type_input, "#{id_klass}#{index + 1}-#{id_answer}", "#{id_klass}#{index + 1}", klass_input, answer)
       end
       id_answer += 1
     end
@@ -452,7 +452,7 @@ true)"
   
   def insert_buttons_each_question(index, flag=false)
     insert_button("show-answer-q-#{index}", translate(:show, 'buttons'), 'btn btn-success btn-sm') if flag
-    insert_button("q-#{index}", translate(:submit, 'buttons'), 'btn btn-primary btn-sm')
+    #insert_button("q-#{index}", translate(:submit, 'buttons'), 'btn btn-primary btn-sm')
     @h.br do
     end
   end
