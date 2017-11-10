@@ -595,10 +595,15 @@ $("#deleteAnswers").click(function() {
   reload();
 });
 
+$("#deleteAnswers").hide();
+
+
 $("#deleteStorage").click(function() {
   deleteAnswers(true, 1);
   reload();
 });
+
+$("#deleteStorage").hide();
 
 $("a[id^=show-answer-q-]").click(function() {
   numQuestion = parseInt($(this).attr('id').split('-')[3]);
