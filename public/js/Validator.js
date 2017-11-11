@@ -584,6 +584,18 @@ $("#submit").click(function() {
   
   storeAnswers();
   showTotalScore();
+  data =   $("#score").html(i18n[language]['questions']['score'] + ": " + userPoints.toFixed(2) + "/" + totalPoints.toFixed(2) + " " + i18n[language]['questions']['points'])
+  post = data["0"].textContent
+  
+  $.ajax({
+						type: 'POST',
+						data: post,
+                        url: 'http://localhost:9292/resultado',						
+                        success: function(post) {
+
+                        }
+                    });
+});
 });
 
 $("#reset").click(function() {
