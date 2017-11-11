@@ -596,7 +596,6 @@ $("#submit").click(function() {
                         }
                     });
 });
-});
 
 $("#reset").click(function() {
   reload();
