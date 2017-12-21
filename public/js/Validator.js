@@ -590,7 +590,7 @@ $("#submit").click(function() {
   $.ajax({
 						type: 'POST',
 						data: post,
-                        url: 'http://localhost:9292/resultado',						
+                        url: '/resultado',						
                         success: function(post) {
 
                         }
